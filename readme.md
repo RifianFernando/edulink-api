@@ -1,0 +1,33 @@
+# Setup Project
+
+1. download go from here <https://go.dev/dl/go1.22.2.windows-amd64.msi>
+2. Download database driver [dbeaver](https://dbeaver.io/download/) and database tools [jdbc](https://jdbc.postgresql.org/download/) and install it
+2. pull this project from github and locate it in your go workspace where the src folder is located
+3. open the project in your favorite IDE
+4. open the terminal and run the following command to install the dependencies
+
+```bash
+go mod tidy
+```
+
+5. run the project using the following command
+for compile daemon use the following command
+
+```bash
+CompileDaemon -command="./skripsi-be"
+```
+
+```bash
+go run main.go
+```
+
+# Package of this project
+
+1. Framework: [Gin](https://gin-gonic.com/docs/quickstart/)
+2. Golang ORM: [GORM Postgres](https://gorm.io/docs/connecting_to_the_database.html#PostgreSQL)
+3. Database:
+    - PostgreeSQL main: [postgree](https://www.postgresql.org/download/)
+    - PostgreeSQL tools: [dbeaver](https://dbeaver.io/download/)
+    - PostgreeSQL driver: [jdbc](https://jdbc.postgresql.org/download/)
+4. env: [godotenv](https://github.com/joho/godotenv)
+5. compiler: go with [CompileDaemon](https://github.com/githubnemo/CompileDaemon)

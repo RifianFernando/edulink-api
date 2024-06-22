@@ -1,7 +1,7 @@
 # Setup Project
 
 1. download go from here <https://go.dev/dl/go1.22.2.windows-amd64.msi>
-2. Download database driver [dbeaver](https://dbeaver.io/download/) and database tools [jdbc](https://jdbc.postgresql.org/download/) and install it
+2. Download database driver [dbeaver](https://dbeaver.io/download/) and database tools [jdbc](https://www.enterprisedb.com/downloads/postgres-postgresql-downloads) and install it
 3. pull this project from github and locate it in your go workspace where the src folder is located
 4. open the project in your favorite IDE
 5. open the terminal and run the following command to install the dependencies

@@ -9,8 +9,6 @@ import (
 	"gorm.io/gorm"
 )
 
-var DB *gorm.DB
-
 func getEnvValue(key string) string {
 	value, exists := os.LookupEnv(key)
 	if !exists {
@@ -20,6 +18,8 @@ func getEnvValue(key string) string {
 	}
 	return value
 }
+
+var DB *gorm.DB
 
 func ConnecToDB() {
 	var err error

@@ -18,13 +18,20 @@
 6. run the project using the following command
 for compile daemon use the following command
 
-```bash
-CompileDaemon -command="./skripsi-be"
-```
+- first thing to do for migrate to postgresql
+    ```bash
+    go run migrate/migrate.go
+    ```
 
-```bash
-go run main.go 
-```
+- Run Project with CompileDaemon **(RECOMMENDED)**
+    ```bash
+    CompileDaemon -command="./skripsi-be"
+    ```
+
+- Run Project
+    ```bash
+    go run main.go 
+    ```
 
 # Package of this project
 

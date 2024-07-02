@@ -162,3 +162,27 @@ func UpdateStudentById(c *gin.Context) {
 	student.MotherNumberPhone = request.MotherNumberPhone
 	connections.DB.Save(&student)
 }
+
+func DeleteStudentById(c *gin.Context) {
+	id := c.Param("id")
+
+	var student models.Student
+	// if student exist
+	if connections.DB.First(&student, id).Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Student not found",
+		})
+		return
+	}
+	result := connections.DB.Delete(&student{}, id)
+	if result.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": result.Error.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"student": student,
+	})
+}

@@ -7,7 +7,7 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type CreateStudentRequest struct {
+type InsertStudentRequest struct {
 	Name              string `json:"name" binding:"required"`
 	Gender            string `json:"gender" binding:"required,oneof=male female other"`
 	PlaceOfBirth      string `json:"place_of_birth" binding:"required"`
@@ -28,13 +28,13 @@ type CreateStudentRequest struct {
 }
 
 // Validate method
-func (r *CreateStudentRequest) Validate() error {
+func (r *InsertStudentRequest) Validate() error {
 	validate := validator.New()
 	return validate.Struct(r)
 }
 
 // Method to parse dates
-func (r *CreateStudentRequest) ParseDates() (time.Time, time.Time, error) {
+func (r *InsertStudentRequest) ParseDates() (time.Time, time.Time, error) {
 	dateOfBirth, err := time.Parse("2006-01-02", r.DateOfBirth)
 	if err != nil {
 		return time.Time{}, time.Time{}, err

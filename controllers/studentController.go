@@ -134,13 +134,13 @@ func UpdateStudentById(c *gin.Context) {
 
 	// Get student by id
 	var student models.Student
-	// result := connections.DB.First(&student, request.ID)
-	// if result.Error != nil {
-	// 	c.JSON(http.StatusBadRequest, gin.H{
-	// 		"error": result.Error.Error(),
-	// 	})
-	// 	return
-	// }
+	result := connections.DB.First(&student, c.Param("id"))
+	if result.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": result.Error.Error(),
+		})
+		return
+	}
 
 	// Update student
 	student.Name = request.Name
@@ -174,7 +174,8 @@ func DeleteStudentById(c *gin.Context) {
 		})
 		return
 	}
-	result := connections.DB.Delete(&student{}, id)
+
+	result := connections.DB.Delete(&student, id)
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": result.Error.Error(),

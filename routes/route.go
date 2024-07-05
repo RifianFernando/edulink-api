@@ -12,13 +12,30 @@ func Route(router *gin.Engine) {
 	{
 
 		// Student CRUD
-		product := apiV1.Group("/student")
+		student := apiV1.Group("/student")
 		{
-			product.GET("/", controllers.GetAllStudent) // every product in every store
-			product.GET("/:id", controllers.GetStudentById)
-			product.POST("/create", controllers.CreateStudent)
-			// product.PUT("/update/:id", middleware.HaveStore(), routes.UpdateProduct)
-			// product.DELETE("/delete/:id", middleware.HaveStore(), routes.DeleteProduct)
+			student.GET(
+				"/", 
+				controllers.GetAllStudent,
+			)
+			student.GET(
+				"/:id", 
+				controllers.GetStudentById,
+			)
+			student.POST(
+				"/create", 
+				controllers.CreateStudent,
+			)
+			student.PUT(
+				"/update/:id", 
+				// middleware.HaveStore(), 
+				controllers.UpdateStudentById,
+			)
+			student.DELETE(
+				"/delete/:id", 
+				// middleware.HaveStore(), try to implement this middleware
+				controllers.DeleteStudentById,
+			)
 		}
 	}
 }

@@ -13,15 +13,16 @@
     ```bash
     go mod tidy #same as npm install bur remove the unused package
     ```
-
-
-6. run the project using the following command
-for compile daemon use the following command
-
-- first thing to do for migrate to postgresql
+6. try to install all package
+    ```
+    go install
+    ```
+7. create a new file named .env in the root of the project and copy the content of .env.example to .env
+8. **IMPORTANT** If u're new on this project try to migrate the database first
     ```bash
     go run migrate/migrate.go
     ```
+8. run the project using the following command
 
 - Run Project with CompileDaemon **(RECOMMENDED)**
     ```bash

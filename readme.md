@@ -20,7 +20,7 @@
 7. create a new file named .env in the root of the project and copy the content of .env.example to .env
 8. **IMPORTANT** If u're new on this project try to migrate the database first
     ```bash
-    go run migrate/migrate.go
+    go run database/migrate.go
     ```
 8. run the project using the following command
 

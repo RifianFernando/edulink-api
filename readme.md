@@ -13,6 +13,8 @@
     ```bash
     go mod tidy #same as npm install bur remove the unused package
     ```
+    
+    <!-- testing pushing to master for disabled feature of github -->
 6. try to install all package
     ```
     go install

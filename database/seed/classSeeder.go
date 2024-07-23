@@ -24,7 +24,7 @@ func ClassSeeder() {
 			ClassID: 2,
 			ClassName:  "XII IPA 2",
 			ClassGrade: "XII",
-			TeacherID:  2,
+			TeacherID:  1,
 		},
 	}
 

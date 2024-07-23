@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 
-	"github.com/skripsi-be/database/migration"
+	"github.com/skripsi-be/database/migration/lib"
 )
 
 type Student struct {
@@ -25,9 +25,9 @@ type Student struct {
 	StudentMotherName     string    `json:"mother_name" binding:"required"`
 	StudentMotherJob      string    `json:"mother_job" binding:"required"`
 	StudentMotherNumPhone string    `json:"mother_number_phone" binding:"required,e164"`
-	migration.BaseModel
+	lib.BaseModel
 }
 
 func (Student) TableName() string {
-	return migration.GenerateTableName(migration.Academic, "students")
+	return lib.GenerateTableName(lib.Academic, "students")
 }

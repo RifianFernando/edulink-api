@@ -2,6 +2,8 @@ package migration
 
 import (
 	"time"
+
+	"github.com/skripsi-be/database/migration/lib"
 )
 
 /*
@@ -30,7 +32,7 @@ type Student struct {
 	Grades                []Grade             `gorm:"foreignKey:StudentID;references:StudentID;constraint:OnUpdate:SET NULL,OnDelete:SET NULL"`
 	Attendance            []Attendance        `gorm:"foreignKey:StudentID;references:StudentID"`
 	AttendanceSummaries   []AttendanceSummary `gorm:"foreignKey:StudentID;references:StudentID"`
-	BaseModel                                 /* this type include CreatedAt, UpdatedAt, DeletedAt, I can't use the gorm.models because can't customize the id name */
+	lib.BaseModel                             /* this type include CreatedAt, UpdatedAt, DeletedAt, I can't use the gorm.models because can't customize the id name */
 }
 
 /*
@@ -38,5 +40,5 @@ type Student struct {
 * https://gorm.io/docs/conventions.html
  */
 func (Student) TableName() string {
-	return GenerateTableName(Academic, "students")
+	return lib.GenerateTableName(lib.Academic, "students")
 }

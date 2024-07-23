@@ -7,7 +7,7 @@ import (
 	"github.com/skripsi-be/lib"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"gorm.io/gorm/schema"
+	// "gorm.io/gorm/schema"
 )
 
 var DB *gorm.DB
@@ -28,17 +28,27 @@ func ConnecToDB() error {
 		PreferSimpleProtocol: true,
 	}), &gorm.Config{
 		// configure the database on here
-		NamingStrategy: schema.NamingStrategy{
-			TablePrefix:   "public", // schema name
-			SingularTable: false,
-		},
+		// NamingStrategy: schema.NamingStrategy{
+		// 	TablePrefix:   "public", // schema name
+		// 	SingularTable: false,
+		// },
 	})
 
 	if err != nil {
 		log.Fatal("failed to connect database", err)
 	}
 
-	err = DB.Exec("CREATE SCHEMA IF NOT EXISTS PUBLIC").Error
+	err = DB.Exec("CREATE SCHEMA IF NOT EXISTS public").Error
+	if err != nil {
+		return err
+	}
+
+	err = DB.Exec("CREATE SCHEMA IF NOT EXISTS academic").Error
+	if err != nil {
+		return err
+	}
+
+	err = DB.Exec("CREATE SCHEMA IF NOT EXISTS administration").Error
 	if err != nil {
 		return err
 	}

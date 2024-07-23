@@ -29,7 +29,7 @@ func CreateStudent(c *gin.Context) {
 	}
 
 	// Parse date strings to time.Time
-	dateOfBirth, acceptedDate, err := request.ParseDates()
+	DateOfBirth, AcceptedDate, err := request.ParseDates()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid date format",
@@ -39,23 +39,23 @@ func CreateStudent(c *gin.Context) {
 
 	// create student
 	student := models.Student{
-		Name:              request.Name,
-		Gender:            request.Gender,
-		PlaceOfBirth:      request.PlaceOfBirth,
-		DateOfBirth:       dateOfBirth,
-		Religion:          request.Religion,
-		Address:           request.Address,
-		NumberPhone:       request.NumberPhone,
-		Email:             request.Email,
-		AcceptedDate:      acceptedDate,
-		SchoolOrigin:      request.SchoolOrigin,
-		IDClass:           request.IDClass,
-		FatherName:        request.FatherName,
-		FatherJob:         request.FatherJob,
-		FatherNumberPhone: request.FatherNumberPhone,
-		MotherName:        request.MotherName,
-		MotherJob:         request.MotherJob,
-		MotherNumberPhone: request.MotherNumberPhone,
+		ClassID:               request.ClassID,
+		StudentName:           request.StudentName,
+		StudentGender:         request.StudentGender,
+		StudentPlaceOfBirth:   request.StudentPlaceOfBirth,
+		StudentDateOfBirth:    DateOfBirth,
+		StudentReligion:       request.StudentReligion,
+		StudentAddress:        request.StudentAddress,
+		StudentNumPhone:       request.StudentNumPhone,
+		StudentEmail:          request.StudentEmail,
+		StudentAcceptedDate:   AcceptedDate,
+		StudentSchoolOrigin:   request.StudentSchoolOrigin,
+		StudentFatherName:     request.StudentFatherName,
+		StudentFatherJob:      request.StudentFatherJob,
+		StudentFatherNumPhone: request.StudentFatherNumPhone,
+		StudentMotherName:     request.StudentMotherName,
+		StudentMotherJob:      request.StudentMotherJob,
+		StudentMotherNumPhone: request.StudentMotherNumPhone,
 	}
 
 	result := connections.DB.Create(&student)
@@ -80,7 +80,14 @@ func GetAllStudent(c *gin.Context) {
 			"error": result.Error.Error(),
 		})
 		return
+	} else if result.RowsAffected == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "No student found",
+		})
+		return
 	}
+
+	// return it
 
 	c.JSON(http.StatusOK, gin.H{
 		"students": students,
@@ -143,23 +150,23 @@ func UpdateStudentById(c *gin.Context) {
 	}
 
 	// Update student
-	student.Name = request.Name
-	student.Gender = request.Gender
-	student.PlaceOfBirth = request.PlaceOfBirth
-	student.DateOfBirth = dateOfBirth
-	student.Religion = request.Religion
-	student.Address = request.Address
-	student.NumberPhone = request.NumberPhone
-	student.Email = request.Email
-	student.AcceptedDate = acceptedDate
-	student.SchoolOrigin = request.SchoolOrigin
-	student.IDClass = request.IDClass
-	student.FatherName = request.FatherName
-	student.FatherJob = request.FatherJob
-	student.FatherNumberPhone = request.FatherNumberPhone
-	student.MotherName = request.MotherName
-	student.MotherJob = request.MotherJob
-	student.MotherNumberPhone = request.MotherNumberPhone
+	student.ClassID = request.ClassID
+	student.StudentName = request.StudentName
+	student.StudentGender = request.StudentGender
+	student.StudentPlaceOfBirth = request.StudentPlaceOfBirth
+	student.StudentDateOfBirth = dateOfBirth
+	student.StudentReligion = request.StudentReligion
+	student.StudentAddress = request.StudentAddress
+	student.StudentNumPhone = request.StudentNumPhone
+	student.StudentEmail = request.StudentEmail
+	student.StudentAcceptedDate = acceptedDate
+	student.StudentSchoolOrigin = request.StudentSchoolOrigin
+	student.StudentFatherName = request.StudentFatherName
+	student.StudentFatherJob = request.StudentFatherJob
+	student.StudentFatherNumPhone = request.StudentFatherNumPhone
+	student.StudentMotherName = request.StudentMotherName
+	student.StudentMotherJob = request.StudentMotherJob
+	student.StudentMotherNumPhone = request.StudentMotherNumPhone
 	connections.DB.Save(&student)
 }
 

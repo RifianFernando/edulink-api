@@ -2,29 +2,32 @@ package models
 
 import (
 	"time"
-	"gorm.io/gorm"
+
+	"github.com/skripsi-be/database/migration"
 )
 
 type Student struct {
-	ID                uint           `gorm:"primaryKey" json:"id"`
-	Name              string         `json:"name" binding:"required"`
-	Gender            string         `json:"gender" binding:"required,oneof=male female other"`
-	PlaceOfBirth      string         `json:"place_of_birth" binding:"required"`
-	DateOfBirth       time.Time      `json:"date_of_birth" binding:"required,datetime=2006-01-02"`
-	Religion          string         `json:"religion" binding:"required"`
-	Address           string         `json:"address" binding:"required"`
-	NumberPhone       string         `json:"number_phone" binding:"required,e164"`
-	Email             string         `json:"email" binding:"required,email"`
-	AcceptedDate      time.Time      `json:"accepted_date" binding:"required,datetime=2006-01-02"`
-	SchoolOrigin      string         `json:"school_origin" binding:"required"`
-	IDClass           uint           `json:"id_class" binding:"required"`
-	FatherName        string         `json:"father_name" binding:"required"`
-	FatherJob         string         `json:"father_job" binding:"required"`
-	FatherNumberPhone string         `json:"father_number_phone" binding:"required,e164"`
-	MotherName        string         `json:"mother_name" binding:"required"`
-	MotherJob         string         `json:"mother_job" binding:"required"`
-	MotherNumberPhone string         `json:"mother_number_phone" binding:"required,e164"`
-	CreatedAt         time.Time      `json:"created_at"`
-	UpdatedAt         time.Time      `json:"updated_at"`
-	DeletedAt         gorm.DeletedAt `gorm:"index" json:"-"`
+	StudentID             int64     `gorm:"primaryKey"`
+	ClassID               int64     `json:"id_class" binding:"required"`
+	StudentName           string    `json:"name" binding:"required"`
+	StudentGender         string    `json:"gender" binding:"required,oneof=male female other"`
+	StudentPlaceOfBirth   string    `json:"place_of_birth" binding:"required"`
+	StudentDateOfBirth    time.Time `json:"date_of_birth"`
+	StudentReligion       string    `json:"religion" binding:"required"`
+	StudentAddress        string    `json:"address" binding:"required"`
+	StudentNumPhone       string    `json:"number_phone" binding:"required,e164"`
+	StudentEmail          string    `json:"email" binding:"required,email"`
+	StudentAcceptedDate   time.Time `json:"accepted_date"`
+	StudentSchoolOrigin   string    `json:"school_origin" binding:"required"`
+	StudentFatherName     string    `json:"father_name" binding:"required"`
+	StudentFatherJob      string    `json:"father_job" binding:"required"`
+	StudentFatherNumPhone string    `json:"father_number_phone" binding:"required,e164"`
+	StudentMotherName     string    `json:"mother_name" binding:"required"`
+	StudentMotherJob      string    `json:"mother_job" binding:"required"`
+	StudentMotherNumPhone string    `json:"mother_number_phone" binding:"required,e164"`
+	migration.BaseModel
+}
+
+func (Student) TableName() string {
+	return migration.GenerateTableName(migration.Academic, "students")
 }

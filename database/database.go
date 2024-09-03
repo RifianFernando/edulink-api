@@ -9,11 +9,14 @@ import (
 	"github.com/skripsi-be/connections"
 	"github.com/skripsi-be/database/migration"
 	"github.com/skripsi-be/database/seed"
+	"github.com/skripsi-be/lib"
 )
 
 func init() {
 	connections.LoadEnvVariables()
-	connections.ConnecToDB()
+	
+	err := connections.ConnecToDB()
+	lib.HandleError(err, "Failed to connect db")
 }
 
 func main() {

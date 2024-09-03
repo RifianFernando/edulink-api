@@ -5,12 +5,14 @@ import (
 
 	"github.com/skripsi-be/connections"
 	"github.com/skripsi-be/database/migration"
+	"github.com/skripsi-be/lib"
 )
 
 // init initializes the package by loading environment variables and connecting to the database.
 func init() {
 	connections.LoadEnvVariables()
-	connections.ConnecToDB()
+	err := connections.ConnecToDB()
+	lib.HandleError(err, "Failed to connect db")
 }
 
 // ClassSeeder seeds the Class data into the database.

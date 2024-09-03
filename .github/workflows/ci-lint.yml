@@ -8,4 +8,4 @@ jobs:
         uses: golangci/golangci-lint-action@v6.1.0
       - name: Run golangci-lint
         run: |
-          golangci-lint run config connections controllers database lib middleware models request routes
+          golangci-lint run

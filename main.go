@@ -2,14 +2,16 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/skripsi-be/connections"
-	"github.com/skripsi-be/routes"
 	"github.com/skripsi-be/config"
+	"github.com/skripsi-be/connections"
+	"github.com/skripsi-be/lib"
+	"github.com/skripsi-be/routes"
 )
 
 func init() {
 	connections.LoadEnvVariables()
-	connections.ConnecToDB()
+	err := connections.ConnecToDB()
+	lib.HandleError(err, "Failed to connect db")
 }
 
 func main() {
@@ -24,5 +26,6 @@ func main() {
 	// use router
 	routes.Route(r)
 
-	r.Run() // listen and serve on 0.0.0.0:8080
+	err := r.Run()
+	lib.HandleError(err, "Failed serve the server")
 }

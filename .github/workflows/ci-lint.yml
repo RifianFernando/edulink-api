@@ -1,11 +1,18 @@
 name: Linting CI Pipeline
 on: push
+permissions:
+  contents: read
 jobs:
-  lint:
+  golangci:
+    name: lint
     runs-on: ubuntu-latest
     steps:
-      - name: Golangci-lint
-        uses: golangci/golangci-lint-action@v6.1.0
-      - name: Run golangci-lint
-        run: |
-          golangci-lint run
+      - name: go/packages
+        uses: actions/checkout@v4.1.7
+      - name: Setup Go environment
+        uses: actions/setup-go@v5.0.2
+        with:
+          go-version: 1.22.2
+      - run: go version
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v6

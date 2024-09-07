@@ -12,4 +12,5 @@ func init() {
 
 func main() {
 	connections.DB.AutoMigrate(&models.Student{})
+	connections.DB.AutoMigrate(&models.Class{})
 }

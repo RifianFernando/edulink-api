@@ -37,5 +37,30 @@ func Route(router *gin.Engine) {
 				controllers.DeleteStudentById,
 			)
 		}
+
+		// Class CRUD
+		class := apiV1.Group("/class")
+		{
+			class.GET(
+				"/", 
+				controllers.GetAllClass,
+			)
+			class.GET(
+				"/:id", 
+				controllers.GetClassById,
+			)
+			class.POST(
+				"/create", 
+				controllers.CreateClass,
+			)
+			class.PUT(
+				"/update/:id", 
+				controllers.UpdateClassById,
+			)
+			class.DELETE(
+				"/delete/:id",
+				controllers.DeleteClassById,
+			)
+		}
 	}
 }

@@ -8,7 +8,7 @@ import (
 type Student struct {
 	ID                uint           `gorm:"primaryKey" json:"id"`
 	Name              string         `json:"name" binding:"required"`
-	Gender            string         `json:"gender" binding:"required,oneof=male female other"`
+	Gender            string         `json:"gender" binding:"required,oneof=Male Female other"`
 	PlaceOfBirth      string         `json:"place_of_birth" binding:"required"`
 	DateOfBirth       time.Time      `json:"date_of_birth" binding:"required,datetime=2006-01-02"`
 	Religion          string         `json:"religion" binding:"required"`

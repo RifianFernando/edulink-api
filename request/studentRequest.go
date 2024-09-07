@@ -9,7 +9,7 @@ import (
 
 type InsertStudentRequest struct {
 	Name              string `json:"name" binding:"required"`
-	Gender            string `json:"gender" binding:"required,oneof=male female other"`
+	Gender            string `json:"gender" binding:"required,oneof=Male Female other"`
 	PlaceOfBirth      string `json:"place_of_birth" binding:"required"`
 	DateOfBirth       string `json:"date_of_birth" binding:"required"`
 	Religion          string `json:"religion" binding:"required"`

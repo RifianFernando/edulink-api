@@ -1,8 +1,8 @@
 package models
 
 import (
-	"time"
-	"gorm.io/gorm"
+	"github.com/skripsi-be/database/migration/lib"
+
 )
 
 type Class struct {
@@ -10,7 +10,5 @@ type Class struct {
 	IDTeacher   uint           `json:"id_teacher" binding:"required"`
 	Name        string         `json:"name" binding:"required"`
 	Grade       int            `json:"grade" binding:"required"`
-	CreatedAt   time.Time      `json:"created_at"`
-	UpdatedAt   time.Time      `json:"updated_at"`
-	DeletedAt   gorm.DeletedAt `gorm:"index" json:"-"`
+	lib.BaseModel
 }

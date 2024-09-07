@@ -13,6 +13,7 @@
     ```bash
     go mod tidy #same as npm install bur remove the unused package
     ```
+
 6. try to install all package
     ```
     go install
@@ -20,9 +21,19 @@
 7. create a new file named .env in the root of the project and copy the content of .env.example to .env
 8. **IMPORTANT** If u're new on this project try to migrate the database first
     ```bash
-    go run migrate/migrate.go
+    go run database/database.go -migrate
     ```
-8. run the project using the following command
+
+    if you want to drop all table use the following command
+    ```bash
+    go run database/database.go -migrate:fresh
+    ```
+
+    if you want to seed the database use the following command
+    ```bash
+    go run database/database.go -seed
+    ```
+9. run the project using the following command
 
 - Run Project with CompileDaemon **(RECOMMENDED)**
     ```bash

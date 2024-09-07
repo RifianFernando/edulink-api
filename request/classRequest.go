@@ -2,12 +2,11 @@ package request
 
 import (
 	"github.com/go-playground/validator/v10"
+	"github.com/skripsi-be/models"
 )
 
 type InsertClassRequest struct {
-	IDTeacher uint   `json:"id_teacher" binding:"required"`
-	Name      string `json:"name" binding:"required"`
-	Grade     int `json:"grade" binding:"required"`
+	models.Class
 }
 
 // Validate method

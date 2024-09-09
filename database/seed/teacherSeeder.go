@@ -2,8 +2,8 @@ package seed
 
 import (
 	"github.com/skripsi-be/connections"
-	"github.com/skripsi-be/database/migration"
 	"github.com/skripsi-be/lib"
+	"github.com/skripsi-be/models"
 )
 
 // init initializes the package by loading environment variables and connecting to the database.
@@ -15,14 +15,14 @@ func init() {
 
 // ClassSeeder seeds the Class data into the database.
 func TeacherSeeder() {
-	classes := []migration.Teacher{
+	teachers := []models.Teacher{
 		{
-			UserID: 1,
+			UserID:       1,
 			TeachingHour: 20,
 		},
 	}
 
-	for _, class := range classes {
-		connections.DB.Create(&class)
+	for _, teacher := range teachers {
+		connections.DB.Create(&teacher)
 	}
 }

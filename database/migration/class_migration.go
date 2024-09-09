@@ -8,9 +8,9 @@ import "github.com/skripsi-be/database/migration/lib"
  */
 type Class struct {
 	ClassID       int64  `gorm:"primaryKey;autoIncrement"`
+	TeacherID     int64  `gorm:"foreignKey:TeacherID;references:TeacherID;constraint:OnUpdate:SET NULL,OnDelete:SET NULL"`
 	ClassName     string `gorm:"unique;not null"`
 	ClassGrade    string `gorm:"not null"`
-	TeacherID     int64  `gorm:"foreignKey:TeacherID;references:TeacherID;constraint:OnUpdate:SET NULL,OnDelete:SET NULL"`
 	Student       Student
 	lib.BaseModel /* this type include CreatedAt, UpdatedAt, DeletedAt, I can't use the gorm.models because can't customize the id name */
 }

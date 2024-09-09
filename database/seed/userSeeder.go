@@ -4,8 +4,8 @@ import (
 	"time"
 
 	"github.com/skripsi-be/connections"
-	"github.com/skripsi-be/database/migration"
 	"github.com/skripsi-be/lib"
+	"github.com/skripsi-be/models"
 )
 
 // init initializes the package by loading environment variables and connecting to the database.
@@ -17,20 +17,20 @@ func init() {
 
 // ClassSeeder seeds the Class data into the database.
 func UserSeeder() {
-	classes := []migration.User{
+	users := []models.User{
 		{
-			UserName: "guru1",
-			UserGender: "male",
+			UserName:         "guru1",
+			UserGender:       "male",
 			UserPlaceOfBirth: "Jakarta",
-			UserDateOfBirth: time.Now(),
-			UserAddress: "Jl. Jakarta",
-			UserNumPhone: "08123456789",
-			UserEmail: "test@gmail.com",
-			UserPassword: "123456",
+			UserDateOfBirth:  time.Now(),
+			UserAddress:      "Jl. Jakarta",
+			UserNumPhone:     "08123456789",
+			UserEmail:        "test@gmail.com",
+			UserPassword:     "123456",
 		},
 	}
 
-	for _, class := range classes {
-		connections.DB.Create(&class)
+	for _, user := range users {
+		connections.DB.Create(&user)
 	}
 }

@@ -9,12 +9,13 @@ import (
 /*
 * see the documentation here
 * https://gorm.io/docs/data_types.html
+* https://gorm.io/docs/models.html#Fields-Tags
  */
 type Student struct {
 	StudentID             int64     `gorm:"primaryKey;autoIncrement"`
 	ClassID               int64     `gorm:"not null"`
 	StudentName           string    `gorm:"unique;not null"`
-	StudentGender         Gender    `gorm:"type:VARCHAR(6);not null"`
+	StudentGender         Gender    `gorm:"type:VARCHAR(6);not null;"`
 	StudentPlaceOfBirth   string    `gorm:"not null"`
 	StudentDateOfBirth    time.Time `gorm:"not null"`
 	StudentReligion       string    `gorm:"not null"`

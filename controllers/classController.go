@@ -30,9 +30,9 @@ func CreateClass(c *gin.Context) {
 
 	// create class
 	class := models.Class{
-		IDTeacher: request.IDTeacher,
-		Name: request.Name,
-		Grade: request.Grade,
+		TeacherID:  request.TeacherID,
+		ClassName:  request.ClassName,
+		ClassGrade: request.ClassGrade,
 	}
 
 	result := connections.DB.Create(&class)
@@ -67,7 +67,7 @@ func GetClassById(c *gin.Context) {
 	id := c.Param("id")
 
 	var class models.Class
-	result := connections.DB.First(&class, id)	
+	result := connections.DB.First(&class, id)
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Class not found",
@@ -109,11 +109,12 @@ func UpdateClassById(c *gin.Context) {
 		return
 	}
 
-	// update class
-	class.Name = request.Name
-	class.IDTeacher = request.IDTeacher
-	class.Name = request.Name
-	class.Grade = request.Grade
+	// update class if exist
+	connections.DB.Model(&class).Updates(models.Class{
+		ClassName:  request.ClassName,
+		TeacherID:  request.TeacherID,
+		ClassGrade: request.ClassGrade,
+	})
 
 	result = connections.DB.Save(&class)
 	if result.Error != nil {

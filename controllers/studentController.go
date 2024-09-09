@@ -149,25 +149,30 @@ func UpdateStudentById(c *gin.Context) {
 		return
 	}
 
-	// Update student
-	student.ClassID = request.ClassID
-	student.StudentName = request.StudentName
-	student.StudentGender = request.StudentGender
-	student.StudentPlaceOfBirth = request.StudentPlaceOfBirth
-	student.StudentDateOfBirth = dateOfBirth
-	student.StudentReligion = request.StudentReligion
-	student.StudentAddress = request.StudentAddress
-	student.StudentNumPhone = request.StudentNumPhone
-	student.StudentEmail = request.StudentEmail
-	student.StudentAcceptedDate = acceptedDate
-	student.StudentSchoolOrigin = request.StudentSchoolOrigin
-	student.StudentFatherName = request.StudentFatherName
-	student.StudentFatherJob = request.StudentFatherJob
-	student.StudentFatherNumPhone = request.StudentFatherNumPhone
-	student.StudentMotherName = request.StudentMotherName
-	student.StudentMotherJob = request.StudentMotherJob
-	student.StudentMotherNumPhone = request.StudentMotherNumPhone
-	connections.DB.Save(&student)
+	// update student if exist
+	connections.DB.Model(&student).Updates(models.Student{
+		ClassID:               request.ClassID,
+		StudentName:           request.StudentName,
+		StudentGender:         request.StudentGender,
+		StudentPlaceOfBirth:   request.StudentPlaceOfBirth,
+		StudentDateOfBirth:    dateOfBirth,
+		StudentReligion:       request.StudentReligion,
+		StudentAddress:        request.StudentAddress,
+		StudentNumPhone:       request.StudentNumPhone,
+		StudentEmail:          request.StudentEmail,
+		StudentAcceptedDate:   acceptedDate,
+		StudentSchoolOrigin:   request.StudentSchoolOrigin,
+		StudentFatherName:     request.StudentFatherName,
+		StudentFatherJob:      request.StudentFatherJob,
+		StudentFatherNumPhone: request.StudentFatherNumPhone,
+		StudentMotherName:     request.StudentMotherName,
+		StudentMotherJob:      request.StudentMotherJob,
+		StudentMotherNumPhone: request.StudentMotherNumPhone,
+	})
+
+	c.JSON(http.StatusOK, gin.H{
+		"student": student,
+	})
 }
 
 func DeleteStudentById(c *gin.Context) {

@@ -9,6 +9,7 @@ import (
 /*
 * see the documentation here
 * https://gorm.io/docs/data_types.html
+* https://gorm.io/docs/models.html#Fields-Tags
  */
 type EventSchedule struct {
 	EventScheduleID   int64     `gorm:"primaryKey;autoIncrement"`

@@ -5,6 +5,7 @@ import "github.com/skripsi-be/database/migration/lib"
 /*
 * see the documentation here
 * https://gorm.io/docs/data_types.html
+* https://gorm.io/docs/models.html#Fields-Tags
  */
 type SyllabusDetail struct {
 	SyllabusID                       int64 `gorm:"not null"`

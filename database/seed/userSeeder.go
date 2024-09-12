@@ -26,7 +26,17 @@ func UserSeeder() {
 			UserAddress:      "Jl. Jakarta",
 			UserNumPhone:     "08123456789",
 			UserEmail:        "test@gmail.com",
-			UserPassword:     "123456",
+			UserPassword:     lib.HashPassword("123456"),
+		},
+		{
+			UserName:         "Admin1",
+			UserGender:       "male",
+			UserPlaceOfBirth: "Jakarta",
+			UserDateOfBirth:  time.Now(),
+			UserAddress:      "Jl. Jakarta",
+			UserNumPhone:     "08123456781",
+			UserEmail:        "testadmin@gmail.com",
+			UserPassword:     lib.HashPassword("123456"),
 		},
 	}
 

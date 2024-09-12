@@ -10,7 +10,6 @@ func Route(router *gin.Engine) {
 	// Initialize Version
 	apiV1 := router.Group("/api/v1")
 	{
-
 		// Student CRUD
 		student := apiV1.Group("/student")
 		{
@@ -60,6 +59,15 @@ func Route(router *gin.Engine) {
 			class.DELETE(
 				"/delete/:id",
 				controllers.DeleteClassById,
+			)
+		}
+
+		// authentication
+		auth := apiV1.Group("/auth")
+		{
+			auth.POST(
+				"/login",
+				controllers.Login,
 			)
 		}
 	}

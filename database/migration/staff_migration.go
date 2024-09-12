@@ -5,6 +5,7 @@ import "github.com/skripsi-be/database/migration/lib"
 /*
 * see the documentation here
 * https://gorm.io/docs/data_types.html
+* https://gorm.io/docs/models.html#Fields-Tags
  */
 type Staff struct {
 	StaffID       int64 `gorm:"primaryKey;autoIncrement"`

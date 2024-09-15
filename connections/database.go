@@ -3,11 +3,10 @@ package connections
 import (
 	"fmt"
 	"log"
+	"os"
 
-	"github.com/skripsi-be/lib"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	// "gorm.io/gorm/schema"
 )
 
 var DB *gorm.DB
@@ -15,12 +14,13 @@ var DB *gorm.DB
 func ConnecToDB() error {
 	var err error
 
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Jakarta",
-		lib.GetEnvValue("DB_HOST"),
-		lib.GetEnvValue("DB_USERNAME"),
-		lib.GetEnvValue("DB_PASSWORD"),
-		lib.GetEnvValue("DB_NAME"),
-		lib.GetEnvValue("DB_PORT"),
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=%s",
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_USERNAME"),
+		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_NAME"),
+		os.Getenv("DB_PORT"),
+		os.Getenv("DB_TIMEZONE"),
 	)
 
 	DB, err = gorm.Open(postgres.New(postgres.Config{
@@ -55,13 +55,3 @@ func ConnecToDB() error {
 
 	return nil
 }
-
-// func ConnecToDB(tablePrefix string) (*gorm.DB) {
-// 	db, err := ConnectDB(tablePrefix)
-
-// 	if err != nil {
-// 		panic("failed to connect database" + err.Error())
-// 	}
-
-// 	return db
-// }

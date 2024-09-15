@@ -37,6 +37,11 @@
     ```bash
     go run database/database.go -seed
     ```
+
+    if you want to generate the session_key for auth use the following command
+    ```bash
+    go run database/database.go -session:generate
+    ```
 10. run the project using the following command
 
 - Run Project with CompileDaemon **(RECOMMENDED)**
@@ -59,3 +64,6 @@
     - PostgreeSQL driver: [jdbc](https://jdbc.postgresql.org/download/)
 4. env: [godotenv](https://github.com/joho/godotenv)
 5. compiler: go with [CompileDaemon](https://github.com/githubnemo/CompileDaemon)
+6. session: [session](https://github.com/gorilla/sessions)
+7. hash: [bcrypt](https://pkg.go.dev/golang.org/x/crypto/bcrypt)
+

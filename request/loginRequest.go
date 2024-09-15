@@ -5,8 +5,8 @@ import (
 )
 
 type InsertLoginRequest struct {
-	UserEmail    string `json:"user_email" binding:"required" validate:"email"`
-	UserPassword string `json:"user_password" binding:"required"`
+	UserEmail    string `json:"email" binding:"required" validate:"email"`
+	UserPassword string `json:"password" binding:"required"`
 }
 
 // Validate method

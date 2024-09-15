@@ -3,6 +3,8 @@ package main
 import (
 	"net/http"
 	"os"
+	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/sessions"
@@ -12,21 +14,35 @@ import (
 	"github.com/skripsi-be/routes"
 )
 
-var session = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
+var store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
 
 func init() {
-	session.Options.HttpOnly = true
-	session.Options.SameSite = http.SameSiteLaxMode
-	// if (lib.GetEnvValue("ENV") == "production") {
-	// 	session.Options.Secure = true
-	// }
+	// store.Options.HttpOnly = true
+	// store.Options.MaxAge = 60
+	// store.Options.SameSite = http.SameSiteNoneMode
+	var isDevMode bool
+	if strings.Contains(os.Getenv("ALLOW_ORIGIN"), "localhost") {
+		// store.Options.Secure = false // For local development; set to true in production
+		isDevMode = true
+	} else {
+		// store.Options.Secure = true
+		isDevMode = false
+	}
+	// store.Options.Domain = os.Getenv("ALLOW_ORIGIN")
+	store.Options = &sessions.Options{
+		HttpOnly: true,
+		MaxAge:   60, // 8 hours
+		SameSite: http.SameSiteNoneMode,
+		Secure:   isDevMode,
+		Domain:   os.Getenv("ALLOW_ORIGIN"),
+	}
+
 	connections.LoadEnvVariables()
 	err := connections.ConnecToDB()
 	lib.HandleError(err, "Failed to connect db")
 }
 
 func main() {
-	// use router
 	router()
 }
 
@@ -34,16 +50,22 @@ func router() *gin.Engine {
 	r := gin.Default()
 	r.Use(config.Cors())
 	r.GET("/", func(c *gin.Context) {
+		currentTime := time.Now().Format("2006-01-02 15:04:05 MST")
 		c.JSON(200, gin.H{
-			"message": "pong",
+			"current_time": currentTime,
 		})
 	})
+	r.ForwardedByClientIP = true
+	r.SetTrustedProxies(
+		[]string{
+			os.Getenv("ALLOW_ORIGIN"),
+		},
+	)
 
-	// use router
 	routes.Route(r)
 
 	err := r.Run()
-	lib.HandleError(err, "Failed serve the server")
+	lib.HandleError(err, "Failed to serve the server")
 
 	return r
 }

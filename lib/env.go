@@ -3,20 +3,9 @@ package lib
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"os"
 	"strings"
 )
-
-func GetEnvValue(key string) string {
-	value, exists := os.LookupEnv(key)
-	if !exists {
-		log.Fatalf("Environment variable %s is not set", key)
-	} else if value == "" {
-		log.Fatalf("Environment variable %s is empty", key)
-	}
-	return value
-}
 
 func SetEnvValue(key, value string) (string, error) {
 	// Load the existing .env file

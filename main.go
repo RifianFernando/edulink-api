@@ -15,17 +15,17 @@ import (
 )
 
 var store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
+var ALLOW_ORIGIN = os.Getenv("ALLOW_ORIGIN")
 
 func init() {
-	// store.Options.HttpOnly = true
-	// store.Options.MaxAge = 60
-	// store.Options.SameSite = http.SameSiteNoneMode
+	connections.LoadEnvVariables()
+	err := connections.ConnecToDB()
+	lib.HandleError(err, "Failed to connect db")
+
 	var isDevMode bool
-	if strings.Contains(os.Getenv("ALLOW_ORIGIN"), "localhost") {
-		// store.Options.Secure = false // For local development; set to true in production
+	if strings.Contains(ALLOW_ORIGIN, "localhost") {
 		isDevMode = true
 	} else {
-		// store.Options.Secure = true
 		isDevMode = false
 	}
 	// store.Options.Domain = os.Getenv("ALLOW_ORIGIN")
@@ -34,12 +34,8 @@ func init() {
 		MaxAge:   60, // 8 hours
 		SameSite: http.SameSiteNoneMode,
 		Secure:   isDevMode,
-		Domain:   os.Getenv("ALLOW_ORIGIN"),
+		Domain:   ALLOW_ORIGIN,
 	}
-
-	connections.LoadEnvVariables()
-	err := connections.ConnecToDB()
-	lib.HandleError(err, "Failed to connect db")
 }
 
 func main() {
@@ -56,15 +52,15 @@ func router() *gin.Engine {
 		})
 	})
 	r.ForwardedByClientIP = true
-	r.SetTrustedProxies(
-		[]string{
-			os.Getenv("ALLOW_ORIGIN"),
-		},
+
+	err := r.SetTrustedProxies(
+		lib.HandleTrustedProxies(ALLOW_ORIGIN),
 	)
+	lib.HandleError(err, "Failed to set trusted proxies")
 
 	routes.Route(r)
 
-	err := r.Run()
+	err = r.Run()
 	lib.HandleError(err, "Failed to serve the server")
 
 	return r

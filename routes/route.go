@@ -3,6 +3,7 @@ package routes
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/skripsi-be/controllers"
+	"github.com/skripsi-be/middleware"
 	// "github.com/skripsi-be/middleware"
 )
 
@@ -32,7 +33,7 @@ func Route(router *gin.Engine) {
 			)
 			student.DELETE(
 				"/delete/:id", 
-				// middleware.HaveStore(), try to implement this middleware
+				middleware.IsAlreadyLogged, // try to implement this middleware
 				controllers.DeleteStudentById,
 			)
 		}

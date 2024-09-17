@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"strings"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -19,7 +20,7 @@ func Cors() gin.HandlerFunc {
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 		AllowOriginFunc: func(origin string) bool {
-			return origin == os.Getenv("ALLOW_ORIGIN")
+			return strings.Contains(origin, os.Getenv("ALLOW_ORIGIN"))
 		},
 	})
 }

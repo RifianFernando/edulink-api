@@ -10,14 +10,13 @@ import (
 )
 
 func Login(c *gin.Context) {
+	var store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
 	email := c.PostForm("email")
 	password := c.PostForm("password")
 
 	var req request.InsertLoginRequest
 	req.UserEmail = email
 	req.UserPassword = password
-
-	var store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -35,12 +34,17 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	session, _ := store.Get(c.Request, "session")
+	session, err := store.Get(c.Request, "session")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get session"})
+		return
+	}
+
 	session.Values["userId"] = userID
 
 	err = session.Save(c.Request, c.Writer)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
 		return
 	}
 

@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/skripsi-be/controllers"
 	"github.com/skripsi-be/middleware"
-	// "github.com/skripsi-be/middleware"
 )
 
 func Route(router *gin.Engine) {
@@ -15,25 +14,26 @@ func Route(router *gin.Engine) {
 		student := apiV1.Group("/student")
 		{
 			student.GET(
-				"/", 
+				"/",
+				middleware.IsLoggedIn, // try to implement this middleware
 				controllers.GetAllStudent,
 			)
 			student.GET(
-				"/:id", 
+				"/:id",
 				controllers.GetStudentById,
 			)
 			student.POST(
-				"/create", 
+				"/create",
 				controllers.CreateStudent,
 			)
 			student.PUT(
-				"/update/:id", 
-				// middleware.HaveStore(), 
+				"/update/:id",
+				// middleware.HaveStore(),
 				controllers.UpdateStudentById,
 			)
 			student.DELETE(
-				"/delete/:id", 
-				middleware.IsAlreadyLogged, // try to implement this middleware
+				"/delete/:id",
+				middleware.IsLoggedIn, // try to implement this middleware
 				controllers.DeleteStudentById,
 			)
 		}
@@ -42,19 +42,19 @@ func Route(router *gin.Engine) {
 		class := apiV1.Group("/class")
 		{
 			class.GET(
-				"/", 
+				"/",
 				controllers.GetAllClass,
 			)
 			class.GET(
-				"/:id", 
+				"/:id",
 				controllers.GetClassById,
 			)
 			class.POST(
-				"/create", 
+				"/create",
 				controllers.CreateClass,
 			)
 			class.PUT(
-				"/update/:id", 
+				"/update/:id",
 				controllers.UpdateClassById,
 			)
 			class.DELETE(

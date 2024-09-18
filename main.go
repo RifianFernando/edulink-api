@@ -1,61 +1,24 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
-	"os"
-	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gorilla/sessions"
 	"github.com/skripsi-be/config"
 	"github.com/skripsi-be/connections"
 	"github.com/skripsi-be/lib"
 	"github.com/skripsi-be/routes"
 )
 
-var (
-	store        *sessions.CookieStore
-	allowOrigin  string
-	isProdMode   bool
-	parsedDomain string
-)
-
 func init() {
 	// Load environment variables
 	connections.LoadEnvVariables()
+	config.InitializeSessionStore()
 
 	// Initialize the database connection
 	err := connections.ConnecToDB()
 	lib.HandleError(err, "Failed to connect db")
-
-	// Read environment variables
-	allowOrigin = os.Getenv("ALLOW_ORIGIN")
-	sessionKey := os.Getenv("SESSION_KEY")
-
-	// Determine if in production mode
-	if strings.Contains(allowOrigin, "localhost") {
-		isProdMode = false
-		parsedDomain = ""
-	} else {
-		isProdMode = true
-		parsedDomain = extractDomain(allowOrigin)
-	}
-
-	// Initialize the session store
-	store = sessions.NewCookieStore([]byte(sessionKey))
-	store.Options = &sessions.Options{
-		HttpOnly: true,
-		MaxAge:   8 * 60 * 60, // 8 hours
-		SameSite: http.SameSiteNoneMode,
-		Secure:   isProdMode, // Secure in production, not in dev
-		Domain:   parsedDomain,
-	}
-
-	// Print debug information
-	fmt.Println("Is in Production mode:", isProdMode)
-	fmt.Println("Parsed Domain:", parsedDomain)
 }
 
 func main() {
@@ -86,12 +49,4 @@ func setupRouter() *gin.Engine {
 	routes.Route(r)
 
 	return r
-}
-
-// Example function to extract base domain from a full URL (e.g., "https://example.com")
-func extractDomain(fullUrl string) string {
-	fullUrl = strings.TrimPrefix(fullUrl, "https://")
-	fullUrl = strings.TrimPrefix(fullUrl, "http://")
-	// This is a placeholder, implement your domain extraction logic
-	return fullUrl
 }

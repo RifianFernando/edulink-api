@@ -2,15 +2,13 @@ package controllers
 
 import (
 	"net/http"
-	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gorilla/sessions"
+	"github.com/skripsi-be/config"
 	"github.com/skripsi-be/request"
 )
 
 func Login(c *gin.Context) {
-	var store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
 	email := c.PostForm("email")
 	password := c.PostForm("password")
 
@@ -34,7 +32,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	session, err := store.Get(c.Request, "session")
+	session, err := config.Store.Get(c.Request, "session")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get session"})
 		return

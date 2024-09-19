@@ -32,6 +32,7 @@ func main() {
 func setupRouter() *gin.Engine {
 	r := gin.Default()
 	r.Use(config.Cors())
+	r.Use(gin.Logger())
 
 	r.GET("/", func(c *gin.Context) {
 		currentTime := time.Now().Format("2006-01-02 15:04:05 MST")

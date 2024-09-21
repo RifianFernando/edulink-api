@@ -15,26 +15,26 @@ func Route(router *gin.Engine) {
 		{
 			student.GET(
 				"/",
-				middleware.IsLoggedIn, // try to implement this middleware
-				controllers.GetAllStudent,
+				middleware.IsLoggedIn(), // try to implement this middleware
+				controllers.GetAllStudent(),
 			)
 			student.GET(
-				"/:id",
-				controllers.GetStudentById,
+				"/:student_id",
+				controllers.GetStudentById(),
 			)
 			student.POST(
 				"/create",
-				controllers.CreateStudent,
+				controllers.CreateStudent(),
 			)
 			student.PUT(
-				"/update/:id",
+				"/update/:student_id",
 				// middleware.HaveStore(),
-				controllers.UpdateStudentById,
+				controllers.UpdateStudentById(),
 			)
 			student.DELETE(
-				"/delete/:id",
-				middleware.IsLoggedIn, // try to implement this middleware
-				controllers.DeleteStudentById,
+				"/delete/:student_id",
+				middleware.IsLoggedIn(), // try to implement this middleware
+				controllers.DeleteStudentById(),
 			)
 		}
 
@@ -43,23 +43,23 @@ func Route(router *gin.Engine) {
 		{
 			class.GET(
 				"/",
-				controllers.GetAllClass,
+				controllers.GetAllClass(),
 			)
 			class.GET(
-				"/:id",
-				controllers.GetClassById,
+				"/:class_id",
+				controllers.GetClassById(),
 			)
 			class.POST(
 				"/create",
-				controllers.CreateClass,
+				controllers.CreateClass(),
 			)
 			class.PUT(
-				"/update/:id",
-				controllers.UpdateClassById,
+				"/update/:class_id",
+				controllers.UpdateClassById(),
 			)
 			class.DELETE(
-				"/delete/:id",
-				controllers.DeleteClassById,
+				"/delete/:class_id",
+				controllers.DeleteClassById(),
 			)
 		}
 
@@ -68,7 +68,7 @@ func Route(router *gin.Engine) {
 		{
 			auth.POST(
 				"/login",
-				controllers.Login,
+				controllers.Login(),
 			)
 		}
 	}

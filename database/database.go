@@ -54,6 +54,7 @@ func generateSessionKey() {
 var table = []interface{}{
 	&migration.Subject{},
 	&migration.User{},
+	&migration.Session{},
 	&migration.Class{},
 	&migration.Assignment{},
 	&migration.Student{},
@@ -95,4 +96,5 @@ func runSeeders() {
 	seed.TeacherSeeder()
 	seed.ClassSeeder()
 	seed.StudentSeeder()
+	seed.AdminSeeder()
 }

@@ -5,8 +5,8 @@ import (
 )
 
 type Admin struct {
-	AdminID  uint   `gorm:"primaryKey" json:"id"`
-	UserID   int64 `json:"id_user" binding:"required"`
+	AdminID  int64  `gorm:"primaryKey" json:"id"`
+	UserID   int64  `json:"id_user" binding:"required"`
 	Position string `json:"teacher_position" binding:"required"`
 	lib.BaseModel
 }

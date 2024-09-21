@@ -8,10 +8,10 @@ import "github.com/skripsi-be/database/migration/lib"
 * https://gorm.io/docs/models.html#Fields-Tags
  */
 type Staff struct {
-	StaffID       int64 `gorm:"primaryKey;autoIncrement"`
-	UserID        int64 `gorm:"not null"`
-	TeachingHour  int32 `gorm:"not null"`
-	lib.BaseModel       /* this type include CreatedAt, UpdatedAt, DeletedAt, I can't use the gorm.models because can't customize the id name */
+	StaffID       int64  `gorm:"primaryKey;autoIncrement"`
+	UserID        int64  `gorm:"not null"`
+	Position      string `gorm:"not null"`
+	lib.BaseModel        /* this type include CreatedAt, UpdatedAt, DeletedAt, I can't use the gorm.models because can't customize the id name */
 }
 
 /*

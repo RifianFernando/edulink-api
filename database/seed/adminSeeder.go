@@ -18,7 +18,7 @@ func AdminSeeder() {
 	admins := []models.Admin{
 		{
 			UserID:   2,
-			Position: "admin at sekolah binus",
+			Position: "admin",
 		},
 	}
 

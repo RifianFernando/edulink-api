@@ -1,50 +1,61 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/skripsi-be/config"
+	"github.com/skripsi-be/helper"
 	"github.com/skripsi-be/request"
 )
 
-func Login(c *gin.Context) {
-	email := c.PostForm("email")
-	password := c.PostForm("password")
+func Login() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		email := c.PostForm("email")
+		password := c.PostForm("password")
 
-	var req request.InsertLoginRequest
-	req.UserEmail = email
-	req.UserPassword = password
+		var req request.InsertLoginRequest
+		req.UserEmail = email
+		req.UserPassword = password
 
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+		if err := c.ShouldBindJSON(&req); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		if err := req.Validate(); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		user, userType := helper.Authenticate(req.UserEmail, req.UserPassword)
+		if userType == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"error": "Invalid credentials when authenticating",
+			})
+			return
+		}
+
+		token, refreshToken, err := helper.GenerateToken(user, userType)
+		if err != nil {
+			fmt.Sprintln("Error generating token: ", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		var IpAddress = c.ClientIP()
+		var UserAgent = c.Request.UserAgent()
+		err = helper.UpdateSessionTable(token, refreshToken, user.UserID, IpAddress, UserAgent)
+		if err != nil {
+			fmt.Sprintln("Error updating session table: ", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		// c.JSON(http.StatusOK, gin.H{"message": "Login success"})
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Login success",
+			"token":   token,
+		})
 	}
-
-	if err := req.Validate(); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	userID, err := Authenticate(req.UserEmail, req.UserPassword)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
-		return
-	}
-
-	session, err := config.Store.Get(c.Request, "session")
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get session"})
-		return
-	}
-
-	session.Values["userId"] = userID
-
-	err = session.Save(c.Request, c.Writer)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "Login success"})
 }

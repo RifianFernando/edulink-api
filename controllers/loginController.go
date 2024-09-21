@@ -51,6 +51,8 @@ func Login() gin.HandlerFunc {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
+		// c.SetCookie("token", token, 3600*24, "/", config.ParsedDomain, config.IsProdMode, true) // true for HttpOnly
+		c.SetCookie("token", token, 3600, "/", "", false, true) // Adjust as needed
 
 		// c.JSON(http.StatusOK, gin.H{"message": "Login success"})
 		c.JSON(http.StatusOK, gin.H{

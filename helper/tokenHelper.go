@@ -64,12 +64,15 @@ func UpdateSessionTable(
 	IpAddress string,
 	UserAgent string,
 ) error {
-	var session models.Session
-	result := connections.DB.First(&session, userID)
+	var sessions models.Session
+	// result := connections.DB.First(&session, userID)
+	connections.DB.Where(models.Session{
+		UserID: userID,
+	}).Find(&sessions)
 
-	if result.Error != nil {
-		fmt.Println("Error: ", result.Error)
-		session = models.Session{
+	fmt.Println("session: ", sessions)
+	if sessions.SessionID == "" && sessions.SessionToken == "" {
+		session := models.Session{
 			UserID:       userID,
 			SessionToken: token,
 			RefreshToken: refreshToken,
@@ -82,16 +85,20 @@ func UpdateSessionTable(
 			return err
 		}
 		return nil
-	}
-	connections.DB.Model(&session).Updates(models.Session{
-		SessionToken: token,
-		RefreshToken: refreshToken,
-		IPAddress:    IpAddress,
-		UserAgent:    UserAgent,
-		ExpiresAt:    CustomTimeFunc(2),
-	})
+	} else {
+		// Update the session in the database using where
+		if err := connections.DB.Model(&sessions).Where("user_id = ?", userID).Updates(models.Session{
+			SessionToken: token,
+			RefreshToken: refreshToken,
+			IPAddress:    IpAddress,
+			UserAgent:    UserAgent,
+			ExpiresAt:    CustomTimeFunc(2),
+		}).Error; err != nil {
+			return err
+		}
 
-	return nil
+		return nil
+	}
 }
 
 func ValidateToken(

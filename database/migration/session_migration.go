@@ -13,7 +13,7 @@ import (
  */
 type Session struct {
 	SessionID    string    `gorm:"primaryKey;size:255"`
-	UserID       int64     `gorm:"not null;index"`
+	UserID       int64     `gorm:"not null;index;unique"`
 	SessionToken string    `gorm:"not null"`
 	RefreshToken string    `gorm:"not null"`
 	IPAddress    string    `gorm:"not null"`

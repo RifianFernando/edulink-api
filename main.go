@@ -31,6 +31,7 @@ func main() {
 
 func setupRouter() *gin.Engine {
 	r := gin.Default()
+	r.Use(config.SetSecurityHeaders())
 	r.Use(config.Cors())
 	r.Use(gin.Logger())
 

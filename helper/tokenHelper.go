@@ -1,7 +1,6 @@
 package helper
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"time"
@@ -70,7 +69,6 @@ func UpdateSessionTable(
 		UserID: userID,
 	}).Find(&sessions)
 
-	fmt.Println("session: ", sessions)
 	if sessions.SessionID == "" && sessions.SessionToken == "" {
 		session := models.Session{
 			UserID:       userID,

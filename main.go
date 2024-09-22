@@ -36,9 +36,16 @@ func setupRouter() *gin.Engine {
 	r.Use(gin.Logger())
 
 	r.GET("/", func(c *gin.Context) {
+		// c.SetCookie("token", "test", 3600, "/", "localhost", false, true)
+		cookieResult, err := c.Cookie("token")
+		if err != nil {
+			cookieResult = "No cookie"
+		}
+
 		currentTime := time.Now().Format("2006-01-02 15:04:05 MST")
 		c.JSON(http.StatusOK, gin.H{
 			"current_time": currentTime,
+			"cookie":       cookieResult,
 		})
 	})
 

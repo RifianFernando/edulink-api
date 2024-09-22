@@ -7,6 +7,7 @@ import (
 
 	"github.com/golang-jwt/jwt"
 	"github.com/skripsi-be/connections"
+	"github.com/skripsi-be/lib"
 	"github.com/skripsi-be/models"
 )
 
@@ -69,6 +70,8 @@ func UpdateSessionTable(
 		UserID: userID,
 	}).Find(&sessions)
 
+	token = lib.HashToken(token)
+	refreshToken = lib.HashToken(refreshToken)
 	if sessions.SessionID == "" && sessions.SessionToken == "" {
 		session := models.Session{
 			UserID:       userID,
@@ -105,6 +108,7 @@ func ValidateToken(
 	claims *userDetailToken,
 	msg string,
 ) {
+	// signedToken = lib.HashPassword(signedToken)
 	token, err := jwt.ParseWithClaims(
 		signedToken,
 		&userDetailToken{},

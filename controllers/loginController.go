@@ -53,9 +53,6 @@ func Login() gin.HandlerFunc {
 			return
 		}
 		c.SetCookie("token", token, 3600*24, "/", config.ParsedDomain, config.IsProdMode, true) // true for HttpOnly
-		// c.SetCookie("token", token, 3600, "/", "", false, true) // Adjust as needed
-
-		// c.JSON(http.StatusOK, gin.H{"message": "Login success"})
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Login success",
 			"token":   token,

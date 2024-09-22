@@ -11,15 +11,16 @@ import (
 
 // Cors is a function to enable cors
 func Cors() gin.HandlerFunc {
+	var allowOrigin = os.Getenv("ALLOW_ORIGIN")
 	return cors.New(cors.Config{
-		AllowOrigins:     []string{os.Getenv("ALLOW_ORIGIN")},
+		AllowOrigins:     []string{allowOrigin},
 		AllowMethods:     []string{"PUT", "PATCH", "GET", "POST", "OPTIONS", "DELETE"},
 		AllowHeaders:     []string{"Content-Type", "Authorization", "X-Requested-With", "Accept"},
 		ExposeHeaders:    []string{"Content-Length", "Authorization"},
 		AllowCredentials: true, // This allows cookies to be sent
 		MaxAge:           12 * time.Hour,
 		AllowOriginFunc: func(origin string) bool {
-			return strings.Contains(origin, os.Getenv("ALLOW_ORIGIN"))
+			return strings.Contains(origin, allowOrigin)
 		},
 	})
 }

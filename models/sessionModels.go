@@ -7,7 +7,7 @@ import (
 )
 
 type Session struct {
-	SessionID     string    `gorm:"primaryKey;size:255"` // Unique session identifier
+	SessionID     int64    `gorm:"primaryKey"` // Unique session identifier
 	UserID        int64     `gorm:"not null;index"`      // References the User ID
 	SessionToken  string    `gorm:"not null"`            // Token for authentication (JWT or random string)
 	RefreshToken  string    `gorm:"not null"`            // Token for refreshing the session

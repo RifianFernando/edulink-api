@@ -12,7 +12,7 @@ import (
 * https://gorm.io/docs/models.html#Fields-Tags
  */
 type Session struct {
-	SessionID    string    `gorm:"primaryKey;size:255"`
+	SessionID    int64    `gorm:"primaryKey;autoIncrement"` // Unique session identifier
 	UserID       int64     `gorm:"not null;index;unique"`
 	SessionToken string    `gorm:"not null"`
 	RefreshToken string    `gorm:"not null"`

@@ -20,24 +20,24 @@ type userDetailToken struct {
 
 var SECRET_KEY string = os.Getenv("SESSION_KEY")
 
-func CustomTimeFunc(days int) time.Time {
+func CustomTimeDay(days int) time.Time {
 	return time.Now().Local().Add(time.Hour * time.Duration(24*days))
 }
 
 func GenerateToken(user models.User, userType string) (signedToken string, signedRefreshToken string, err error) {
 	claims := &userDetailToken{
-		UserID:    1,
+		UserID:    user.UserID,
 		UserName:  user.UserName,
 		User_type: userType,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: CustomTimeFunc(1).Unix(),
+			ExpiresAt: CustomTimeDay(1).Unix(),
 			IssuedAt:  time.Now().Unix(),
 		},
 	}
 
 	refreshClaims := &userDetailToken{
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: CustomTimeFunc(2).Unix(),
+			ExpiresAt: CustomTimeDay(2).Unix(),
 			IssuedAt:  time.Now().Unix(),
 		},
 	}
@@ -66,20 +66,20 @@ func UpdateSessionTable(
 ) error {
 	var sessions models.Session
 	// result := connections.DB.First(&session, userID)
-	connections.DB.Where(models.Session{
+	result := connections.DB.Where(models.Session{
 		UserID: userID,
 	}).Find(&sessions)
 
 	token = lib.HashToken(token)
 	refreshToken = lib.HashToken(refreshToken)
-	if sessions.SessionID == "" && sessions.SessionToken == "" {
+	if result.RowsAffected == 0 {
 		session := models.Session{
 			UserID:       userID,
 			SessionToken: token,
 			RefreshToken: refreshToken,
 			IPAddress:    IpAddress,
 			UserAgent:    UserAgent,
-			ExpiresAt:    time.Now().Local().Add(24 * time.Hour),
+			ExpiresAt:    CustomTimeDay(1),
 		}
 		// Save the session to the database
 		if err := connections.DB.Create(&session).Error; err != nil {
@@ -93,7 +93,7 @@ func UpdateSessionTable(
 			RefreshToken: refreshToken,
 			IPAddress:    IpAddress,
 			UserAgent:    UserAgent,
-			ExpiresAt:    CustomTimeFunc(2),
+			ExpiresAt:    CustomTimeDay(1),
 		}).Error; err != nil {
 			return err
 		}

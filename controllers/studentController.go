@@ -42,6 +42,7 @@ func CreateStudent() gin.HandlerFunc {
 		student := models.Student{
 			ClassID:               request.ClassID,
 			StudentName:           request.StudentName,
+			StudentNISN:           request.StudentNISN,
 			StudentGender:         request.StudentGender,
 			StudentPlaceOfBirth:   request.StudentPlaceOfBirth,
 			StudentDateOfBirth:    DateOfBirth,

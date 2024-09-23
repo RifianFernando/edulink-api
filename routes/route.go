@@ -15,7 +15,7 @@ func Route(router *gin.Engine) {
 		{
 			student.GET(
 				"/",
-				middleware.IsLoggedIn(), // try to implement this middleware
+				middleware.AdminOnly(), // try to implement this middleware
 				controllers.GetAllStudent(),
 			)
 			student.GET(

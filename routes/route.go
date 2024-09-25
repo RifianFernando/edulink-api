@@ -70,6 +70,10 @@ func Route(router *gin.Engine) {
 				"/login",
 				controllers.Login(),
 			)
+			auth.POST(
+				"/logout",
+				controllers.Logout(),
+			)
 		}
 	}
 }

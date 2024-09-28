@@ -10,6 +10,7 @@ type Student struct {
 	StudentID             int64     `gorm:"primaryKey"`
 	ClassID               int64     `json:"id_class" binding:"required"`
 	StudentName           string    `json:"name" binding:"required"`
+	StudentNISN           string    `json:"nisn" binding:"required,len=10"`
 	StudentGender         string    `json:"gender" binding:"required,oneof=Male Female"`
 	StudentPlaceOfBirth   string    `json:"place_of_birth" binding:"required"`
 	StudentDateOfBirth    time.Time `json:"date_of_birth"`

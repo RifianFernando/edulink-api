@@ -21,6 +21,7 @@ func (g *Gender) Scan(value interface{}) error {
 /*
 * see the documentation here
 * https://gorm.io/docs/data_types.html
+* https://gorm.io/docs/models.html#Fields-Tags
  */
 type User struct {
 	UserID           int64     `gorm:"primaryKey;autoIncrement"`
@@ -34,6 +35,8 @@ type User struct {
 	UserPassword     string    `gorm:"not null"`
 	Teacher          Teacher   `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 	Staff            Staff     `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	Admin            Admin     `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	Session         Session  `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 	lib.BaseModel              /* this type include CreatedAt, UpdatedAt, DeletedAt, I can't use the gorm.models because can't customize the id name */
 }
 

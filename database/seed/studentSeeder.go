@@ -21,6 +21,7 @@ func StudentSeeder() {
 		{
 			ClassID:               1,
 			StudentName:           "Siswa 1",
+			StudentNISN:           "0987654321",
 			StudentGender:         "male",
 			StudentPlaceOfBirth:   "Jakarta",
 			StudentDateOfBirth:    time.Now(),

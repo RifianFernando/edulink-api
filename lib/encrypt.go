@@ -12,3 +12,11 @@ func HashToken(token string) string {
 
     return hex.EncodeToString(hash.Sum(nil))
 }
+
+func VerifyToken(token string, storedHash string) bool {
+    // Hash the token
+    hashedToken := HashToken(token)
+
+    // Compare the hashed token with the stored hash
+    return hashedToken == storedHash
+}

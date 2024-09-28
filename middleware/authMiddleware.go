@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -24,8 +23,6 @@ func IsLoggedIn() gin.HandlerFunc {
 			return
 		}
 
-		fmt.Println("clientToken: ", clientToken)
-
 		claims, msg := helper.ValidateToken(clientToken)
 		if msg != "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": msg})
@@ -38,5 +35,30 @@ func IsLoggedIn() gin.HandlerFunc {
 		c.Set("user_name", claims.UserName)
 
 		c.Next()
+	}
+}
+
+func IsNotLoggedIn() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		clientToken, err := c.Cookie("token")
+
+		if err != nil {
+			c.Next()
+			return
+		}
+
+		if clientToken == "" {
+			c.Next()
+			return
+		}
+
+		claims, msg := helper.ValidateToken(clientToken)
+		if msg != "" && claims.UserID == 0 {
+			c.Next()
+			return
+		}
+
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "You are already logged in"})
+		c.Abort()
 	}
 }

@@ -68,10 +68,12 @@ func Route(router *gin.Engine) {
 		{
 			auth.POST(
 				"/login",
+				middleware.IsNotLoggedIn(),
 				controllers.Login(),
 			)
 			auth.POST(
 				"/logout",
+				middleware.IsLoggedIn(),
 				controllers.Logout(),
 			)
 		}

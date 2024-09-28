@@ -108,7 +108,8 @@ func ValidateToken(
 	claims *userDetailToken,
 	msg string,
 ) {
-	// signedToken = lib.HashPassword(signedToken)
+	var invalidToken = "The token is invalid"
+
 	token, err := jwt.ParseWithClaims(
 		signedToken,
 		&userDetailToken{},
@@ -125,7 +126,7 @@ func ValidateToken(
 
 	claims, ok := token.Claims.(*userDetailToken)
 	if !ok {
-		msg = "The token is invalid"
+		msg = invalidToken
 
 		return
 	}
@@ -135,5 +136,81 @@ func ValidateToken(
 
 		return
 	}
+
+	var session models.Session
+	if err := connections.DB.Where(models.Session{
+		UserID: claims.UserID,
+	}).First(&session).Error; err != nil {
+		msg = invalidToken
+
+		return
+	}
+
+	if !lib.VerifyToken(signedToken, session.SessionToken) {
+		msg = invalidToken
+
+		return
+	}
+
 	return claims, msg
+}
+
+func DeleteToken(
+	signedToken string,
+) (
+	isDeleted bool,
+	msg string,
+) {
+	var invalidToken = "The token is invalid"
+
+	token, err := jwt.ParseWithClaims(
+		signedToken,
+		&userDetailToken{},
+		func(token *jwt.Token) (interface{}, error) {
+			return []byte(SECRET_KEY), nil
+		},
+	)
+
+	if err != nil {
+		msg = err.Error()
+
+		return false, msg
+	}
+
+	claims, ok := token.Claims.(*userDetailToken)
+	if !ok {
+		msg = invalidToken
+
+		return false, msg
+	}
+
+	if claims.ExpiresAt < time.Now().Local().Unix() {
+		msg = "The token is expired"
+
+		return false, msg
+	}
+
+	var session models.Session
+	if err := connections.DB.Where(models.Session{
+		UserID: claims.UserID,
+	}).First(&session).Error; err != nil {
+		msg = invalidToken
+
+		return false, msg
+	}
+
+	if !lib.VerifyToken(signedToken, session.SessionToken) {
+		msg = invalidToken
+
+		return false, msg
+	}
+
+	// bulk delete
+	if err := connections.DB.Unscoped().Delete(&session).Error; err != nil {
+		msg = err.Error()
+
+		return false, msg
+	}
+
+	return true, msg
 }

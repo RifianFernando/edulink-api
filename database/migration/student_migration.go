@@ -15,6 +15,7 @@ type Student struct {
 	StudentID             int64     `gorm:"primaryKey;autoIncrement"`
 	ClassID               int64     `gorm:"not null"`
 	StudentName           string    `gorm:"unique;not null"`
+	StudentNISN           string    `gorm:"unique;not null;size:10"`
 	StudentGender         Gender    `gorm:"type:VARCHAR(6);not null;"`
 	StudentPlaceOfBirth   string    `gorm:"not null"`
 	StudentDateOfBirth    time.Time `gorm:"not null"`

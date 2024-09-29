@@ -17,6 +17,7 @@ func (g *AssignmentType) Scan(value interface{}) error {
 /*
 * see the documentation here
 * https://gorm.io/docs/data_types.html
+* https://gorm.io/docs/models.html#Fields-Tags
  */
 type Assignment struct {
 	AssignmentID   int64          `gorm:"primaryKey;autoIncrement"`

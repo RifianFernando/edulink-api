@@ -2,9 +2,11 @@ package helper
 
 import (
 	"log"
+	"net/http"
 	"os"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 	"github.com/skripsi-be/connections"
 	"github.com/skripsi-be/lib"
@@ -213,4 +215,22 @@ func DeleteToken(
 	}
 
 	return true, msg
+}
+
+func GetClaimsToken(c *gin.Context) (*userDetailToken, bool) {
+	clientToken, err := c.Cookie("token")
+	if err != nil || clientToken == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization token not found in cookies"})
+
+		return nil, false
+	}
+
+	claims, msg := ValidateToken(clientToken)
+	if msg != "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": msg})
+
+		return nil, false
+	}
+
+	return claims, true
 }

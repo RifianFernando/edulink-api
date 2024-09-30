@@ -9,26 +9,6 @@ import (
 
 func IsLoggedIn() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// clientToken, err := c.Cookie("token")
-
-		// if err != nil {
-		// 	c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization token not found in cookies"})
-		// 	c.Abort()
-		// 	return
-		// }
-
-		// if clientToken == "" {
-		// 	c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization token not found in cookies"})
-		// 	c.Abort()
-		// 	return
-		// }
-
-		// claims, msg := helper.ValidateToken(clientToken)
-		// if msg != "" {
-		// 	c.JSON(http.StatusUnauthorized, gin.H{"error": msg})
-		// 	c.Abort()
-		// 	return
-		// }
 		claims, valid := helper.GetClaimsToken(c)
 		if !valid {
 			c.Abort()

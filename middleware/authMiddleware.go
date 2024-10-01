@@ -38,7 +38,8 @@ func IsNotLoggedIn() gin.HandlerFunc {
 		}
 
 		claims, msg := helper.ValidateToken(clientToken)
-		if msg != "" && claims.UserID == 0 {
+		userID, exist := c.Get("user_id")
+		if msg != "" && claims.UserID == 0 && !exist && userID == nil {
 			c.Next()
 			return
 		}

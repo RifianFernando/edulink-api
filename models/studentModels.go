@@ -3,7 +3,9 @@ package models
 import (
 	"time"
 
+	"github.com/skripsi-be/connections"
 	"github.com/skripsi-be/database/migration/lib"
+	"gorm.io/gorm"
 )
 
 type Student struct {
@@ -31,4 +33,63 @@ type Student struct {
 
 func (Student) TableName() string {
 	return lib.GenerateTableName(lib.Academic, "students")
+}
+
+// Create student
+func (student *Student) CreateStudent() error {
+	result := connections.DB.Create(&student)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}
+
+// Get all students
+func (student *Student) GetAllStudents() (
+	students []Student,
+	msg string,
+) {
+	result := connections.DB.Find(&students)
+	if result.Error != nil {
+		return nil, result.Error.Error()
+	} else if result.RowsAffected == 0 {
+		return nil, "No students found"
+	}
+
+	return students, ""
+}
+
+// get student by id
+func (student *Student) GetStudentById(id string) (Student, error) {
+	var students Student
+	result := connections.DB.First(&students, id)
+
+	if result.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			return students, nil
+		}
+		return students, result.Error
+	}
+
+	return students, nil
+}
+
+// update student by id
+func (student *Student) UpdateStudentById(students *Student) error {
+	result := connections.DB.Model(&student).Updates(&students)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
+
+// delete student by id
+func (student *Student) DeleteStudentById(id string) error {
+	result := connections.DB.Delete(&student, id)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
 }

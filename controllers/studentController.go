@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/skripsi-be/connections"
 	"github.com/skripsi-be/models"
 	"github.com/skripsi-be/request"
 )
@@ -39,7 +38,7 @@ func CreateStudent() gin.HandlerFunc {
 		}
 
 		// create student
-		student := models.Student{
+		var student = models.Student{
 			ClassID:               request.ClassID,
 			StudentName:           request.StudentName,
 			StudentNISN:           request.StudentNISN,
@@ -60,10 +59,11 @@ func CreateStudent() gin.HandlerFunc {
 			StudentMotherNumPhone: request.StudentMotherNumPhone,
 		}
 
-		result := connections.DB.Create(&student)
-		if result.Error != nil {
+		err = student.CreateStudent()
+
+		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error result": result.Error.Error(),
+				"error while create student": err,
 			})
 			return
 		}
@@ -77,24 +77,17 @@ func CreateStudent() gin.HandlerFunc {
 
 func GetAllStudent() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var students []models.Student
-		result := connections.DB.Find(&students)
-		if result.Error != nil {
+		var students models.Student
+		result, err := students.GetAllStudents()
+		if err != "" {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error": result.Error.Error(),
-			})
-			return
-		} else if result.RowsAffected == 0 {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "No student found",
+				"error": err,
 			})
 			return
 		}
 
-		// return it
-
 		c.JSON(http.StatusOK, gin.H{
-			"students": students,
+			"students": result,
 		})
 	}
 }
@@ -104,16 +97,24 @@ func GetStudentById() gin.HandlerFunc {
 		id := c.Param("student_id")
 
 		var student models.Student
-		result := connections.DB.First(&student, id)
-		if result.Error != nil {
+		result, err := student.GetStudentById(id)
+
+		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+
+		if result.StudentID == 0 {
+			c.JSON(http.StatusNotFound, gin.H{
 				"error": "Student not found",
 			})
 			return
 		}
 
 		c.JSON(http.StatusOK, gin.H{
-			"student": student,
+			"student": result,
 		})
 	}
 }
@@ -144,39 +145,57 @@ func UpdateStudentById() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": "Invalid date format",
 			})
+
 			return
 		}
 
 		// Get student by id
+		id := c.Param("student_id")
+
 		var student models.Student
-		result := connections.DB.First(&student, c.Param("student_id"))
-		if result.Error != nil {
+		result, err := student.GetStudentById(id)
+		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error": result.Error.Error(),
+				"error": err.Error(),
 			})
+
+			return
+		} else if result == (models.Student{}) && err == nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "Student not found",
+			})
+
 			return
 		}
 
 		// update student if exist
-		connections.DB.Model(&student).Updates(models.Student{
-			ClassID:               request.ClassID,
-			StudentName:           request.StudentName,
-			StudentGender:         request.StudentGender,
-			StudentPlaceOfBirth:   request.StudentPlaceOfBirth,
-			StudentDateOfBirth:    dateOfBirth,
-			StudentReligion:       request.StudentReligion,
-			StudentAddress:        request.StudentAddress,
-			StudentNumPhone:       request.StudentNumPhone,
-			StudentEmail:          request.StudentEmail,
-			StudentAcceptedDate:   acceptedDate,
-			StudentSchoolOrigin:   request.StudentSchoolOrigin,
-			StudentFatherName:     request.StudentFatherName,
-			StudentFatherJob:      request.StudentFatherJob,
-			StudentFatherNumPhone: request.StudentFatherNumPhone,
-			StudentMotherName:     request.StudentMotherName,
-			StudentMotherJob:      request.StudentMotherJob,
-			StudentMotherNumPhone: request.StudentMotherNumPhone,
-		})
+		student.StudentID = result.StudentID
+		student.ClassID = request.ClassID
+		student.StudentName = request.StudentName
+		student.StudentNISN = request.StudentNISN
+		student.StudentGender = request.StudentGender
+		student.StudentPlaceOfBirth = request.StudentPlaceOfBirth
+		student.StudentDateOfBirth = dateOfBirth
+		student.StudentReligion = request.StudentReligion
+		student.StudentAddress = request.StudentAddress
+		student.StudentNumPhone = request.StudentNumPhone
+		student.StudentEmail = request.StudentEmail
+		student.StudentAcceptedDate = acceptedDate
+		student.StudentSchoolOrigin = request.StudentSchoolOrigin
+		student.StudentFatherName = request.StudentFatherName
+		student.StudentFatherJob = request.StudentFatherJob
+		student.StudentFatherNumPhone = request.StudentFatherNumPhone
+		student.StudentMotherName = request.StudentMotherName
+		student.StudentMotherJob = request.StudentMotherJob
+		student.StudentMotherNumPhone = request.StudentMotherNumPhone
+
+		err = student.UpdateStudentById(&student)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error while updating": err.Error(),
+			})
+			return
+		}
 
 		c.JSON(http.StatusOK, gin.H{
 			"student": student,
@@ -190,23 +209,15 @@ func DeleteStudentById() gin.HandlerFunc {
 
 		var student models.Student
 		// if student exist
-		if connections.DB.First(&student, id).Error != nil {
+		err := student.DeleteStudentById(id)
+		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "Student not found",
+				"error": err.Error(),
 			})
-			return
-		}
-
-		result := connections.DB.Delete(&student, id)
-		if result.Error != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": result.Error.Error(),
-			})
-			return
 		}
 
 		c.JSON(http.StatusOK, gin.H{
-			"student": student,
+			"student": "deleted student with id " + id,
 		})
 	}
 }

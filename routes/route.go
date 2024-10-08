@@ -24,6 +24,7 @@ func Route(router *gin.Engine) {
 			)
 			student.POST(
 				"/create",
+				middleware.AdminOnly(),
 				controllers.CreateStudent(),
 			)
 			student.PUT(

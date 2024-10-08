@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/skripsi-be/connections"
 	"github.com/skripsi-be/models"
 	"github.com/skripsi-be/request"
 )
@@ -19,6 +18,7 @@ func CreateClass() gin.HandlerFunc {
 				"message": "Invalid request body",
 				"error":   err.Error(),
 			})
+
 			return
 		}
 
@@ -32,18 +32,20 @@ func CreateClass() gin.HandlerFunc {
 		}
 
 		// Create class
-		class := models.Class{
+		var class = models.Class{
 			TeacherID:  request.TeacherID,
 			ClassName:  request.ClassName,
 			ClassGrade: request.ClassGrade,
 		}
 
+		err := class.CreateClass()
+
 		// Insert the class into the database
-		if err := connections.DB.Create(&class).Error; err != nil {
+		if err != nil {
 			// Handle different types of database errors
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"message": "Failed to create class",
-				"error":   err.Error(),
+				"error":   err,
 			})
 			return
 		}
@@ -56,20 +58,19 @@ func CreateClass() gin.HandlerFunc {
 	}
 }
 
-
 func GetAllClass() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var classes []models.Class
-		result := connections.DB.Find(&classes)
-		if result.Error != nil {
+		var classes models.Class
+		result, err := classes.GetAllClass()
+		if err != "" {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error": result.Error.Error(),
+				"error": err,
 			})
 			return
 		}
 
 		c.JSON(http.StatusOK, gin.H{
-			"classes": classes,
+			"classes": result,
 		})
 	}
 }
@@ -79,20 +80,25 @@ func GetClassById() gin.HandlerFunc {
 		id := c.Param("class_id")
 
 		var class models.Class
-		result := connections.DB.First(&class, id)
-		if result.Error != nil {
+		result, err := class.GetClassById(id)
+		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": "Class not found",
 			})
 			return
+		} else if result.ClassID == 0 {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "class doesn't exist",
+			})
+
+			return
 		}
 
 		c.JSON(http.StatusOK, gin.H{
-			"class": class,
+			"class": result,
 		})
 	}
 }
-
 
 func UpdateClassById() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -114,33 +120,29 @@ func UpdateClassById() gin.HandlerFunc {
 			return
 		}
 
-		// Get class by id
 		var class models.Class
-		result := connections.DB.First(&class, c.Param("class_id"))
-		if result.Error != nil {
+		class, err := class.GetClassById(c.Param("class_id"))
+		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": "Class not found",
 			})
 			return
 		}
 
-		// update class if exist
-		connections.DB.Model(&class).Updates(models.Class{
-			ClassName:  request.ClassName,
-			TeacherID:  request.TeacherID,
-			ClassGrade: request.ClassGrade,
-		})
-
-		result = connections.DB.Save(&class)
-		if result.Error != nil {
+		class.ClassName = request.ClassName
+		class.TeacherID = request.TeacherID
+		class.ClassGrade = request.ClassGrade
+		err = class.UpdateClassByObject()
+		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error": result.Error.Error(),
+				"error": err,
 			})
 			return
 		}
 
 		c.JSON(http.StatusOK, gin.H{
-			"class": class,
+			"class":   class,
+			"message": "Class updated successfully",
 		})
 	}
 }
@@ -148,18 +150,12 @@ func UpdateClassById() gin.HandlerFunc {
 func DeleteClassById() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var class models.Class
-		result := connections.DB.First(&class, c.Param("class_id"))
-		if result.Error != nil {
+		var id = c.Param("class_id")
+
+		err := class.DeleteClassById(id)
+		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": "Class not found",
-			})
-			return
-		}
-
-		result = connections.DB.Delete(&class)
-		if result.Error != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": result.Error.Error(),
 			})
 			return
 		}

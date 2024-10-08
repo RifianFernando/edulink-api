@@ -66,4 +66,4 @@
 5. compiler: go with [CompileDaemon](https://github.com/githubnemo/CompileDaemon)
 6. session: [session](https://github.com/gorilla/sessions)
 7. hash: [bcrypt](https://pkg.go.dev/golang.org/x/crypto/bcrypt)
-
+8. token: [JWT](https://jwt.io/)

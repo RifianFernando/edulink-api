@@ -2,7 +2,6 @@ package main
 
 import (
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/skripsi-be/config"
@@ -42,7 +41,7 @@ func setupRouter() *gin.Engine {
 			cookieResult = "No cookie"
 		}
 
-		currentTime := time.Now().Format("2006-01-02 15:04:05 MST")
+		currentTime := lib.GetTimeNow().Format("2006-01-02 15:04:05 MST")
 		c.JSON(http.StatusOK, gin.H{
 			"current_time": currentTime,
 			"cookie":       cookieResult,

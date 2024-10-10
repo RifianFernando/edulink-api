@@ -3,6 +3,7 @@ package models
 import (
 	"time"
 
+	"github.com/skripsi-be/connections"
 	"github.com/skripsi-be/database/migration/lib"
 )
 
@@ -21,4 +22,14 @@ type User struct {
 
 func (User) TableName() string {
 	return lib.GenerateTableName(lib.Public, "users")
+}
+
+func (user *User) GetUser() (User, error) {
+	// get result by model
+	result := connections.DB.Where(&user).First(&user)
+	if result.Error != nil {
+		return User{}, result.Error
+	}
+
+	return *user, nil
 }

@@ -14,7 +14,6 @@ import (
 type Session struct {
 	SessionID    int64    `gorm:"primaryKey;autoIncrement"` // Unique session identifier
 	UserID       int64     `gorm:"not null;index;unique"`
-	SessionToken string    `gorm:"not null"`
 	RefreshToken string    `gorm:"not null"`
 	IPAddress    string    `gorm:"not null"`
 	UserAgent    string    `gorm:"not null"`

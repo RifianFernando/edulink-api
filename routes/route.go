@@ -12,10 +12,10 @@ func Route(router *gin.Engine) {
 	{
 		// Student CRUD
 		student := apiV1.Group("/student")
+		student.Use(middleware.AlreadyLoggedIn(), middleware.AdminOnly())
 		{
 			student.GET(
 				"/",
-				middleware.AdminOnly(), // try to implement this middleware
 				controllers.GetAllStudent(),
 			)
 			student.GET(
@@ -24,7 +24,6 @@ func Route(router *gin.Engine) {
 			)
 			student.POST(
 				"/create",
-				middleware.AdminOnly(),
 				controllers.CreateStudent(),
 			)
 			student.PUT(
@@ -34,7 +33,6 @@ func Route(router *gin.Engine) {
 			)
 			student.DELETE(
 				"/delete/:student_id",
-				middleware.IsLoggedIn(), // try to implement this middleware
 				controllers.DeleteStudentById(),
 			)
 		}
@@ -74,7 +72,7 @@ func Route(router *gin.Engine) {
 			)
 			auth.POST(
 				"/logout",
-				middleware.IsLoggedIn(),
+				middleware.AlreadyLoggedIn(),
 				controllers.Logout(),
 			)
 		}

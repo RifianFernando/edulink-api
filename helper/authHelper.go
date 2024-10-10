@@ -7,28 +7,38 @@ import (
 )
 
 func Authenticate(email string, password string) (models.User, string) {
-	var user models.User
-
 	// Find user by email using GORM
-	result := connections.DB.Where("user_email = ?", email).First(&user)
-
-	if result.Error != nil {
-		return models.User{}, ""
+	var user = models.User{
+		UserEmail: email,
 	}
+	user, err := user.GetUser();
 
-	// Check password using bcrypt
-	err := lib.CompareHash(user.UserPassword, password)
 	if err != nil {
 		return models.User{}, ""
 	}
 
+	// Check password using bcrypt
+	err = lib.CompareHash(user.UserPassword, password)
+	if err != nil {
+		return models.User{}, ""
+	}
+
+	userType := GetUserTypeByUID(user)
+	if userType == "" {
+		return models.User{}, ""
+	}
+	
+	return user, userType
+}
+
+func GetUserTypeByUID(user models.User) string {
 	var teachers []models.Teacher
 	connections.DB.Where(models.Teacher{
 		UserID: user.UserID,
 	}).Find(&teachers)
 
 	if len(teachers) > 0 {
-		return user, "teacher"
+		return "teacher"
 	}
 
 	var staff []models.Staff
@@ -37,7 +47,7 @@ func Authenticate(email string, password string) (models.User, string) {
 	}).First(&staff)
 
 	if len(staff) > 0 {
-		return user, "staff"
+		return "staff"
 	}
 
 	var admins []models.Admin
@@ -46,8 +56,8 @@ func Authenticate(email string, password string) (models.User, string) {
 	}).First(&admins)
 
 	if len(admins) > 0 {
-		return user, "admin"
+		return "admin"
 	}
 
-	return models.User{}, ""
+	return ""
 }

@@ -1,14 +1,13 @@
 package helper
 
 import (
+	"errors"
+	"fmt"
 	"log"
-	"net/http"
 	"os"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
-	"github.com/skripsi-be/connections"
 	"github.com/skripsi-be/lib"
 	"github.com/skripsi-be/models"
 )
@@ -38,6 +37,9 @@ func GenerateToken(user models.User, userType string) (signedToken string, signe
 	}
 
 	refreshClaims := &userDetailToken{
+		UserID:    user.UserID,
+		UserName:  user.UserName,
+		User_type: userType,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: CustomTimeDay(2).Unix(),
 			IssuedAt:  time.Now().Unix(),
@@ -59,48 +61,74 @@ func GenerateToken(user models.User, userType string) (signedToken string, signe
 	return token, refreshToken, nil
 }
 
-func UpdateSessionTable(
-	token string,
+func UpdateSession(refreshToken string, userID int64, ipAddress string, userAgent string) (newToken string, newRefreshToken string, err error) {
+	// Validate the refresh token
+	claims, msg := ValidateToken(refreshToken)
+	fmt.Println("claims userID:", claims.UserID, "userID:", userID)
+	if msg != "" || claims.UserID != userID {
+		return "", "", errors.New("invalid token")
+	}
+
+	// Retrieve the session from the database
+	var session = models.Session{UserID: userID}
+	session = session.GetSession()
+	if session.SessionID == 0 {
+		return "", "", errors.New("the refresh token does not exist")
+	}
+
+	// Generate new access token and refresh token
+	user := models.User{UserID: userID}
+	newToken, newRefreshToken, err = GenerateToken(user, GetUserTypeByUID(user))
+	if err != nil {
+		return "", "", err
+	}
+
+	// Update session with new refresh token
+	session.RefreshToken = lib.HashToken(newRefreshToken)
+	session.IPAddress = ipAddress
+	session.UserAgent = userAgent
+	session.ExpiresAt = CustomTimeDay(7) // Extend session expiry
+
+	err = session.UpdateSession()
+	if err != nil {
+		return "", "", err
+	}
+
+	return newToken, newRefreshToken, nil
+}
+
+func InsertSession(
 	refreshToken string,
 	userID int64,
-	IpAddress string,
-	UserAgent string,
-) error {
-	var sessions models.Session
-	// result := connections.DB.First(&session, userID)
-	result := connections.DB.Where(models.Session{
+	ipAddress string,
+	userAgent string,
+) string {
+	session := models.Session{
 		UserID: userID,
-	}).Find(&sessions)
+	}
 
-	token = lib.HashToken(token)
-	refreshToken = lib.HashToken(refreshToken)
-	if result.RowsAffected == 0 {
-		session := models.Session{
-			UserID:       userID,
-			SessionToken: token,
-			RefreshToken: refreshToken,
-			IPAddress:    IpAddress,
-			UserAgent:    UserAgent,
-			ExpiresAt:    CustomTimeDay(1),
-		}
-		// Save the session to the database
-		if err := connections.DB.Create(&session).Error; err != nil {
-			return err
-		}
-		return nil
+	// Check if the session already exists for the user
+	exists, err := session.SessionExists()
+	if err != nil {
+		return err.Error()
+	}
+
+	if exists {
+		return "the refresh token already exists"
+	}
+
+	// Insert new session
+	session.RefreshToken = lib.HashToken(refreshToken)
+	session.IPAddress = ipAddress
+	session.UserAgent = userAgent
+	session.ExpiresAt = CustomTimeDay(7) // Set session expiry to match refresh token
+
+	err = session.InsertSession()
+
+	if err != nil {
+		return err.Error()
 	} else {
-		// Update the session in the database using where
-		if err := connections.DB.Model(&sessions).Where("user_id = ?", userID).Updates(models.Session{
-			SessionToken: token,
-			RefreshToken: refreshToken,
-			IPAddress:    IpAddress,
-			UserAgent:    UserAgent,
-			ExpiresAt:    CustomTimeDay(1),
-		}).Error; err != nil {
-			return err
-		}
-
-		return nil
+		return ""
 	}
 }
 
@@ -139,98 +167,73 @@ func ValidateToken(
 		return
 	}
 
-	var session models.Session
-	if err := connections.DB.Where(models.Session{
-		UserID: claims.UserID,
-	}).First(&session).Error; err != nil {
-		msg = invalidToken
+	return claims, msg
+}
 
-		return
+func ValidateRefreshToken(
+	signedToken string,
+) (
+	claims *userDetailToken,
+	msg string,
+) {
+	claims, msg = ValidateToken(signedToken)
+	if msg != "" {
+		return nil, msg
 	}
 
-	if !lib.VerifyToken(signedToken, session.SessionToken) {
-		msg = invalidToken
+	// check database
+	var session = models.Session{
+		UserID: claims.UserID,
+	}
+	session = session.GetSession()
+	if session.SessionID == 0 {
+		return nil, "the refresh token does not exist"
+	}
 
-		return
+	// Validate the stored refresh token with the one passed
+	if !lib.VerifyToken(signedToken, session.RefreshToken) {
+		fmt.Println("session.RefreshToken:", session.RefreshToken)
+		return nil, "the refresh token is invalid"
 	}
 
 	return claims, msg
 }
 
 func DeleteToken(
-	signedToken string,
+	refreshToken string,
 ) (
 	isDeleted bool,
 	msg string,
 ) {
 	var invalidToken = "The token is invalid"
 
-	token, err := jwt.ParseWithClaims(
-		signedToken,
-		&userDetailToken{},
-		func(token *jwt.Token) (interface{}, error) {
-			return []byte(SECRET_KEY), nil
-		},
-	)
-
-	if err != nil {
-		msg = err.Error()
-
+	// validate the token
+	claims, msg := ValidateToken(refreshToken)
+	if msg != "" {
 		return false, msg
 	}
 
-	claims, ok := token.Claims.(*userDetailToken)
-	if !ok {
+	var session = models.Session{UserID: claims.UserID}
+	session = session.GetSession()
+
+	if session.SessionID == 0 {
 		msg = invalidToken
-
 		return false, msg
 	}
 
-	if claims.ExpiresAt < time.Now().Local().Unix() {
-		msg = "The token is expired"
-
-		return false, msg
-	}
-
-	var session models.Session
-	if err := connections.DB.Where(models.Session{
-		UserID: claims.UserID,
-	}).First(&session).Error; err != nil {
-		msg = invalidToken
-
-		return false, msg
-	}
-
-	if !lib.VerifyToken(signedToken, session.SessionToken) {
+	if !lib.VerifyToken(refreshToken, session.RefreshToken) {
 		msg = invalidToken
 
 		return false, msg
 	}
 
 	// bulk delete
-	if err := connections.DB.Unscoped().Delete(&session).Error; err != nil {
+	err := session.DeleteSession()
+	if err != nil {
 		msg = err.Error()
 
 		return false, msg
 	}
 
 	return true, msg
-}
-
-func GetClaimsToken(c *gin.Context) (*userDetailToken, bool) {
-	clientToken, err := c.Cookie("token")
-	if err != nil || clientToken == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization token not found in cookies"})
-
-		return nil, false
-	}
-
-	claims, msg := ValidateToken(clientToken)
-	if msg != "" {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": msg})
-
-		return nil, false
-	}
-
-	return claims, true
 }

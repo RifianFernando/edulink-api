@@ -17,8 +17,9 @@ func (Admin) TableName() string {
 }
 
 // get admin by id
-func (admin *Admin) GetAdminByUserID(id int64) error {
-	result := connections.DB.Where("user_id = ?", id).First(&admin)
+func (admin *Admin) GetAdminByUserID() error {
+	// result := connections.DB.Where("user_id = ?", id).First(&admin)
+	result := connections.DB.Where(&admin).First(&admin)
 	if result.Error != nil {
 		return result.Error
 	}

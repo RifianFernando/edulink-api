@@ -10,27 +10,31 @@ import (
 
 func Logout() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		clientToken, err := c.Cookie("token")
-
+		// Retrieve the refresh token from the cookie
+		refreshToken, err := c.Cookie("token")
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "Token not found",
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"error": "token not found",
 			})
 			return
 		}
 
-		isDeleted, msg := helper.DeleteToken(clientToken)
+		// Delete the refresh token from the server (if applicable)
+		isDeleted, msg := helper.DeleteToken(refreshToken)
 
-		if !isDeleted && msg != "" {
-			c.JSON(http.StatusBadRequest, gin.H{
+		if !isDeleted {
+			// Handle error if token deletion fails
+			c.JSON(http.StatusInternalServerError, gin.H{
 				"error": msg,
 			})
 			return
 		}
 
-		c.SetCookie("token", "", -1, "/", config.ParsedDomain, config.IsProdMode, true)
+		// Remove the refresh token cookie
+		c.SetCookie("token", "", -1, "/", config.ParsedDomain, config.IsProdMode, true) // Clear the cookie
+
 		c.JSON(http.StatusOK, gin.H{
-			"message": "Logout success",
+			"message": "Logout successful",
 		})
 	}
 }

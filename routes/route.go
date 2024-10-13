@@ -75,6 +75,10 @@ func Route(router *gin.Engine) {
 				middleware.AlreadyLoggedIn(),
 				controllers.Logout(),
 			)
+			auth.POST(
+				"/get-access-token",
+				middleware.AlreadyLoggedIn(),
+			)
 		}
 	}
 }

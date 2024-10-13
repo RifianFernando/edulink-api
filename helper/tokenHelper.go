@@ -16,6 +16,7 @@ type userDetailToken struct {
 	UserID    int64
 	UserName  string
 	User_type string
+	TokenType string
 	jwt.StandardClaims
 }
 
@@ -30,6 +31,7 @@ func GenerateToken(user models.User, userType string) (signedToken string, signe
 		UserID:    user.UserID,
 		UserName:  user.UserName,
 		User_type: userType,
+		TokenType: "access_token",
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: CustomTimeDay(1).Unix(),
 			IssuedAt:  time.Now().Unix(),
@@ -40,8 +42,9 @@ func GenerateToken(user models.User, userType string) (signedToken string, signe
 		UserID:    user.UserID,
 		UserName:  user.UserName,
 		User_type: userType,
+		TokenType: "refresh_token",
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: CustomTimeDay(2).Unix(),
+			ExpiresAt: CustomTimeDay(7).Unix(),
 			IssuedAt:  time.Now().Unix(),
 		},
 	}
@@ -63,7 +66,7 @@ func GenerateToken(user models.User, userType string) (signedToken string, signe
 
 func UpdateSession(refreshToken string, userID int64, ipAddress string, userAgent string) (newToken string, newRefreshToken string, err error) {
 	// Validate the refresh token
-	claims, msg := ValidateToken(refreshToken)
+	claims, msg := ValidateToken(refreshToken, "refresh_token")
 	fmt.Println("claims userID:", claims.UserID, "userID:", userID)
 	if msg != "" || claims.UserID != userID {
 		return "", "", errors.New("invalid token")
@@ -134,6 +137,7 @@ func InsertSession(
 
 func ValidateToken(
 	signedToken string,
+	tokenType string,
 ) (
 	claims *userDetailToken,
 	msg string,
@@ -167,6 +171,13 @@ func ValidateToken(
 		return
 	}
 
+	if claims.TokenType != tokenType {
+		msg = invalidToken
+
+		return
+	}
+
+
 	return claims, msg
 }
 
@@ -176,7 +187,7 @@ func ValidateRefreshToken(
 	claims *userDetailToken,
 	msg string,
 ) {
-	claims, msg = ValidateToken(signedToken)
+	claims, msg = ValidateToken(signedToken, "refresh_token")
 	if msg != "" {
 		return nil, msg
 	}
@@ -208,7 +219,7 @@ func DeleteToken(
 	var invalidToken = "The token is invalid"
 
 	// validate the token
-	claims, msg := ValidateToken(refreshToken)
+	claims, msg := ValidateToken(refreshToken, "refresh_token")
 	if msg != "" {
 		return false, msg
 	}

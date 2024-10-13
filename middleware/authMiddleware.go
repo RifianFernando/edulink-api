@@ -21,8 +21,10 @@ func AuthHandler(isLoggedIn bool) gin.HandlerFunc {
 			if err != nil {
 				if isLoggedIn {
 					c.JSON(http.StatusUnauthorized, gin.H{"error": "not logged in"})
+					c.Abort()
+				} else {
+					c.Next()
 				}
-				c.Next() // Proceed if checking for not logged in
 				return
 			}
 
@@ -30,8 +32,10 @@ func AuthHandler(isLoggedIn bool) gin.HandlerFunc {
 			if msg != "" || claims == nil {
 				if isLoggedIn {
 					c.JSON(http.StatusUnauthorized, gin.H{"error": msg})
+					c.Abort()
+				} else {
+					c.Next()
 				}
-				c.Next()
 				return
 			}
 
@@ -48,9 +52,8 @@ func AuthHandler(isLoggedIn bool) gin.HandlerFunc {
 				c.Next()
 				return
 			}
-
 			// Set the refresh token in an HttpOnly cookie (valid for 1 day)
-			c.SetCookie("token", newRefreshToken, 3600*24, "/", config.ParsedDomain, config.IsProdMode, true)
+			c.SetCookie("token", newRefreshToken, 3600*24*7, "/", config.ParsedDomain, config.IsProdMode, true)
 
 			if isLoggedIn {
 				c.JSON(http.StatusOK, gin.H{
@@ -59,6 +62,8 @@ func AuthHandler(isLoggedIn bool) gin.HandlerFunc {
 				})
 				c.Abort()
 				return
+			} else {
+				c.Next()
 			}
 		}
 
@@ -67,8 +72,10 @@ func AuthHandler(isLoggedIn bool) gin.HandlerFunc {
 		if len(parts) != 2 || parts[0] != "Bearer" {
 			if isLoggedIn {
 				c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid Authorization header format"})
+				c.Abort()
+			} else {
+				c.Next()
 			}
-			c.Next()
 			return
 		}
 
@@ -76,18 +83,22 @@ func AuthHandler(isLoggedIn bool) gin.HandlerFunc {
 		if accessToken == "" {
 			if isLoggedIn {
 				c.JSON(http.StatusUnauthorized, gin.H{"error": "Token not found"})
+				c.Abort()
+			} else {
+				c.Next()
 			}
-			c.Next()
 			return
 		}
 
 		// Validate the access token
-		claims, msg := helper.ValidateToken(accessToken)
+		claims, msg := helper.ValidateToken(accessToken, "access_token")
 		if msg != "" {
 			if isLoggedIn {
 				c.JSON(http.StatusUnauthorized, gin.H{"error": msg})
+				c.Abort()
+			} else {
+				c.Next()
 			}
-			c.Next()
 			return
 		}
 

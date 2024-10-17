@@ -75,6 +75,60 @@ func CreateStudent() gin.HandlerFunc {
 	}
 }
 
+func CreateAllStudent() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var request request.InsertAllStudentRequest
+
+		// Bind the request JSON to the CreateAllStudentRequest struct
+		if err := c.ShouldBindJSON(&request); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error should bind json": err.Error(),
+			})
+			return
+		}
+
+		// Validate the request
+		if err := request.ValidateAllStudent(); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error when validate": err.Error(),
+			})
+			return
+		}
+
+		// return it
+		// c.JSON(http.StatusOK, gin.H{
+		// 	"student": request,
+		// })
+
+		// return
+
+		// var students []*models.Student;
+		// // get all students and parse it to struct
+		// // err := json.NewDecoder(request).Decode(&students)
+
+		// // create all student
+		// var student = []*models.Student{
+			
+		// }
+
+		// }
+
+		// err = student.CreateAllStudent()
+
+		// if err != nil {
+		// 	c.JSON(http.StatusBadRequest, gin.H{
+		// 		"error while create student": err,
+		// 	})
+		// 	return
+		// }
+
+		// return it
+		// c.JSON(http.StatusOK, gin.H{
+		// 	"student": student,
+		// })
+	}
+}
+
 func GetAllStudent() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var students models.Student

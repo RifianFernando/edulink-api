@@ -93,3 +93,11 @@ func (student *Student) DeleteStudentById(id string) error {
 
 	return nil
 }
+
+func (student *Student) CreateAllStudent(students []Student) error {
+	result := connections.DB.Create(&students)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}

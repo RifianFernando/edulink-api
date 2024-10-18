@@ -1,7 +1,10 @@
 package controllers
 
 import (
+	"log"
 	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/skripsi-be/models"
@@ -95,37 +98,181 @@ func CreateAllStudent() gin.HandlerFunc {
 			return
 		}
 
-		// return it
-		// c.JSON(http.StatusOK, gin.H{
-		// 	"student": request,
-		// })
-
 		// return
+		nameMap := make(map[string]bool)
+		nisnMap := make(map[string]bool)
+		numPhoneMap := make(map[string]bool)
+		emailMap := make(map[string]bool)
+		var students []models.Student
+		for _, student := range request.InsertStudentRequest {
+			// Check if StudentName is already in the map
+			if nameMap[student.StudentName] {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"error": "Duplicate StudentName: " + student.StudentName,
+				})
+				return
+			}
+			// Check if StudentNISN is already in the map
+			if nisnMap[student.StudentNISN] {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"error": "Duplicate StudentNISN: " + student.StudentNISN,
+				})
+				return
+			}
+			// Check if StudentNumPhone is already in the map
+			if numPhoneMap[student.StudentNumPhone] {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"error": "Duplicate StudentNumPhone: " + student.StudentNumPhone,
+				})
+				return
+			}
+			// Check if StudentEmail is already in the map
+			if emailMap[student.StudentEmail] {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"error": "Duplicate StudentEmail: " + student.StudentEmail,
+				})
+				return
+			}
 
-		// var students []*models.Student;
-		// // get all students and parse it to struct
-		// // err := json.NewDecoder(request).Decode(&students)
+			// Parse dates (if needed) and construct student models
+			DateOfBirth, err := time.Parse("2006-01-02", student.DateOfBirth)
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"error": "Invalid date format",
+				})
+				return
+			}
+			AcceptedDate, err := time.Parse("2006-01-02", student.AcceptedDate)
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"error": "Invalid date format",
+				})
+				return
+			}
 
-		// // create all student
-		// var student = []*models.Student{
-			
-		// }
+			// checking database name, nisn, number phone, and email if already exist
+			var studentSearch = models.Student{
+				StudentName: student.StudentName,
+			}
+			result, err := studentSearch.GetStudent()
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"error name": err.Error(),
+				})
+				return
+			} else if result.StudentID != 0 || result.ClassID != 0 {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"error": "Student named: " + student.StudentName + " already exist",
+				})
+				return
+			}
 
-		// }
+			log.Println("this is result of the studentNISN: ", student.StudentNISN)
+			studentSearch = models.Student{
+				StudentNISN: student.StudentNISN,
+			}
+			log.Println("this is result of the student: ", student)
+			result, err = studentSearch.GetStudent()
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"error name": err.Error(),
+				})
+				return
+			} else if result.StudentID != 0 || result.ClassID != 0 {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"error": "Student NISN: " + student.StudentNISN + " already exist",
+				})
+				return
+			}
 
-		// err = student.CreateAllStudent()
+			studentSearch = models.Student{
+				StudentNumPhone: student.StudentNumPhone,
+			}
+			result, err = studentSearch.GetStudent()
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"error name": err.Error(),
+				})
+				return
+			} else if result.StudentID != 0 || result.ClassID != 0 {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"error": "Student number_phone: " + student.StudentNumPhone + " already exist",
+				})
+				return
+			}
 
-		// if err != nil {
-		// 	c.JSON(http.StatusBadRequest, gin.H{
-		// 		"error while create student": err,
-		// 	})
-		// 	return
-		// }
+			studentSearch = models.Student{
+				StudentEmail: student.StudentEmail,
+			}
+			result, err = studentSearch.GetStudent()
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"error name": err.Error(),
+				})
+				return
+			} else if result.StudentID != 0 || result.ClassID != 0 {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"error": "Student email: " + student.StudentEmail + " already exist",
+				})
+				return
+			}
 
-		// return it
-		// c.JSON(http.StatusOK, gin.H{
-		// 	"student": student,
-		// })
+			// checking classId if exist on database
+			var class models.Class
+			classIDStr := strconv.FormatInt(student.ClassID, 10)
+			resultClass, err := class.GetClassById(classIDStr)
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"error": err.Error(),
+				})
+				return
+			} else if resultClass.ClassID == 0 {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"error": "Class with id: " + classIDStr + " doesn't exist",
+				})
+				return
+			}
+
+			students = append(students, models.Student{
+				ClassID:               student.ClassID,
+				StudentName:           student.StudentName,
+				StudentNISN:           student.StudentNISN,
+				StudentGender:         student.StudentGender,
+				StudentPlaceOfBirth:   student.StudentPlaceOfBirth,
+				StudentDateOfBirth:    DateOfBirth,
+				StudentReligion:       student.StudentReligion,
+				StudentAddress:        student.StudentAddress,
+				StudentNumPhone:       student.StudentNumPhone,
+				StudentEmail:          student.StudentEmail,
+				StudentAcceptedDate:   AcceptedDate,
+				StudentSchoolOrigin:   student.StudentSchoolOrigin,
+				StudentFatherName:     student.StudentFatherName,
+				StudentFatherJob:      student.StudentFatherJob,
+				StudentFatherNumPhone: student.StudentFatherNumPhone,
+				StudentMotherName:     student.StudentMotherName,
+				StudentMotherJob:      student.StudentMotherJob,
+				StudentMotherNumPhone: student.StudentMotherNumPhone,
+			})
+
+			// Mark each field as seen in the map
+			nameMap[student.StudentName] = true
+			nisnMap[student.StudentNISN] = true
+			numPhoneMap[student.StudentNumPhone] = true
+			emailMap[student.StudentEmail] = true
+		}
+
+		// Create all students
+		err := models.CreateAllStudents(students)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error while create all students": err,
+			})
+			return
+		} else {
+			c.JSON(http.StatusOK, gin.H{
+				"students": students,
+			})
+		}
 	}
 }
 

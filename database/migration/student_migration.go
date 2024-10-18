@@ -30,7 +30,7 @@ type Student struct {
 	StudentFatherNumPhone string    `gorm:"not null"`
 	StudentMotherName     string    `gorm:"not null"`
 	StudentMotherJob      string    `gorm:"not null"`
-	StudentMotherNumPhone string
+	StudentMotherNumPhone string    `gorm:"not null"`
 	Grades                []Grade             `gorm:"foreignKey:StudentID;references:StudentID;constraint:OnUpdate:SET NULL,OnDelete:SET NULL"`
 	Attendance            []Attendance        `gorm:"foreignKey:StudentID;references:StudentID"`
 	AttendanceSummaries   []AttendanceSummary `gorm:"foreignKey:StudentID;references:StudentID"`

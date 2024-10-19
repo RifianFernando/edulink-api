@@ -7,11 +7,13 @@ import (
 )
 
 type ClassName struct {
-	ClassNameID    int64  `gorm:"primaryKey" json:"id"`
-	GradeID        int64  `json:"id_grade" binding:"required"`
-	TeacherID      int64  `json:"id_teacher" binding:"required"`
-	ClassName      string `json:"name" binding:"required" validate:"len=1"`
-	lib.BaseModel 
+	ClassNameID int64   `gorm:"primaryKey" json:"id"`
+	GradeID     int64   `json:"id_grade" binding:"required"`
+	TeacherID   int64   `json:"id_teacher" binding:"required"`
+	Name        string  `json:"name" binding:"required" validate:"len=1"`
+	Teacher     Teacher `gorm:"foreignKey:TeacherID;references:TeacherID"`
+	Grade       Grade   `gorm:"foreignKey:GradeID;references:GradeID"`
+	lib.BaseModel
 }
 
 func (ClassName) TableName() string {
@@ -29,17 +31,17 @@ func (className *ClassName) CreateClassName() error {
 
 // Get all ClassName
 func (class *ClassName) GetAllClassName() (
-	classNames []ClassName,
+	className []ClassName,
 	msg string,
 ) {
-	result := connections.DB.Find(&classNames)
+	result := connections.DB.Preload("Teacher.User").Preload("Grade").Find(&className)
 	if result.Error != nil {
 		return nil, result.Error.Error()
 	} else if result.RowsAffected == 0 {
 		return nil, "No class found"
 	}
 
-	return classNames, ""
+	return className, ""
 }
 
 // get class by id

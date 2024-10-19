@@ -28,22 +28,22 @@ func ClassSeeder() {
 		{
 			TeacherID: 1,
 			GradeID:   1,
-			ClassName: "A",
+			Name:      "A",
 		},
 		{
 			TeacherID: 1,
 			GradeID:   1,
-			ClassName: "B",
+			Name:      "B",
 		},
 		{
 			TeacherID: 1,
 			GradeID:   1,
-			ClassName: "C",
+			Name:      "C",
 		},
 		{
 			TeacherID: 2,
 			GradeID:   1,
-			ClassName: "D",
+			Name:      "D",
 		},
 	}
 

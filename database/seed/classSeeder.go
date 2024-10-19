@@ -15,7 +15,7 @@ func init() {
 
 // ClassSeeder seeds the Class data into the database.
 func ClassSeeder() {
-	classes := []models.Class{
+	ClassNames := []models.ClassName{
 		{
 			TeacherID:  1,
 			ClassName:  "XII IPA 1",
@@ -23,7 +23,7 @@ func ClassSeeder() {
 		},
 	}
 
-	for _, class := range classes {
+	for _, class := range ClassNames {
 		connections.DB.Create(&class)
 	}
 }

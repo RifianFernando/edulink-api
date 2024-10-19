@@ -32,13 +32,13 @@ func CreateClass() gin.HandlerFunc {
 		}
 
 		// Create class
-		var class = models.Class{
+		var className = models.ClassName{
 			TeacherID:  request.TeacherID,
 			ClassName:  request.ClassName,
 			ClassGrade: request.ClassGrade,
 		}
 
-		err := class.CreateClass()
+		err := className.CreateClassName()
 
 		// Insert the class into the database
 		if err != nil {
@@ -53,15 +53,15 @@ func CreateClass() gin.HandlerFunc {
 		// Return the newly created class as the response
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Class created successfully",
-			"class":   class,
+			"class":   className,
 		})
 	}
 }
 
 func GetAllClass() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var classes models.Class
-		result, err := classes.GetAllClass()
+		var ClassName models.Class
+		result, err := ClassName.GetAllClass()
 		if err != "" {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": err,
@@ -70,7 +70,7 @@ func GetAllClass() gin.HandlerFunc {
 		}
 
 		c.JSON(http.StatusOK, gin.H{
-			"classes": result,
+			"ClassName": result,
 		})
 	}
 }

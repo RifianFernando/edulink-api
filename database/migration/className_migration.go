@@ -7,11 +7,11 @@ import "github.com/skripsi-be/database/migration/lib"
 * https://gorm.io/docs/data_types.html
 * https://gorm.io/docs/models.html#Fields-Tags
  */
-type Class struct {
-	ClassID       int64  `gorm:"primaryKey;autoIncrement"`
-	TeacherID     int64  `gorm:"foreignKey:TeacherID;references:TeacherID;constraint:OnUpdate:SET NULL,OnDelete:SET NULL"`
+type ClassName struct {
+	ClassNameID   int64  `gorm:"primaryKey;autoIncrement"`
+	GradeID       int64  `gorm:"not null"` // GradeID is the foreign key
+	TeacherID     int64  `gorm:"not null"` // TeacherID is the foreign key
 	ClassName     string `gorm:"unique;not null"`
-	ClassGrade    string `gorm:"not null"`
 	Student       Student
 	lib.BaseModel /* this type include CreatedAt, UpdatedAt, DeletedAt, I can't use the gorm.models because can't customize the id name */
 }
@@ -20,6 +20,6 @@ type Class struct {
 * see the documentation here about conventions
 * https://gorm.io/docs/conventions.html
  */
-func (Class) TableName() string {
-	return lib.GenerateTableName(lib.Public, "classes")
+func (ClassName) TableName() string {
+	return lib.GenerateTableName(lib.Academic, "class_names")
 }

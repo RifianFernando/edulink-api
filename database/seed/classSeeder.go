@@ -2,24 +2,48 @@ package seed
 
 import (
 	"github.com/skripsi-be/connections"
-	"github.com/skripsi-be/lib"
 	"github.com/skripsi-be/models"
 )
 
-// init initializes the package by loading environment variables and connecting to the database.
-func init() {
-	connections.LoadEnvVariables()
-	err := connections.ConnecToDB()
-	lib.HandleError(err, "Failed to connect db")
-}
-
 // ClassSeeder seeds the Class data into the database.
 func ClassSeeder() {
+	// should add the grade first to reference the class
+	grades := []models.Grade{
+		{
+			Grade: 7,
+		},
+		{
+			Grade: 8,
+		},
+		{
+			Grade: 9,
+		},
+	}
+
+	for _, grade := range grades {
+		connections.DB.Create(&grade)
+	}
+
 	ClassNames := []models.ClassName{
 		{
-			TeacherID:  1,
-			ClassName:  "XII IPA 1",
-			ClassGrade: "XII",
+			TeacherID: 1,
+			GradeID:   1,
+			ClassName: "A",
+		},
+		{
+			TeacherID: 1,
+			GradeID:   1,
+			ClassName: "B",
+		},
+		{
+			TeacherID: 1,
+			GradeID:   1,
+			ClassName: "C",
+		},
+		{
+			TeacherID: 2,
+			GradeID:   1,
+			ClassName: "D",
 		},
 	}
 

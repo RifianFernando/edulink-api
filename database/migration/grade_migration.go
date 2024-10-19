@@ -10,8 +10,8 @@ import "github.com/skripsi-be/database/migration/lib"
 type Grade struct {
 	GradeID       int64       `gorm:"primaryKey;autoIncrement"`
 	Grade         int         `gorm:"not null"`
-	Subjects      []Subject   `gorm:"foreignKey:SubjectID;references:SubjectID"`
-	ClassNames    []ClassName `gorm:"foreignKey:ClassNameID;references:ClassNameID"`
+	Subjects      []Subject   `gorm:"foreignKey:GradeID;references:GradeID"`
+	ClassNames    []ClassName `gorm:"foreignKey:GradeID;references:GradeID"`
 	lib.BaseModel             /* this type include CreatedAt, UpdatedAt, DeletedAt, I can't use the gorm.models because can't customize the id name */
 }
 

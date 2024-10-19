@@ -8,14 +8,14 @@ import (
 
 type ClassName struct {
 	ClassNameID    int64  `gorm:"primaryKey" json:"id"`
+	GradeID        int64  `json:"id_grade" binding:"required"`
 	TeacherID      int64  `json:"id_teacher" binding:"required"`
-	ClassName      string `json:"name" binding:"required"`
-	ClassNameGrade string `json:"grade" binding:"required"`
-	lib.BaseModel
+	ClassName      string `json:"name" binding:"required" validate:"len=1"`
+	lib.BaseModel 
 }
 
 func (ClassName) TableName() string {
-	return lib.GenerateTableName(lib.Public, "class_names")
+	return lib.GenerateTableName(lib.Academic, "class_names")
 }
 
 // Create class

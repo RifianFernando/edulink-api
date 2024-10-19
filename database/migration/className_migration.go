@@ -11,8 +11,7 @@ type ClassName struct {
 	ClassNameID   int64  `gorm:"primaryKey;autoIncrement"`
 	GradeID       int64  `gorm:"not null"` // GradeID is the foreign key
 	TeacherID     int64  `gorm:"not null"` // TeacherID is the foreign key
-	ClassName     string `gorm:"unique;not null"`
-	Student       Student
+	ClassName     string `gorm:"type:char(1);not null"`
 	lib.BaseModel /* this type include CreatedAt, UpdatedAt, DeletedAt, I can't use the gorm.models because can't customize the id name */
 }
 

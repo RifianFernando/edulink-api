@@ -8,12 +8,11 @@ import "github.com/skripsi-be/database/migration/lib"
 * https://gorm.io/docs/models.html#Fields-Tags
  */
 type Grade struct {
-	StudentID     int64  `gorm:"not null"`
-	AssignmentID  int64  `gorm:"not null"`
-	TeacherID     int64  `gorm:"not null"`
-	SubjectID     int64  `gorm:"not null"`
-	Grade         string `gorm:"not null"`
-	lib.BaseModel        /* this type include CreatedAt, UpdatedAt, DeletedAt, I can't use the gorm.models because can't customize the id name */
+	GradeID       int64       `gorm:"primaryKey;autoIncrement"`
+	Grade         int         `gorm:"not null"`
+	Subjects      []Subject   `gorm:"foreignKey:GradeID;references:GradeID"`
+	ClassNames    []ClassName `gorm:"foreignKey:GradeID;references:GradeID"`
+	lib.BaseModel             /* this type include CreatedAt, UpdatedAt, DeletedAt, I can't use the gorm.models because can't customize the id name */
 }
 
 /*

@@ -52,17 +52,21 @@ func generateSessionKey() {
 
 // save the migration to the one variable
 var table = []interface{}{
+	&migration.AcademicYear{},
 	&migration.Subject{},
+	&migration.Grade{},
+	&migration.ClassName{},
 	&migration.User{},
 	&migration.Session{},
-	&migration.Class{},
+	&migration.ClassName{},
 	&migration.Assignment{},
 	&migration.Student{},
 	&migration.Syllabus{},
 	&migration.ContentObjective{},
 	&migration.DomainAchievement{},
 	&migration.SyllabusDetail{},
-	&migration.Grade{},
+	&migration.Score{},
+	&migration.Report{},
 	&migration.Teacher{},
 	&migration.TeacherSubject{},
 	&migration.Schedule{},

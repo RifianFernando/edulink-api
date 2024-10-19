@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -18,7 +17,7 @@ func CreateStudent() gin.HandlerFunc {
 		// Bind the request JSON to the CreateStudentRequest struct
 		if err := c.ShouldBindJSON(&request); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error should bind json": err.Error(),
+				"error": "should bind json" + err.Error(),
 			})
 			return
 		}
@@ -26,7 +25,7 @@ func CreateStudent() gin.HandlerFunc {
 		// Validate the request
 		if err := request.Validate(); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error when validate": err.Error(),
+				"error": "when validate" + err.Error(),
 			})
 			return
 		}
@@ -66,7 +65,7 @@ func CreateStudent() gin.HandlerFunc {
 
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error while create student": err,
+				"error": "while create student: " + err.Error(),
 			})
 			return
 		}
@@ -85,7 +84,7 @@ func CreateAllStudent() gin.HandlerFunc {
 		// Bind the request JSON to the CreateAllStudentRequest struct
 		if err := c.ShouldBindJSON(&request); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error should bind json": err.Error(),
+				"error": "should bind json" + err.Error(),
 			})
 			return
 		}
@@ -93,7 +92,7 @@ func CreateAllStudent() gin.HandlerFunc {
 		// Validate the request
 		if err := request.ValidateAllStudent(); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error when validate": err.Error(),
+				"error": "when validate" + err.Error(),
 			})
 			return
 		}
@@ -104,32 +103,33 @@ func CreateAllStudent() gin.HandlerFunc {
 		numPhoneMap := make(map[string]bool)
 		emailMap := make(map[string]bool)
 		var students []models.Student
-		for _, student := range request.InsertStudentRequest {
+		for index, student := range request.InsertStudentRequest {
+			index = index + 1
 			// Check if StudentName is already in the map
 			if nameMap[student.StudentName] {
 				c.JSON(http.StatusBadRequest, gin.H{
-					"error": "Duplicate StudentName: " + student.StudentName,
+					"error": "Duplicate StudentName: " + student.StudentName + " on index: " + strconv.Itoa(index),
 				})
 				return
 			}
 			// Check if StudentNISN is already in the map
 			if nisnMap[student.StudentNISN] {
 				c.JSON(http.StatusBadRequest, gin.H{
-					"error": "Duplicate StudentNISN: " + student.StudentNISN,
+					"error": "Duplicate StudentNISN: " + student.StudentNISN + " on index: " + strconv.Itoa(index),
 				})
 				return
 			}
 			// Check if StudentNumPhone is already in the map
 			if numPhoneMap[student.StudentNumPhone] {
 				c.JSON(http.StatusBadRequest, gin.H{
-					"error": "Duplicate StudentNumPhone: " + student.StudentNumPhone,
+					"error": "Duplicate StudentNumPhone: " + student.StudentNumPhone + " on index: " + strconv.Itoa(index),
 				})
 				return
 			}
 			// Check if StudentEmail is already in the map
 			if emailMap[student.StudentEmail] {
 				c.JSON(http.StatusBadRequest, gin.H{
-					"error": "Duplicate StudentEmail: " + student.StudentEmail,
+					"error": "Duplicate StudentEmail: " + student.StudentEmail + " on index: " + strconv.Itoa(index),
 				})
 				return
 			}
@@ -138,14 +138,14 @@ func CreateAllStudent() gin.HandlerFunc {
 			DateOfBirth, err := time.Parse("2006-01-02", student.DateOfBirth)
 			if err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{
-					"error": "Invalid date format",
+					"error": "Invalid date format on index: " + strconv.Itoa(index),
 				})
 				return
 			}
 			AcceptedDate, err := time.Parse("2006-01-02", student.AcceptedDate)
 			if err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{
-					"error": "Invalid date format",
+					"error": "Invalid date format on index: " + strconv.Itoa(index),
 				})
 				return
 			}
@@ -157,30 +157,28 @@ func CreateAllStudent() gin.HandlerFunc {
 			result, err := studentSearch.GetStudent()
 			if err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{
-					"error name": err.Error(),
+					"error": err.Error(),
 				})
 				return
 			} else if result.StudentID != 0 || result.ClassID != 0 {
 				c.JSON(http.StatusBadRequest, gin.H{
-					"error": "Student named: " + student.StudentName + " already exist",
+					"error": "Student named: " + student.StudentName + " already exist on index: " + strconv.Itoa(index),
 				})
 				return
 			}
 
-			log.Println("this is result of the studentNISN: ", student.StudentNISN)
 			studentSearch = models.Student{
 				StudentNISN: student.StudentNISN,
 			}
-			log.Println("this is result of the student: ", student)
 			result, err = studentSearch.GetStudent()
 			if err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{
-					"error name": err.Error(),
+					"error": err.Error(),
 				})
 				return
 			} else if result.StudentID != 0 || result.ClassID != 0 {
 				c.JSON(http.StatusBadRequest, gin.H{
-					"error": "Student NISN: " + student.StudentNISN + " already exist",
+					"error": "Student NISN: " + student.StudentNISN + " already exist on index: " + strconv.Itoa(index),
 				})
 				return
 			}
@@ -191,12 +189,12 @@ func CreateAllStudent() gin.HandlerFunc {
 			result, err = studentSearch.GetStudent()
 			if err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{
-					"error name": err.Error(),
+					"error": err.Error(),
 				})
 				return
 			} else if result.StudentID != 0 || result.ClassID != 0 {
 				c.JSON(http.StatusBadRequest, gin.H{
-					"error": "Student number_phone: " + student.StudentNumPhone + " already exist",
+					"error": "Student number_phone: " + student.StudentNumPhone + " already exist on index: " + strconv.Itoa(index),
 				})
 				return
 			}
@@ -207,12 +205,12 @@ func CreateAllStudent() gin.HandlerFunc {
 			result, err = studentSearch.GetStudent()
 			if err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{
-					"error name": err.Error(),
+					"error": err.Error(),
 				})
 				return
 			} else if result.StudentID != 0 || result.ClassID != 0 {
 				c.JSON(http.StatusBadRequest, gin.H{
-					"error": "Student email: " + student.StudentEmail + " already exist",
+					"error": "Student email: " + student.StudentEmail + " already exist on index: " + strconv.Itoa(index),
 				})
 				return
 			}
@@ -228,7 +226,7 @@ func CreateAllStudent() gin.HandlerFunc {
 				return
 			} else if resultClass.ClassID == 0 {
 				c.JSON(http.StatusBadRequest, gin.H{
-					"error": "Class with id: " + classIDStr + " doesn't exist",
+					"error": "Class with id: " + classIDStr + " doesn't exist on index: " + strconv.Itoa(index),
 				})
 				return
 			}
@@ -265,7 +263,7 @@ func CreateAllStudent() gin.HandlerFunc {
 		err := models.CreateAllStudents(students)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error while create all students": err,
+				"error": err,
 			})
 			return
 		} else {
@@ -327,7 +325,7 @@ func UpdateStudentById() gin.HandlerFunc {
 		// Bind the request JSON to the UpdateStudentRequest struct
 		if err := c.ShouldBindJSON(&request); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error should bind json": err.Error(),
+				"error": "should bind json" + err.Error(),
 			})
 			return
 		}
@@ -335,7 +333,7 @@ func UpdateStudentById() gin.HandlerFunc {
 		// Validate the request
 		if err := request.Validate(); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error when validate": err.Error(),
+				"error": err.Error(),
 			})
 			return
 		}
@@ -393,7 +391,7 @@ func UpdateStudentById() gin.HandlerFunc {
 		err = student.UpdateStudentById(&student)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error while updating": err.Error(),
+				"error": "while updating" + err.Error(),
 			})
 			return
 		}

@@ -2,10 +2,9 @@ package controllers
 
 import (
 	"net/http"
-	"strconv"
-	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/skripsi-be/helper"
 	"github.com/skripsi-be/models"
 	"github.com/skripsi-be/request"
 )
@@ -81,196 +80,28 @@ func CreateAllStudent() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var request request.InsertAllStudentRequest
 
-		// Bind the request JSON to the CreateAllStudentRequest struct
 		if err := c.ShouldBindJSON(&request); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "should bind json" + err.Error(),
-			})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "should bind json: " + err.Error()})
 			return
 		}
 
-		// Validate the request
 		if err := request.ValidateAllStudent(); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "when validate" + err.Error(),
-			})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "validation error: " + err.Error()})
 			return
 		}
 
-		// return
-		nameMap := make(map[string]bool)
-		nisnMap := make(map[string]bool)
-		numPhoneMap := make(map[string]bool)
-		emailMap := make(map[string]bool)
-		var students []models.Student
-		for index, student := range request.InsertStudentRequest {
-			index = index + 1
-			// Check if StudentName is already in the map
-			if nameMap[student.StudentName] {
-				c.JSON(http.StatusBadRequest, gin.H{
-					"error": "Duplicate StudentName: " + student.StudentName + " on index: " + strconv.Itoa(index),
-				})
-				return
-			}
-			// Check if StudentNISN is already in the map
-			if nisnMap[student.StudentNISN] {
-				c.JSON(http.StatusBadRequest, gin.H{
-					"error": "Duplicate StudentNISN: " + student.StudentNISN + " on index: " + strconv.Itoa(index),
-				})
-				return
-			}
-			// Check if StudentNumPhone is already in the map
-			if numPhoneMap[student.StudentNumPhone] {
-				c.JSON(http.StatusBadRequest, gin.H{
-					"error": "Duplicate StudentNumPhone: " + student.StudentNumPhone + " on index: " + strconv.Itoa(index),
-				})
-				return
-			}
-			// Check if StudentEmail is already in the map
-			if emailMap[student.StudentEmail] {
-				c.JSON(http.StatusBadRequest, gin.H{
-					"error": "Duplicate StudentEmail: " + student.StudentEmail + " on index: " + strconv.Itoa(index),
-				})
-				return
-			}
-
-			// Parse dates (if needed) and construct student models
-			DateOfBirth, err := time.Parse("2006-01-02", student.DateOfBirth)
-			if err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{
-					"error": "Invalid date format on index: " + strconv.Itoa(index),
-				})
-				return
-			}
-			AcceptedDate, err := time.Parse("2006-01-02", student.AcceptedDate)
-			if err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{
-					"error": "Invalid date format on index: " + strconv.Itoa(index),
-				})
-				return
-			}
-
-			// checking database name, nisn, number phone, and email if already exist
-			var studentSearch = models.Student{
-				StudentName: student.StudentName,
-			}
-			result, err := studentSearch.GetStudent()
-			if err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{
-					"error": err.Error(),
-				})
-				return
-			} else if result.StudentID != 0 || result.ClassID != 0 {
-				c.JSON(http.StatusBadRequest, gin.H{
-					"error": "Student named: " + student.StudentName + " already exist on index: " + strconv.Itoa(index),
-				})
-				return
-			}
-
-			studentSearch = models.Student{
-				StudentNISN: student.StudentNISN,
-			}
-			result, err = studentSearch.GetStudent()
-			if err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{
-					"error": err.Error(),
-				})
-				return
-			} else if result.StudentID != 0 || result.ClassID != 0 {
-				c.JSON(http.StatusBadRequest, gin.H{
-					"error": "Student NISN: " + student.StudentNISN + " already exist on index: " + strconv.Itoa(index),
-				})
-				return
-			}
-
-			studentSearch = models.Student{
-				StudentNumPhone: student.StudentNumPhone,
-			}
-			result, err = studentSearch.GetStudent()
-			if err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{
-					"error": err.Error(),
-				})
-				return
-			} else if result.StudentID != 0 || result.ClassID != 0 {
-				c.JSON(http.StatusBadRequest, gin.H{
-					"error": "Student number_phone: " + student.StudentNumPhone + " already exist on index: " + strconv.Itoa(index),
-				})
-				return
-			}
-
-			studentSearch = models.Student{
-				StudentEmail: student.StudentEmail,
-			}
-			result, err = studentSearch.GetStudent()
-			if err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{
-					"error": err.Error(),
-				})
-				return
-			} else if result.StudentID != 0 || result.ClassID != 0 {
-				c.JSON(http.StatusBadRequest, gin.H{
-					"error": "Student email: " + student.StudentEmail + " already exist on index: " + strconv.Itoa(index),
-				})
-				return
-			}
-
-			// checking classId if exist on database
-			var class models.ClassName
-			classIDStr := strconv.FormatInt(student.ClassID, 10)
-			resultClass, err := class.GetClassNameById(classIDStr)
-			if err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{
-					"error": err.Error(),
-				})
-				return
-			} else if resultClass.ClassNameID == 0 {
-				c.JSON(http.StatusBadRequest, gin.H{
-					"error": "Class with id: " + classIDStr + " doesn't exist on index: " + strconv.Itoa(index),
-				})
-				return
-			}
-
-			students = append(students, models.Student{
-				ClassID:               student.ClassID,
-				StudentName:           student.StudentName,
-				StudentNISN:           student.StudentNISN,
-				StudentGender:         student.StudentGender,
-				StudentPlaceOfBirth:   student.StudentPlaceOfBirth,
-				StudentDateOfBirth:    DateOfBirth,
-				StudentReligion:       student.StudentReligion,
-				StudentAddress:        student.StudentAddress,
-				StudentNumPhone:       student.StudentNumPhone,
-				StudentEmail:          student.StudentEmail,
-				StudentAcceptedDate:   AcceptedDate,
-				StudentSchoolOrigin:   student.StudentSchoolOrigin,
-				StudentFatherName:     student.StudentFatherName,
-				StudentFatherJob:      student.StudentFatherJob,
-				StudentFatherNumPhone: student.StudentFatherNumPhone,
-				StudentMotherName:     student.StudentMotherName,
-				StudentMotherJob:      student.StudentMotherJob,
-				StudentMotherNumPhone: student.StudentMotherNumPhone,
-			})
-
-			// Mark each field as seen in the map
-			nameMap[student.StudentName] = true
-			nisnMap[student.StudentNISN] = true
-			numPhoneMap[student.StudentNumPhone] = true
-			emailMap[student.StudentEmail] = true
-		}
-
-		// Create all students
-		err := models.CreateAllStudents(students)
+		students, err := helper.PrepareStudents(request.InsertStudentRequest, c)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err,
-			})
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
-		} else {
-			c.JSON(http.StatusOK, gin.H{
-				"students": students,
-			})
 		}
+
+		if err := models.CreateAllStudents(students); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"students": students})
 	}
 }
 
@@ -359,7 +190,7 @@ func UpdateStudentById() gin.HandlerFunc {
 			})
 
 			return
-		} else if result == (models.Student{}) && err == nil {
+		} else if result == (models.Student{}) {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": "Student not found",
 			})

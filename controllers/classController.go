@@ -107,7 +107,7 @@ func UpdateClassById() gin.HandlerFunc {
 		// Bind the request JSON to the UpdateClassRequest struct
 		if err := c.ShouldBindJSON(&request); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error should bind json": err.Error(),
+				"error": err.Error(),
 			})
 			return
 		}
@@ -115,7 +115,7 @@ func UpdateClassById() gin.HandlerFunc {
 		// Validate the request
 		if err := request.Validate(); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error when validate": err.Error(),
+				"error": "when validate" + err.Error(),
 			})
 			return
 		}

@@ -12,7 +12,7 @@ func Route(router *gin.Engine) {
 	{
 		// Student CRUD
 		student := apiV1.Group("/student")
-		student.Use(middleware.AlreadyLoggedIn(), middleware.AdminOnly())
+		// student.Use(middleware.AlreadyLoggedIn(), middleware.AdminOnly())
 		{
 			student.GET(
 				"/",
@@ -25,6 +25,10 @@ func Route(router *gin.Engine) {
 			student.POST(
 				"/create",
 				controllers.CreateStudent(),
+			)
+			student.POST(
+				"/create-all",
+				controllers.CreateAllStudent(),
 			)
 			student.PUT(
 				"/update/:student_id",

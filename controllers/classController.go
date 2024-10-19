@@ -69,12 +69,6 @@ func GetAllClass() gin.HandlerFunc {
 			return
 		}
 
-		type ClassWithGrade struct {
-			Teacher   string `json:"teacher"`
-			Grade     int64  `json:"grade"`
-			ClassName string `json:"class_name"`
-		}
-
 		c.JSON(http.StatusOK, gin.H{
 			"ClassName": result,
 		})

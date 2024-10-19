@@ -216,15 +216,15 @@ func CreateAllStudent() gin.HandlerFunc {
 			}
 
 			// checking classId if exist on database
-			var class models.Class
+			var class models.ClassName
 			classIDStr := strconv.FormatInt(student.ClassID, 10)
-			resultClass, err := class.GetClassById(classIDStr)
+			resultClass, err := class.GetClassNameById(classIDStr)
 			if err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{
 					"error": err.Error(),
 				})
 				return
-			} else if resultClass.ClassID == 0 {
+			} else if resultClass.ClassNameID == 0 {
 				c.JSON(http.StatusBadRequest, gin.H{
 					"error": "Class with id: " + classIDStr + " doesn't exist on index: " + strconv.Itoa(index),
 				})

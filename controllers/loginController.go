@@ -72,8 +72,7 @@ func Login() gin.HandlerFunc {
 		// Return success message and send the access token in the response body (optional)
 		c.JSON(http.StatusOK, gin.H{
 			"message":      "Login successful",
-			"accessToken":  accessToken, // Optional, in case the frontend also wants to use it
-			"refreshToken": refreshToken,
+			"access_token":  accessToken, // Optional, in case the frontend also wants to use it
 		})
 	}
 }

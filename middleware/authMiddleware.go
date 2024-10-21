@@ -54,8 +54,7 @@ func AuthHandler(isLoggedIn bool) gin.HandlerFunc {
 
 			if isLoggedIn {
 				c.JSON(http.StatusOK, gin.H{
-					"access_token":  newToken,
-					"refresh_token": newRefreshToken,
+					"access_token": newToken,
 				})
 				c.Abort()
 				return
@@ -75,7 +74,7 @@ func AuthHandler(isLoggedIn bool) gin.HandlerFunc {
 		accessToken := parts[1]
 		if accessToken == "" {
 			if isLoggedIn {
-				c.JSON(http.StatusUnauthorized, gin.H{"error": "Token not found"})
+				c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 			}
 			c.Next()
 			return

@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 	"os"
 
@@ -36,7 +35,7 @@ func main() {
 	case *generateSession:
 		generateSessionKey()
 	default:
-		fmt.Println("No valid command provided. Use -migrate, -migrate-fresh, or -seed.")
+		log.Fatalf("No valid command provided. Use -migrate, -migrate-fresh, or -seed.")
 		os.Exit(1)
 	}
 }
@@ -47,7 +46,7 @@ func generateSessionKey() {
 	if err != nil {
 		log.Fatalf("Failed to set session key: %v", err)
 	}
-	fmt.Println("SESSION_KEY:", value)
+	log.Printf("Session key set to: %s", value)
 }
 
 // save the migration to the one variable

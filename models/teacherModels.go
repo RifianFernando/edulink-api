@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/skripsi-be/connections"
 	"github.com/skripsi-be/database/migration/lib"
 )
 
@@ -16,4 +17,28 @@ type Teacher struct {
 
 func (Teacher) TableName() string {
 	return lib.GenerateTableName(lib.Academic, "teachers")
+}
+
+// Create teacher
+
+func (teacher *Teacher) CreateTeacher() error {
+	result := connections.DB.Create(&teacher)
+	if result.Error != nil {
+			return result.Error
+	}
+	return nil
+}
+
+func (teacher *Teacher) GetAllUserTeachers() (
+	teachers []Teacher,
+	msg string,
+) {
+	result := connections.DB.Preload("User").Find(&teachers)
+	if result.Error != nil {
+		return nil, result.Error.Error()
+	} else if result.RowsAffected == 0 {
+		return nil, "No user teacher found"
+	}
+
+	return teachers, ""
 }

@@ -41,6 +41,36 @@ func Route(router *gin.Engine) {
 			)
 		}
 
+		// Teacher CRUD
+		teacher := apiV1.Group("/teacher")
+		{
+			teacher.GET(
+				"/",
+				controllers.GetAllTeacher(),
+			)
+			// teacher.GET(
+			// 	"/:teacher_id",
+			// 	controllers.GetTeacherById(),
+			// )
+			teacher.POST(
+				"/create",
+				controllers.CreateTeacher(),
+			)
+			// teacher.POST(
+			// 	"/create-all",
+			// 	controllers.CreateAllTeacher(),
+			// )
+			// teacher.PUT(
+			// 	"/update/:teacher_id",
+			// 	// middleware.HaveStore(),
+			// 	controllers.UpdateTeacherById(),
+			// )
+			// teacher.DELETE(
+			// 	"/delete/:teacher_id",
+			// 	controllers.DeleteTeacherById(),
+			// )
+		}
+
 		// Class CRUD
 		class := apiV1.Group("/class")
 		{

@@ -17,7 +17,6 @@ type User struct {
 	UserNumPhone     string    `json:"num_phone" binding:"required"`
 	UserEmail        string    `json:"email" binding:"required"`
 	UserPassword     string    `json:"password" binding:"required"`
-	Teachers         []Teacher `gorm:"foreignKey:UserID;references:UserID"` // Has-many with Teachersreferences:TeacherID"`
 	lib.BaseModel
 }
 
@@ -34,3 +33,14 @@ func (user *User) GetUser() (User, error) {
 
 	return *user, nil
 }
+
+// Create user
+func (user *User) CreateUser() error {
+	result := connections.DB.Create(&user)
+	if result.Error != nil {
+			return result.Error
+	}
+	return nil
+}
+
+

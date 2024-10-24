@@ -27,6 +27,12 @@ func Logout() gin.HandlerFunc {
 			return
 		}
 		accessToken, msg := helper.GetAccessTokenFromHeader(authHeader)
+		if msg != "" || accessToken == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"error": msg,
+			})
+			return
+		}
 
 		// Delete the refresh token from the server (if applicable)
 		isDeleted, msg := helper.DeleteToken(accessToken, refreshToken)

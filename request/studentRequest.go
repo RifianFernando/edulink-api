@@ -9,12 +9,13 @@ import (
 )
 
 /*
+* InsertStudentRequest struct
 * see the documentation about binding and validation here:
 * https://blog.logrocket.com/gin-binding-in-go-a-tutorial-with-examples/#validating-date-time
  */
 type InsertStudentRequest struct {
 	models.Student
-	DateOfBirth string `json:"date_of_birth" binding:"required"`
+	DateOfBirth  string `json:"date_of_birth" binding:"required"`
 	AcceptedDate string `json:"accepted_date" binding:"required"`
 }
 
@@ -40,4 +41,19 @@ func (r *InsertStudentRequest) ParseDates() (time.Time, time.Time, error) {
 	}
 
 	return DateOfBirth, AcceptedDate, nil
+}
+
+/*
+* InsertAllStudentRequest struct
+* see the documentation about binding and validation here:
+* https://blog.logrocket.com/gin-binding-in-go-a-tutorial-with-examples/#validating-date-time
+ */
+type InsertAllStudentRequest struct {
+	InsertStudentRequest []InsertStudentRequest `json:"student-data" binding:"required"`
+}
+
+// Validate method
+func (r *InsertAllStudentRequest) ValidateAllStudent() error {
+	validate := validator.New()
+	return validate.Struct(r)
 }

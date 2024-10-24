@@ -57,8 +57,7 @@ func AuthHandler(isLoggedIn bool) gin.HandlerFunc {
 
 			if isLoggedIn {
 				c.JSON(http.StatusOK, gin.H{
-					"access_token":  newToken,
-					"refresh_token": newRefreshToken,
+					"access_token": newToken,
 				})
 				c.Abort()
 				return

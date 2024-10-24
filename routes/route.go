@@ -26,6 +26,10 @@ func Route(router *gin.Engine) {
 				"/create",
 				controllers.CreateStudent(),
 			)
+			student.POST(
+				"/create-all",
+				controllers.CreateAllStudent(),
+			)
 			student.PUT(
 				"/update/:student_id",
 				// middleware.HaveStore(),

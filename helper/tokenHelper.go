@@ -2,7 +2,6 @@ package helper
 
 import (
 	"errors"
-	"fmt"
 	"log"
 	"os"
 	"time"
@@ -80,7 +79,7 @@ func UpdateSession(refreshToken string, userID int64, ipAddress string, userAgen
 	}
 
 	// Generate new access token and refresh token
-	user := models.User{UserID: userID}
+	user := models.User{UserID: userID, UserName: claims.UserName}
 	newToken, newRefreshToken, err = GenerateToken(user, GetUserTypeByUID(user))
 	if err != nil {
 		return "", "", err
@@ -203,7 +202,6 @@ func ValidateRefreshToken(
 
 	// Validate the stored refresh token with the one passed
 	if !lib.VerifyToken(signedToken, session.RefreshToken) {
-		fmt.Println("session.RefreshToken:", session.RefreshToken)
 		return nil, "the refresh token is invalid"
 	}
 

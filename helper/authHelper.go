@@ -32,13 +32,14 @@ func Authenticate(email string, password string) (models.User, string) {
 }
 
 func GetUserTypeByUID(user models.User) string {
-	var teachers []models.Teacher
-	connections.DB.Where(models.Teacher{
+	// find admin first rather than staff and teacher because admin has the highest priority and if the user is both admin and staff or teacher, the user will be considered as admin
+	var admins []models.Admin
+	connections.DB.Where(models.Admin{
 		UserID: user.UserID,
-	}).Find(&teachers)
+	}).First(&admins)
 
-	if len(teachers) > 0 {
-		return "teacher"
+	if len(admins) > 0 {
+		return "admin"
 	}
 
 	var staff []models.Staff
@@ -50,13 +51,13 @@ func GetUserTypeByUID(user models.User) string {
 		return "staff"
 	}
 
-	var admins []models.Admin
-	connections.DB.Where(models.Admin{
+	var teachers []models.Teacher
+	connections.DB.Where(models.Teacher{
 		UserID: user.UserID,
-	}).First(&admins)
+	}).Find(&teachers)
 
-	if len(admins) > 0 {
-		return "admin"
+	if len(teachers) > 0 {
+		return "teacher"
 	}
 
 	return ""

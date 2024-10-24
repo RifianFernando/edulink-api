@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -53,7 +52,6 @@ func Login() gin.HandlerFunc {
 
 		// TODO: the best practice is if the token already exists, should request the verification method for user for missing the refresh token or access token
 		if errMsg == "the refresh token already exists" {
-			fmt.Println("Updating session")
 			accessToken, refreshToken, err = helper.UpdateSession(refreshToken, user.UserID, IpAddress, UserAgent)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{
@@ -72,8 +70,7 @@ func Login() gin.HandlerFunc {
 		// Return success message and send the access token in the response body (optional)
 		c.JSON(http.StatusOK, gin.H{
 			"message":      "Login successful",
-			"accessToken":  accessToken, // Optional, in case the frontend also wants to use it
-			"refreshToken": refreshToken,
+			"access_token": accessToken, // Optional, in case the frontend also wants to use it
 		})
 	}
 }

@@ -6,7 +6,7 @@ import (
 )
 
 type InsertClassRequest struct {
-	models.Class
+	models.ClassName
 }
 
 // Validate method
@@ -14,4 +14,3 @@ func (r *InsertClassRequest) Validate() error {
 	validate := validator.New()
 	return validate.Struct(r)
 }
-

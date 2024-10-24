@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/skripsi-be/config"
@@ -54,10 +53,11 @@ func AuthHandler(isLoggedIn bool) gin.HandlerFunc {
 			}
 			// Set the refresh token in an HttpOnly cookie (valid for 1 day)
 			c.SetCookie("token", newRefreshToken, 3600*24*7, "/", config.ParsedDomain, config.IsProdMode, true)
+			c.SetCookie("access_token", newToken, 3600*24, "/", config.ParsedDomain, config.IsProdMode, false)
 
 			if isLoggedIn {
 				c.JSON(http.StatusOK, gin.H{
-					"access_token": newToken,
+					"message": "Session updated",
 				})
 				c.Abort()
 				return
@@ -65,21 +65,8 @@ func AuthHandler(isLoggedIn bool) gin.HandlerFunc {
 				c.Next()
 			}
 		}
-
-		// Split the header to get the token
-		parts := strings.Split(authHeader, " ")
-		if len(parts) != 2 || parts[0] != "Bearer" {
-			if isLoggedIn {
-				c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid Authorization header format"})
-				c.Abort()
-			} else {
-				c.Next()
-			}
-			return
-		}
-
-		accessToken := parts[1]
-		if accessToken == "" {
+		accessToken, msg := helper.GetAccessTokenFromHeader(authHeader)
+		if accessToken == "" || msg != "" {
 			if isLoggedIn {
 				c.JSON(http.StatusUnauthorized, gin.H{"error": "Token not found"})
 				c.Abort()

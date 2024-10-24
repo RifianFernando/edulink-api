@@ -4,6 +4,7 @@ import (
 	"errors"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt"
@@ -66,7 +67,6 @@ func GenerateToken(user models.User, userType string) (signedToken string, signe
 func UpdateSession(refreshToken string, userID int64, ipAddress string, userAgent string) (newToken string, newRefreshToken string, err error) {
 	// Validate the refresh token
 	claims, msg := ValidateToken(refreshToken, "refresh_token")
-	fmt.Println("claims userID:", claims.UserID, "userID:", userID)
 	if msg != "" || claims.UserID != userID {
 		return "", "", errors.New("invalid token")
 	}
@@ -176,7 +176,6 @@ func ValidateToken(
 		return
 	}
 
-
 	return claims, msg
 }
 
@@ -209,6 +208,7 @@ func ValidateRefreshToken(
 }
 
 func DeleteToken(
+	accessToken string,
 	refreshToken string,
 ) (
 	isDeleted bool,
@@ -217,8 +217,17 @@ func DeleteToken(
 	var invalidToken = "The token is invalid"
 
 	// validate the token
-	claims, msg := ValidateToken(refreshToken, "refresh_token")
-	if msg != "" {
+	claims, msg := ValidateToken(accessToken, "access_token")
+	claimsRefresh, msgRefresh := ValidateRefreshToken(refreshToken)
+	if msg != "" || msgRefresh != "" {
+		msg = invalidToken
+
+		return false, msg
+	}
+
+	if (claims.UserID != claimsRefresh.UserID) || (claims.UserName != claimsRefresh.UserName) {
+		msg = "access token and refresh token are not match"
+
 		return false, msg
 	}
 
@@ -245,4 +254,28 @@ func DeleteToken(
 	}
 
 	return true, msg
+}
+
+func GetAccessTokenFromHeader(
+	authHeader string,
+) (
+	accessToken string,
+	msg string,
+) {
+	if authHeader == "" {
+		msg = "Authorization header is empty"
+
+		return "", msg
+	}
+
+	parts := strings.Split(authHeader, " ")
+	if len(parts) != 2 || parts[0] != "Bearer" {
+		msg = "Invalid Authorization header format"
+
+		return "", msg
+	}
+
+	accessToken = parts[1]
+
+	return accessToken, msg
 }

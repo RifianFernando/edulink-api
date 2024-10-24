@@ -63,14 +63,11 @@ func Login() gin.HandlerFunc {
 
 		// Set the refresh token in an HttpOnly cookie (valid for 1 day)
 		c.SetCookie("token", refreshToken, 3600*24*7, "/", config.ParsedDomain, config.IsProdMode, true) // HttpOnly = true
-
-		// Set the access token in the Authorization header
-		c.Header("Authorization", "Bearer "+accessToken)
+		c.SetCookie("access_token", accessToken, 3600*24, "/", config.ParsedDomain, config.IsProdMode, true) // HttpOnly = false
 
 		// Return success message and send the access token in the response body (optional)
 		c.JSON(http.StatusOK, gin.H{
 			"message":      "Login successful",
-			"access_token": accessToken, // Optional, in case the frontend also wants to use it
 		})
 	}
 }

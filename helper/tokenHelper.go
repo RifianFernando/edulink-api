@@ -217,9 +217,9 @@ func DeleteToken(
 	var invalidToken = "The token is invalid"
 
 	// validate the token
-	claims, msg := ValidateToken(accessToken, "access_token")
+	claims, msgAccess := ValidateToken(accessToken, "access_token")
 	claimsRefresh, msgRefresh := ValidateRefreshToken(refreshToken)
-	if msg != "" || msgRefresh != "" {
+	if msgAccess != "" || msgRefresh != "" {
 		msg = invalidToken
 
 		return false, msg

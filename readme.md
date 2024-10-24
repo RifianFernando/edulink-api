@@ -5,9 +5,11 @@
 3. pull this project from github and locate it in your go workspace where the src folder is located
 4. open the project in your favorite IDE
 5. open the terminal and run the following command to install the dependencies
+
     ```bash
     go mod download #same as npm install
     ```
+
     if you want to clean the package that not used in the project use the following command
 
     ```bash
@@ -15,43 +17,67 @@
     ```
 
 6. try to install all package
+
     ```
     go install
     ```
+
 7. Install all build tools for our development
+
     ```
     make install-tools
     ```
+
 8. create a new file named .env in the root of the project and copy the content of .env.example to .env
 9. **IMPORTANT** If u're new on this project try to migrate the database first
+
     ```bash
     go run database/database.go -migrate
     ```
 
     if you want to drop all table use the following command
+
     ```bash
     go run database/database.go -migrate:fresh
     ```
 
     if you want to seed the database use the following command
+
     ```bash
     go run database/database.go -seed
     ```
 
     if you want to generate the session_key for auth use the following command
+
     ```bash
     go run database/database.go -session:generate
     ```
+
 10. run the project using the following command
 
 - Run Project with CompileDaemon **(RECOMMENDED)**
+
     ```bash
     CompileDaemon -command="./skripsi-be"
     ```
 
 - Run Project
+
     ```bash
-    go run main.go 
+    go run main.go
+    ```
+
+- Run workflows locally using `act` and `docker`
+    see the workflow list in `.github/workflows` and run the workflow using the following command
+
+    ```bash
+    act --list
+    ```
+
+    run job locally using the following command
+
+    ```bash
+    act -j <job_name>
     ```
 
 # Package of this project

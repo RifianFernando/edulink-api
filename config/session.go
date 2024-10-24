@@ -38,7 +38,7 @@ func InitializeSessionStore() {
 	Store.Options = &sessions.Options{
 		HttpOnly: true,
 		MaxAge:   8 * 60 * 60, // 8 hours
-		SameSite: http.SameSiteLaxMode,
+		SameSite: http.SameSiteStrictMode,
 		Secure:   IsProdMode,
 		Domain:   ParsedDomain,
 		Path:     "/", // This should be the same as the router group base path

@@ -40,13 +40,24 @@ func PrepareStudents(requestedStudents []request.InsertStudentRequest, c *gin.Co
 
 		// Add the validated student to the slice
 		students = append(students, models.Student{
-			StudentName:         student.StudentName,
-			StudentNISN:         student.StudentNISN,
-			StudentNumPhone:     student.StudentNumPhone,
-			StudentEmail:        student.StudentEmail,
-			ClassID:             student.ClassID,
-			StudentDateOfBirth:  parsedDates.DateOfBirth,
-			StudentAcceptedDate: parsedDates.AcceptedDate,
+			ClassID:               student.ClassID,
+			StudentName:           student.StudentName,
+			StudentNISN:           student.StudentNISN,
+			StudentGender:         student.StudentGender,
+			StudentPlaceOfBirth:   student.StudentPlaceOfBirth,
+			StudentDateOfBirth:    parsedDates.DateOfBirth,
+			StudentReligion:       student.StudentReligion,
+			StudentAddress:        student.StudentAddress,
+			StudentNumPhone:       student.StudentNumPhone,
+			StudentEmail:          student.StudentEmail,
+			StudentAcceptedDate:   parsedDates.AcceptedDate,
+			StudentSchoolOrigin:   student.StudentSchoolOrigin,
+			StudentFatherName:     student.StudentFatherName,
+			StudentFatherJob:      student.StudentFatherJob,
+			StudentFatherNumPhone: student.StudentFatherNumPhone,
+			StudentMotherName:     student.StudentMotherName,
+			StudentMotherJob:      student.StudentMotherJob,
+			StudentMotherNumPhone: student.StudentMotherNumPhone,
 		})
 	}
 

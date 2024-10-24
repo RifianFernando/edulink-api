@@ -35,7 +35,6 @@ func setupRouter() *gin.Engine {
 	r.Use(gin.Logger())
 
 	r.GET("/", func(c *gin.Context) {
-		// c.SetCookie("token", "test", 3600, "/", "localhost", false, true)
 		cookieResult, err := c.Cookie("token")
 		if err != nil {
 			cookieResult = "No cookie"

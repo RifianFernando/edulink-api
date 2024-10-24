@@ -12,7 +12,7 @@ func Route(router *gin.Engine) {
 	{
 		// Student CRUD
 		student := apiV1.Group("/student")
-		// student.Use(middleware.AlreadyLoggedIn(), middleware.AdminOnly())
+		student.Use(middleware.AlreadyLoggedIn(), middleware.AdminOnly())
 		{
 			student.GET(
 				"/",
@@ -108,6 +108,10 @@ func Route(router *gin.Engine) {
 				"/logout",
 				middleware.AlreadyLoggedIn(),
 				controllers.Logout(),
+			)
+			auth.POST(
+				"/get-access-token",
+				middleware.AlreadyLoggedIn(),
 			)
 		}
 	}

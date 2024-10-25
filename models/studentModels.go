@@ -1,10 +1,11 @@
 package models
 
 import (
+	"log"
 	"time"
 
-	"github.com/skripsi-be/connections"
-	"github.com/skripsi-be/database/migration/lib"
+	"github.com/edulink-api/connections"
+	"github.com/edulink-api/database/migration/lib"
 	"gorm.io/gorm"
 )
 
@@ -59,6 +60,19 @@ func (student *Student) GetAllStudents() (
 	return students, ""
 }
 
+func (student *Student) GetStudent() (Student, error) {
+	// get result by model
+	result := connections.DB.Where(&student).First(&student)
+	if result.Error != nil && result.Error != gorm.ErrRecordNotFound {
+		if result.Error == gorm.ErrRecordNotFound {
+			return Student{}, nil
+		}
+		return Student{}, result.Error
+	}
+
+	return *student, nil
+}
+
 // get student by id
 func (student *Student) GetStudentById(id string) (Student, error) {
 	var students Student
@@ -91,5 +105,14 @@ func (student *Student) DeleteStudentById(id string) error {
 		return result.Error
 	}
 
+	return nil
+}
+
+func CreateAllStudents(students []Student) error {
+	log.Println("CreateAllStudents")
+	result := connections.DB.Create(&students)
+	if result.Error != nil {
+		return result.Error
+	}
 	return nil
 }

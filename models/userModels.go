@@ -3,8 +3,8 @@ package models
 import (
 	"time"
 
-	"github.com/skripsi-be/connections"
-	"github.com/skripsi-be/database/migration/lib"
+	"github.com/edulink-api/connections"
+	"github.com/edulink-api/database/migration/lib"
 )
 
 type User struct {
@@ -17,6 +17,7 @@ type User struct {
 	UserNumPhone     string    `json:"num_phone" binding:"required"`
 	UserEmail        string    `json:"email" binding:"required"`
 	UserPassword     string    `json:"password" binding:"required"`
+	Teachers         []Teacher `gorm:"foreignKey:UserID;references:UserID"` // Has-many with Teachersreferences:TeacherID"`
 	lib.BaseModel
 }
 

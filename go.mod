@@ -1,4 +1,4 @@
-module github.com/skripsi-be
+module github.com/edulink-api
 
 go 1.23
 

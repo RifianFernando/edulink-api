@@ -4,10 +4,10 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/skripsi-be/config"
-	"github.com/skripsi-be/connections"
-	"github.com/skripsi-be/lib"
-	"github.com/skripsi-be/routes"
+	"github.com/edulink-api/config"
+	"github.com/edulink-api/connections"
+	"github.com/edulink-api/lib"
+	"github.com/edulink-api/routes"
 )
 
 func init() {
@@ -35,7 +35,6 @@ func setupRouter() *gin.Engine {
 	r.Use(gin.Logger())
 
 	r.GET("/", func(c *gin.Context) {
-		// c.SetCookie("token", "test", 3600, "/", "localhost", false, true)
 		cookieResult, err := c.Cookie("token")
 		if err != nil {
 			cookieResult = "No cookie"

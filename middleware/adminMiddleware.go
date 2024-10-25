@@ -1,17 +1,15 @@
 package middleware
 
 import (
-	"fmt"
 	"net/http"
 
+	"github.com/edulink-api/models"
 	"github.com/gin-gonic/gin"
-	"github.com/skripsi-be/models"
 )
 
 func AdminOnly() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userType, exist := c.Get("user_type")
-		fmt.Println("AdminOnly")
 		if !exist {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "User type not found"})
 			c.Abort()

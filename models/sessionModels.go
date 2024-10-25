@@ -1,11 +1,10 @@
 package models
 
 import (
-	"fmt"
 	"time"
 
-	"github.com/skripsi-be/connections"
-	"github.com/skripsi-be/database/migration/lib"
+	"github.com/edulink-api/connections"
+	"github.com/edulink-api/database/migration/lib"
 	"gorm.io/gorm"
 )
 
@@ -34,8 +33,6 @@ func (session *Session) GetSession() Session {
 // Check if the session exists in the database by user id and refresh token
 func (session *Session) SessionExists() (bool, error) {
 	result := connections.DB.Where(&session).First(&session)
-
-	fmt.Println("session:", session)
 
 	if result.Error != nil {
 		if result.Error == gorm.ErrRecordNotFound {

@@ -4,8 +4,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/skripsi-be/models"
-	"github.com/skripsi-be/request"
+	"github.com/edulink-api/helper"
+	"github.com/edulink-api/models"
+	"github.com/edulink-api/request"
 )
 
 func CreateStudent() gin.HandlerFunc {
@@ -15,7 +16,7 @@ func CreateStudent() gin.HandlerFunc {
 		// Bind the request JSON to the CreateStudentRequest struct
 		if err := c.ShouldBindJSON(&request); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error should bind json": err.Error(),
+				"error": "should bind json" + err.Error(),
 			})
 			return
 		}
@@ -23,7 +24,7 @@ func CreateStudent() gin.HandlerFunc {
 		// Validate the request
 		if err := request.Validate(); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error when validate": err.Error(),
+				"error": "when validate" + err.Error(),
 			})
 			return
 		}
@@ -63,7 +64,7 @@ func CreateStudent() gin.HandlerFunc {
 
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error while create student": err,
+				"error": "while create student: " + err.Error(),
 			})
 			return
 		}
@@ -72,6 +73,35 @@ func CreateStudent() gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{
 			"student": student,
 		})
+	}
+}
+
+func CreateAllStudent() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var request request.InsertAllStudentRequest
+
+		if err := c.ShouldBindJSON(&request); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "should bind json: " + err.Error()})
+			return
+		}
+
+		if err := request.ValidateAllStudent(); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "validation error: " + err.Error()})
+			return
+		}
+
+		students, err := helper.PrepareStudents(request.InsertStudentRequest, c)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		if err := models.CreateAllStudents(students); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"students": students})
 	}
 }
 
@@ -126,7 +156,7 @@ func UpdateStudentById() gin.HandlerFunc {
 		// Bind the request JSON to the UpdateStudentRequest struct
 		if err := c.ShouldBindJSON(&request); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error should bind json": err.Error(),
+				"error": "should bind json" + err.Error(),
 			})
 			return
 		}
@@ -134,7 +164,7 @@ func UpdateStudentById() gin.HandlerFunc {
 		// Validate the request
 		if err := request.Validate(); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error when validate": err.Error(),
+				"error": err.Error(),
 			})
 			return
 		}
@@ -160,7 +190,7 @@ func UpdateStudentById() gin.HandlerFunc {
 			})
 
 			return
-		} else if result == (models.Student{}) && err == nil {
+		} else if result == (models.Student{}) {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": "Student not found",
 			})
@@ -192,7 +222,7 @@ func UpdateStudentById() gin.HandlerFunc {
 		err = student.UpdateStudentById(&student)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error while updating": err.Error(),
+				"error": "while updating" + err.Error(),
 			})
 			return
 		}

@@ -1,6 +1,8 @@
 package migration
 
-import "github.com/skripsi-be/database/migration/lib"
+import (
+	"github.com/edulink-api/database/migration/lib"
+)
 
 /*
 * see the documentation here

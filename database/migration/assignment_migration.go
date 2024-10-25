@@ -1,6 +1,6 @@
 package migration
 
-import "github.com/skripsi-be/database/migration/lib"
+import "github.com/edulink-api/database/migration/lib"
 
 type AssignmentType string
 
@@ -22,7 +22,7 @@ func (g *AssignmentType) Scan(value interface{}) error {
 type Assignment struct {
 	AssignmentID   int64          `gorm:"primaryKey;autoIncrement"`
 	TypeAssignment AssignmentType `gorm:"not null"`
-	Grade          []Grade        `gorm:"foreignKey:AssignmentID;references:AssignmentID"`
+	Score          []Score        `gorm:"foreignKey:AssignmentID;references:AssignmentID"`
 	lib.BaseModel                 /* this type include CreatedAt, UpdatedAt, DeletedAt, I can't use the gorm.models because can't customize the id name */
 }
 

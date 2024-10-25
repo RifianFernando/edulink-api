@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/skripsi-be/models"
-	"github.com/skripsi-be/request"
+	"github.com/edulink-api/models"
+	"github.com/edulink-api/request"
 )
 
 func CreateClass() gin.HandlerFunc {
@@ -32,13 +32,13 @@ func CreateClass() gin.HandlerFunc {
 		}
 
 		// Create class
-		var class = models.Class{
-			TeacherID:  request.TeacherID,
-			ClassName:  request.ClassName,
-			ClassGrade: request.ClassGrade,
+		var className = models.ClassName{
+			GradeID:   request.GradeID,
+			TeacherID: request.TeacherID,
+			Name:      request.Name,
 		}
 
-		err := class.CreateClass()
+		err := className.CreateClassName()
 
 		// Insert the class into the database
 		if err != nil {
@@ -53,15 +53,15 @@ func CreateClass() gin.HandlerFunc {
 		// Return the newly created class as the response
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Class created successfully",
-			"class":   class,
+			"class":   className,
 		})
 	}
 }
 
 func GetAllClass() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var classes models.Class
-		result, err := classes.GetAllClass()
+		var ClassName models.ClassName
+		result, err := ClassName.GetAllClassName()
 		if err != "" {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": err,
@@ -70,7 +70,7 @@ func GetAllClass() gin.HandlerFunc {
 		}
 
 		c.JSON(http.StatusOK, gin.H{
-			"classes": result,
+			"ClassName": result,
 		})
 	}
 }
@@ -79,14 +79,14 @@ func GetClassById() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("class_id")
 
-		var class models.Class
-		result, err := class.GetClassById(id)
+		var class models.ClassName
+		result, err := class.GetClassNameById(id)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": "Class not found",
 			})
 			return
-		} else if result.ClassID == 0 {
+		} else if result.ClassNameID == 0 {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": "class doesn't exist",
 			})
@@ -107,7 +107,7 @@ func UpdateClassById() gin.HandlerFunc {
 		// Bind the request JSON to the UpdateClassRequest struct
 		if err := c.ShouldBindJSON(&request); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error should bind json": err.Error(),
+				"error": err.Error(),
 			})
 			return
 		}
@@ -115,13 +115,13 @@ func UpdateClassById() gin.HandlerFunc {
 		// Validate the request
 		if err := request.Validate(); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error when validate": err.Error(),
+				"error": "when validate" + err.Error(),
 			})
 			return
 		}
 
-		var class models.Class
-		class, err := class.GetClassById(c.Param("class_id"))
+		var class models.ClassName
+		class, err := class.GetClassNameById(c.Param("class_id"))
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": "Class not found",
@@ -129,10 +129,10 @@ func UpdateClassById() gin.HandlerFunc {
 			return
 		}
 
-		class.ClassName = request.ClassName
+		class.Name = request.Name
 		class.TeacherID = request.TeacherID
-		class.ClassGrade = request.ClassGrade
-		err = class.UpdateClassByObject()
+		class.GradeID = request.GradeID
+		err = class.UpdateClassNameByObject()
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": err,
@@ -149,10 +149,10 @@ func UpdateClassById() gin.HandlerFunc {
 
 func DeleteClassById() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var class models.Class
+		var class models.ClassName
 		var id = c.Param("class_id")
 
-		err := class.DeleteClassById(id)
+		err := class.DeleteClassNameById(id)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": "Class not found",

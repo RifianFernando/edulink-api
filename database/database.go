@@ -2,14 +2,13 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 	"os"
 
-	"github.com/skripsi-be/connections"
-	"github.com/skripsi-be/database/migration"
-	"github.com/skripsi-be/database/seed"
-	"github.com/skripsi-be/lib"
+	"github.com/edulink-api/connections"
+	"github.com/edulink-api/database/migration"
+	"github.com/edulink-api/database/seed"
+	"github.com/edulink-api/lib"
 )
 
 func init() {
@@ -36,7 +35,7 @@ func main() {
 	case *generateSession:
 		generateSessionKey()
 	default:
-		fmt.Println("No valid command provided. Use -migrate, -migrate-fresh, or -seed.")
+		log.Fatalf("No valid command provided. Use -migrate, -migrate-fresh, or -seed.")
 		os.Exit(1)
 	}
 }
@@ -47,22 +46,26 @@ func generateSessionKey() {
 	if err != nil {
 		log.Fatalf("Failed to set session key: %v", err)
 	}
-	fmt.Println("SESSION_KEY:", value)
+	log.Printf("Session key set to: %s", value)
 }
 
 // save the migration to the one variable
 var table = []interface{}{
+	&migration.AcademicYear{},
 	&migration.Subject{},
+	&migration.Grade{},
+	&migration.ClassName{},
 	&migration.User{},
 	&migration.Session{},
-	&migration.Class{},
+	&migration.ClassName{},
 	&migration.Assignment{},
 	&migration.Student{},
 	&migration.Syllabus{},
 	&migration.ContentObjective{},
 	&migration.DomainAchievement{},
 	&migration.SyllabusDetail{},
-	&migration.Grade{},
+	&migration.Score{},
+	&migration.Report{},
 	&migration.Teacher{},
 	&migration.TeacherSubject{},
 	&migration.Schedule{},

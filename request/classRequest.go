@@ -1,12 +1,12 @@
 package request
 
 import (
+	"github.com/edulink-api/models"
 	"github.com/go-playground/validator/v10"
-	"github.com/skripsi-be/models"
 )
 
 type InsertClassRequest struct {
-	models.Class
+	models.ClassName
 }
 
 // Validate method
@@ -14,4 +14,3 @@ func (r *InsertClassRequest) Validate() error {
 	validate := validator.New()
 	return validate.Struct(r)
 }
-

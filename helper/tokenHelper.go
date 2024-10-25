@@ -2,20 +2,21 @@ package helper
 
 import (
 	"errors"
-	"fmt"
 	"log"
 	"os"
+	"strings"
 	"time"
 
+	"github.com/edulink-api/lib"
+	"github.com/edulink-api/models"
 	"github.com/golang-jwt/jwt"
-	"github.com/skripsi-be/lib"
-	"github.com/skripsi-be/models"
 )
 
 type userDetailToken struct {
 	UserID    int64
 	UserName  string
 	User_type string
+	TokenType string
 	jwt.StandardClaims
 }
 
@@ -30,6 +31,7 @@ func GenerateToken(user models.User, userType string) (signedToken string, signe
 		UserID:    user.UserID,
 		UserName:  user.UserName,
 		User_type: userType,
+		TokenType: "access_token",
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: CustomTimeDay(1).Unix(),
 			IssuedAt:  time.Now().Unix(),
@@ -40,8 +42,9 @@ func GenerateToken(user models.User, userType string) (signedToken string, signe
 		UserID:    user.UserID,
 		UserName:  user.UserName,
 		User_type: userType,
+		TokenType: "refresh_token",
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: CustomTimeDay(2).Unix(),
+			ExpiresAt: CustomTimeDay(7).Unix(),
 			IssuedAt:  time.Now().Unix(),
 		},
 	}
@@ -63,8 +66,7 @@ func GenerateToken(user models.User, userType string) (signedToken string, signe
 
 func UpdateSession(refreshToken string, userID int64, ipAddress string, userAgent string) (newToken string, newRefreshToken string, err error) {
 	// Validate the refresh token
-	claims, msg := ValidateToken(refreshToken)
-	fmt.Println("claims userID:", claims.UserID, "userID:", userID)
+	claims, msg := ValidateToken(refreshToken, "refresh_token")
 	if msg != "" || claims.UserID != userID {
 		return "", "", errors.New("invalid token")
 	}
@@ -77,7 +79,7 @@ func UpdateSession(refreshToken string, userID int64, ipAddress string, userAgen
 	}
 
 	// Generate new access token and refresh token
-	user := models.User{UserID: userID}
+	user := models.User{UserID: userID, UserName: claims.UserName}
 	newToken, newRefreshToken, err = GenerateToken(user, GetUserTypeByUID(user))
 	if err != nil {
 		return "", "", err
@@ -134,6 +136,7 @@ func InsertSession(
 
 func ValidateToken(
 	signedToken string,
+	tokenType string,
 ) (
 	claims *userDetailToken,
 	msg string,
@@ -167,6 +170,12 @@ func ValidateToken(
 		return
 	}
 
+	if claims.TokenType != tokenType {
+		msg = invalidToken
+
+		return
+	}
+
 	return claims, msg
 }
 
@@ -176,7 +185,7 @@ func ValidateRefreshToken(
 	claims *userDetailToken,
 	msg string,
 ) {
-	claims, msg = ValidateToken(signedToken)
+	claims, msg = ValidateToken(signedToken, "refresh_token")
 	if msg != "" {
 		return nil, msg
 	}
@@ -192,7 +201,6 @@ func ValidateRefreshToken(
 
 	// Validate the stored refresh token with the one passed
 	if !lib.VerifyToken(signedToken, session.RefreshToken) {
-		fmt.Println("session.RefreshToken:", session.RefreshToken)
 		return nil, "the refresh token is invalid"
 	}
 
@@ -200,6 +208,7 @@ func ValidateRefreshToken(
 }
 
 func DeleteToken(
+	accessToken string,
 	refreshToken string,
 ) (
 	isDeleted bool,
@@ -208,8 +217,17 @@ func DeleteToken(
 	var invalidToken = "The token is invalid"
 
 	// validate the token
-	claims, msg := ValidateToken(refreshToken)
-	if msg != "" {
+	claims, msgAccess := ValidateToken(accessToken, "access_token")
+	claimsRefresh, msgRefresh := ValidateRefreshToken(refreshToken)
+	if msgAccess != "" || msgRefresh != "" {
+		msg = invalidToken
+
+		return false, msg
+	}
+
+	if (claims.UserID != claimsRefresh.UserID) || (claims.UserName != claimsRefresh.UserName) {
+		msg = "access token and refresh token are not match"
+
 		return false, msg
 	}
 
@@ -236,4 +254,28 @@ func DeleteToken(
 	}
 
 	return true, msg
+}
+
+func GetAccessTokenFromHeader(
+	authHeader string,
+) (
+	accessToken string,
+	msg string,
+) {
+	if authHeader == "" {
+		msg = "Authorization header is empty"
+
+		return "", msg
+	}
+
+	parts := strings.Split(authHeader, " ")
+	if len(parts) != 2 || parts[0] != "Bearer" {
+		msg = "Invalid Authorization header format"
+
+		return "", msg
+	}
+
+	accessToken = parts[1]
+
+	return accessToken, msg
 }

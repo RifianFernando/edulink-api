@@ -79,6 +79,11 @@ func Route(router *gin.Engine) {
 				middleware.AlreadyLoggedIn(),
 				controllers.Logout(),
 			)
+			auth.POST(
+				"/forget-password",
+				middleware.IsNotLoggedIn(),
+				controllers.ForgetPassword(),
+			)
 		}
 	}
 }

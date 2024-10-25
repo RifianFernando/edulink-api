@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/edulink-api/models"
+	"github.com/edulink-api/request"
 	"github.com/gin-gonic/gin"
-	"github.com/skripsi-be/models"
-	"github.com/skripsi-be/request"
 )
 
 func PrepareStudents(requestedStudents []request.InsertStudentRequest, c *gin.Context) ([]models.Student, error) {

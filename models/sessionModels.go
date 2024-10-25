@@ -3,8 +3,8 @@ package models
 import (
 	"time"
 
-	"github.com/skripsi-be/connections"
-	"github.com/skripsi-be/database/migration/lib"
+	"github.com/edulink-api/connections"
+	"github.com/edulink-api/database/migration/lib"
 	"gorm.io/gorm"
 )
 

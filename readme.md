@@ -58,7 +58,7 @@
 - Run Project with CompileDaemon **(RECOMMENDED)**
 
     ```bash
-    CompileDaemon -command="./skripsi-be"
+    CompileDaemon -command="./edulink-api"
     ```
 
 - Run Project

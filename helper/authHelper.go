@@ -1,9 +1,9 @@
 package helper
 
 import (
-	"github.com/skripsi-be/connections"
-	"github.com/skripsi-be/lib"
-	"github.com/skripsi-be/models"
+	"github.com/edulink-api/connections"
+	"github.com/edulink-api/lib"
+	"github.com/edulink-api/models"
 )
 
 func Authenticate(email string, password string) (models.User, string) {
@@ -11,7 +11,7 @@ func Authenticate(email string, password string) (models.User, string) {
 	var user = models.User{
 		UserEmail: email,
 	}
-	user, err := user.GetUser();
+	user, err := user.GetUser()
 
 	if err != nil {
 		return models.User{}, ""
@@ -27,7 +27,7 @@ func Authenticate(email string, password string) (models.User, string) {
 	if userType == "" {
 		return models.User{}, ""
 	}
-	
+
 	return user, userType
 }
 
@@ -61,4 +61,13 @@ func GetUserTypeByUID(user models.User) string {
 	}
 
 	return ""
+}
+
+func GetUserByEmail(email string) (models.User, error) {
+	var user = models.User{
+		UserEmail: email,
+	}
+	user, err := user.GetUser()
+
+	return user, err
 }

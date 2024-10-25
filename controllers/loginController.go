@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/skripsi-be/config"
-	"github.com/skripsi-be/helper"
-	"github.com/skripsi-be/request"
+	"github.com/edulink-api/config"
+	"github.com/edulink-api/helper"
+	"github.com/edulink-api/request"
 )
 
 func Login() gin.HandlerFunc {

@@ -3,10 +3,10 @@ package middleware
 import (
 	"net/http"
 
+	"github.com/edulink-api/config"
+	"github.com/edulink-api/helper"
+	"github.com/edulink-api/models"
 	"github.com/gin-gonic/gin"
-	"github.com/skripsi-be/config"
-	"github.com/skripsi-be/helper"
-	"github.com/skripsi-be/models"
 )
 
 // AuthHandler handles authentication and user session validation.

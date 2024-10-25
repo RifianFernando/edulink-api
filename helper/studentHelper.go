@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/edulink-api/models"
+	"github.com/edulink-api/request"
 	"github.com/gin-gonic/gin"
-	"github.com/skripsi-be/models"
-	"github.com/skripsi-be/request"
 )
 
 func PrepareStudents(requestedStudents []request.InsertStudentRequest, c *gin.Context) ([]models.Student, error) {
@@ -64,18 +64,22 @@ func PrepareStudents(requestedStudents []request.InsertStudentRequest, c *gin.Co
 	return students, nil
 }
 
+func customErrorForDuplicate(property string, atribute string, index int) string {
+	return "Duplicate " + property + ": " + atribute + " on index: " + strconv.Itoa(index)
+}
+
 func checkForDuplicates(student request.InsertStudentRequest, index int, nameMap, nisnMap, numPhoneMap, emailMap map[string]bool) error {
 	if nameMap[student.StudentName] {
-		return errors.New("Duplicate StudentName: " + student.StudentName + " on index: " + strconv.Itoa(index))
+		return errors.New(customErrorForDuplicate("StudentName", student.StudentName, index))
 	}
 	if nisnMap[student.StudentNISN] {
-		return errors.New("Duplicate StudentNISN: " + student.StudentNISN + " on index: " + strconv.Itoa(index))
+		return errors.New(customErrorForDuplicate("StudentNISN", student.StudentNISN, index))
 	}
 	if numPhoneMap[student.StudentNumPhone] {
-		return errors.New("Duplicate StudentNumPhone: " + student.StudentNumPhone + " on index: " + strconv.Itoa(index))
+		return errors.New(customErrorForDuplicate("StudentNumPhone", student.StudentNumPhone, index))
 	}
 	if emailMap[student.StudentEmail] {
-		return errors.New("Duplicate StudentEmail: " + student.StudentEmail + " on index: " + strconv.Itoa(index))
+		return errors.New(customErrorForDuplicate("StudentEmail", student.StudentEmail, index))
 	}
 
 	nameMap[student.StudentName] = true

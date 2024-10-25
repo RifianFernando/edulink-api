@@ -1,9 +1,9 @@
 package routes
 
 import (
+	"github.com/edulink-api/controllers"
+	"github.com/edulink-api/middleware"
 	"github.com/gin-gonic/gin"
-	"github.com/skripsi-be/controllers"
-	"github.com/skripsi-be/middleware"
 )
 
 func Route(router *gin.Engine) {
@@ -78,10 +78,6 @@ func Route(router *gin.Engine) {
 				"/logout",
 				middleware.AlreadyLoggedIn(),
 				controllers.Logout(),
-			)
-			auth.POST(
-				"/get-access-token",
-				middleware.AlreadyLoggedIn(),
 			)
 		}
 	}

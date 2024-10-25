@@ -3,9 +3,9 @@ package seed
 import (
 	"time"
 
-	"github.com/skripsi-be/connections"
-	"github.com/skripsi-be/lib"
-	"github.com/skripsi-be/models"
+	"github.com/edulink-api/connections"
+	"github.com/edulink-api/models"
+	"github.com/edulink-api/lib"
 )
 
 // ClassSeeder seeds the Class data into the database.

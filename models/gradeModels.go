@@ -1,7 +1,7 @@
 package models
 
 import (
-	"github.com/skripsi-be/database/migration/lib"
+	"github.com/edulink-api/database/migration/lib"
 )
 
 type Grade struct {

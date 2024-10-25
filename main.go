@@ -4,10 +4,10 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/skripsi-be/config"
-	"github.com/skripsi-be/connections"
-	"github.com/skripsi-be/lib"
-	"github.com/skripsi-be/routes"
+	"github.com/edulink-api/config"
+	"github.com/edulink-api/connections"
+	"github.com/edulink-api/lib"
+	"github.com/edulink-api/routes"
 )
 
 func init() {

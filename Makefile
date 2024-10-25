@@ -1,6 +1,6 @@
 # applicationName.
-main_package_path = ./cmd/skripsi-be
-binary_name = skripsi-be
+main_package_path = ./cmd/edulink-api
+binary_name = edulink-api
 
 # ==================================================================================== #
 # Development

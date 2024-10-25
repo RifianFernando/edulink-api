@@ -5,10 +5,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/skripsi-be/connections"
-	"github.com/skripsi-be/database/migration"
-	"github.com/skripsi-be/database/seed"
-	"github.com/skripsi-be/lib"
+	"github.com/edulink-api/connections"
+	"github.com/edulink-api/database/migration"
+	"github.com/edulink-api/database/seed"
+	"github.com/edulink-api/lib"
 )
 
 func init() {

@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/edulink-api/lib"
+	"github.com/edulink-api/models"
 	"github.com/golang-jwt/jwt"
-	"github.com/skripsi-be/lib"
-	"github.com/skripsi-be/models"
 )
 
 type userDetailToken struct {

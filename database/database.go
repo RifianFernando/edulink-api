@@ -22,7 +22,8 @@ func main() {
 	migrateFlag := flag.Bool("migrate", false, "Run the migrations")
 	migrateFreshFlag := flag.Bool("migrate:fresh", false, "Drop all tables and run the migrations")
 	seedFlag := flag.Bool("seed", false, "Run the seeders")
-	generateSession := flag.Bool("session:generate", false, "Run generate session key")
+	keyGenerate := flag.Bool("key:generate", false, "Run generate app key")
+	help := flag.Bool("help", false, "Show help")
 	flag.Parse()
 
 	switch {
@@ -32,21 +33,23 @@ func main() {
 		migrateFresh()
 	case *seedFlag:
 		runSeeders()
-	case *generateSession:
-		generateSessionKey()
+	case *keyGenerate:
+		generateAppKey()
+	case *help:
+		flag.PrintDefaults()
 	default:
-		log.Fatalf("No valid command provided. Use -migrate, -migrate-fresh, or -seed.")
+		log.Fatalf("No valid command provided. Use -help for help")
 		os.Exit(1)
 	}
 }
 
-func generateSessionKey() {
-	sessionKey := lib.GenerateMultipleRandomStrings(1, 32)[0]
-	value, err := lib.SetEnvValue("SESSION_KEY", sessionKey)
+func generateAppKey() {
+	appKey := lib.GenerateMultipleRandomStrings(1, 32)[0]
+	value, err := lib.SetEnvValue("APP_KEY", appKey)
 	if err != nil {
-		log.Fatalf("Failed to set session key: %v", err)
+		log.Fatalf("Failed to set app key: %v", err)
 	}
-	log.Printf("Session key set to: %s", value)
+	log.Printf("app key set to: %s", value)
 }
 
 // save the migration to the one variable

@@ -27,7 +27,9 @@ type resetPassDetailToken struct {
 	jwt.StandardClaims
 }
 
-var SECRET_KEY string = os.Getenv("SESSION_KEY")
+var invalidToken = "the token is invalid"
+
+var SECRET_KEY string = os.Getenv("APP_KEY")
 
 func CustomTimeDay(days int) time.Time {
 	return time.Now().Local().Add(time.Hour * time.Duration(24*days))
@@ -172,8 +174,6 @@ func ValidateToken(
 	claims *userDetailToken,
 	msg string,
 ) {
-	var invalidToken = "The token is invalid"
-
 	token, err := jwt.ParseWithClaims(
 		signedToken,
 		&userDetailToken{},
@@ -245,8 +245,6 @@ func DeleteToken(
 	isDeleted bool,
 	msg string,
 ) {
-	var invalidToken = "The token is invalid"
-
 	// validate the token
 	claims, msgAccess := ValidateToken(accessToken, "access_token")
 	claimsRefresh, msgRefresh := ValidateRefreshToken(refreshToken)

@@ -42,7 +42,7 @@ func ForgetPassword() gin.HandlerFunc {
 		}
 
 		// TODO: GET the real domain without changing the code
-		resetTokenLink = os.Getenv("SESSION_DOMAIN") + "/reset-password?token=" + resetTokenLink + "&email=" + user.UserEmail
+		resetTokenLink = os.Getenv("ALLOW_ORIGIN") + "/auth/reset-password?token=" + resetTokenLink + "&email=" + user.UserEmail
 
 		// Send the reset token to the user's email
 		// err = helper.SendResetTokenEmail(user.UserEmail, resetToken)

@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/gin-gonic/gin"
 	"github.com/gorilla/sessions"
 )
 
@@ -20,10 +21,10 @@ var (
 
 func InitializeSessionStore() {
 	allowOrigin := os.Getenv("ALLOW_ORIGIN")
-	sessionKey := os.Getenv("SESSION_KEY")
+	sessionKey := os.Getenv("APP_KEY")
 
 	if sessionKey == "" {
-		panic("SESSION_KEY is not set in the environment")
+		panic("APP_KEY is not set in the environment")
 	}
 
 	if strings.Contains(allowOrigin, "localhost") {

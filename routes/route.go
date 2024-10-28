@@ -1,6 +1,8 @@
 package routes
 
 import (
+	"os"
+
 	"github.com/edulink-api/controllers"
 	"github.com/edulink-api/middleware"
 	"github.com/gin-gonic/gin"
@@ -8,7 +10,7 @@ import (
 
 func Route(router *gin.Engine) {
 	// Initialize Version
-	apiV1 := router.Group("/api/v1")
+	apiV1 := router.Group(os.Getenv("API_V1"))
 	{
 		// Student CRUD
 		student := apiV1.Group("/student")

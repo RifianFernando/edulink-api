@@ -86,6 +86,11 @@ func Route(router *gin.Engine) {
 				middleware.IsNotLoggedIn(),
 				controllers.ForgetPassword(),
 			)
+			auth.POST(
+				"/reset-password",
+				middleware.IsNotLoggedIn(),
+				controllers.ResetPassword(),
+			)
 		}
 	}
 }

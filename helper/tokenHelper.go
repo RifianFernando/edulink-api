@@ -238,6 +238,49 @@ func ValidateRefreshToken(
 	return claims, msg
 }
 
+func ValidateResetPasswordToken(
+	signedToken string,
+) (
+	claims *resetPassDetailToken,
+	msg string,
+) {
+
+	token, err := jwt.ParseWithClaims(
+		signedToken,
+		&resetPassDetailToken{},
+		func(token *jwt.Token) (interface{}, error) {
+			return []byte(SECRET_KEY), nil
+		},
+	)
+
+	if err != nil {
+		msg = err.Error()
+
+		return
+	}
+
+	claims, ok := token.Claims.(*resetPassDetailToken)
+	if !ok {
+		msg = invalidToken
+
+		return
+	}
+
+	if claims.ExpiresAt < time.Now().Local().Unix() {
+		msg = "the token is expired"
+
+		return
+	}
+
+	if claims.TokenType != "reset_password" {
+		msg = invalidToken
+
+		return
+	}
+
+	return claims, msg
+}
+
 func DeleteToken(
 	accessToken string,
 	refreshToken string,

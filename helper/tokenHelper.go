@@ -20,6 +20,13 @@ type userDetailToken struct {
 	jwt.StandardClaims
 }
 
+type resetPassDetailToken struct {
+	UserID    int64
+	UserEmail string
+	TokenType string
+	jwt.StandardClaims
+}
+
 var SECRET_KEY string = os.Getenv("SESSION_KEY")
 
 func CustomTimeDay(days int) time.Time {
@@ -62,6 +69,30 @@ func GenerateToken(user models.User, userType string) (signedToken string, signe
 	}
 
 	return token, refreshToken, nil
+}
+
+func GenerateResetPasswordToken(
+	userID int64,
+	email string,
+) (string, error) {
+	claims := &resetPassDetailToken{
+		UserID:    userID,
+		UserEmail: email,
+		TokenType: "reset_password",
+		StandardClaims: jwt.StandardClaims{
+			// 5 minutes
+			ExpiresAt: time.Now().Local().Add(time.Minute * 5).Unix(),
+			IssuedAt:  time.Now().Unix(),
+		},
+	}
+
+	resetToken, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(SECRET_KEY))
+	if err != nil {
+		log.Panic(err)
+		return "", err
+	}
+
+	return resetToken, nil
 }
 
 func UpdateSession(refreshToken string, userID int64, ipAddress string, userAgent string) (newToken string, newRefreshToken string, err error) {

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/edulink-api/helper"
 	"github.com/edulink-api/request"
@@ -29,16 +30,19 @@ func ForgetPassword() gin.HandlerFunc {
 		// Check if the email exists in the database
 		user, err := helper.GetUserByEmail(req.UserEmail)
 		if err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+			c.JSON(http.StatusNotFound, gin.H{"error": "user not registered"})
 			return
 		}
 
 		// Generate a password reset token
-		// resetToken, err := helper.GenerateResetToken(user.UserID)
-		// if err != nil {
-		// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "Error generating reset token"})
-		// 	return
-		// }
+		resetTokenLink, err := helper.GenerateResetPasswordToken(user.UserID, user.UserEmail)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error generating reset token"})
+			return
+		}
+
+		// TODO: GET the real domain without changing the code
+		resetTokenLink = os.Getenv("SESSION_DOMAIN") + "/reset-password?token=" + resetTokenLink + "&email=" + user.UserEmail
 
 		// Send the reset token to the user's email
 		// err = helper.SendResetTokenEmail(user.UserEmail, resetToken)
@@ -50,6 +54,7 @@ func ForgetPassword() gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Reset token sent to your email",
 			"user":    user,
+			"token":   resetTokenLink,
 		})
 	}
 }

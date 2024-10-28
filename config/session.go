@@ -30,8 +30,10 @@ func InitializeSessionStore() {
 	if strings.Contains(allowOrigin, "localhost") {
 		IsProdMode = false
 		ParsedDomain = ""
+		gin.SetMode(gin.DebugMode)
 	} else {
 		IsProdMode = true
+		gin.SetMode(gin.ReleaseMode)
 		ParsedDomain = extractDomain(allowOrigin)
 	}
 

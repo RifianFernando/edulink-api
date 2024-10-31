@@ -63,7 +63,6 @@ func SessionMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		session, err := Store.Get(c.Request, "session") // Replace with a constant or config
 		if err != nil {
-			c.Error(err) // Handle the error appropriately
 			c.Abort()
 			return
 		}
@@ -72,7 +71,8 @@ func SessionMiddleware() gin.HandlerFunc {
 
 		defer func() {
 			if err := sessions.Save(c.Request, c.Writer); err != nil {
-				c.Error(err) // Handle the error appropriately
+				c.Abort()
+				return
 			}
 		}()
 

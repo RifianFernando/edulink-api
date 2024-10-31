@@ -81,6 +81,16 @@ func Route(router *gin.Engine) {
 				middleware.AlreadyLoggedIn(),
 				controllers.Logout(),
 			)
+			// validate access token
+			auth.GET(
+				"/validate-token",
+				controllers.ValidateAccessToken(),
+			)
+			auth.GET(
+				"/refresh-token",
+				middleware.IsNotLoggedIn(),
+				controllers.RefreshToken(),
+			)
 			auth.POST(
 				"/forget-password",
 				middleware.IsNotLoggedIn(),

@@ -30,8 +30,9 @@ func main() {
 
 func setupRouter() *gin.Engine {
 	r := gin.New() // Creates a bare instance without Logger or Recovery
-	r.Use(config.SetSecurityHeaders())
 	r.Use(config.Cors())
+	r.Use(config.SetSecurityHeaders())
+	r.Use(config.SessionMiddleware())
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 

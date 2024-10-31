@@ -31,10 +31,6 @@ var invalidToken = "the token is invalid"
 
 var SECRET_KEY string = os.Getenv("APP_KEY")
 
-func CustomTimeDay(days int) time.Time {
-	return time.Now().Local().Add(time.Hour * time.Duration(24*days))
-}
-
 func GenerateToken(user models.User, userType string) (signedToken string, signedRefreshToken string, err error) {
 	claims := &userDetailToken{
 		UserID:    user.UserID,
@@ -42,7 +38,7 @@ func GenerateToken(user models.User, userType string) (signedToken string, signe
 		User_type: userType,
 		TokenType: "access_token",
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: CustomTimeDay(1).Unix(),
+			ExpiresAt: time.Now().Local().Add(time.Minute * 1).Unix(),
 			IssuedAt:  time.Now().Unix(),
 		},
 	}
@@ -53,7 +49,7 @@ func GenerateToken(user models.User, userType string) (signedToken string, signe
 		User_type: userType,
 		TokenType: "refresh_token",
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: CustomTimeDay(7).Unix(),
+			ExpiresAt: lib.CustomTimeDay(7).Unix(),
 			IssuedAt:  time.Now().Unix(),
 		},
 	}
@@ -122,7 +118,7 @@ func UpdateSession(refreshToken string, userID int64, ipAddress string, userAgen
 	session.RefreshToken = lib.HashToken(newRefreshToken)
 	session.IPAddress = ipAddress
 	session.UserAgent = userAgent
-	session.ExpiresAt = CustomTimeDay(7) // Extend session expiry
+	session.ExpiresAt = lib.CustomTimeDay(7) // Extend session expiry
 
 	err = session.UpdateSession()
 	if err != nil {
@@ -156,7 +152,7 @@ func InsertSession(
 	session.RefreshToken = lib.HashToken(refreshToken)
 	session.IPAddress = ipAddress
 	session.UserAgent = userAgent
-	session.ExpiresAt = CustomTimeDay(7) // Set session expiry to match refresh token
+	session.ExpiresAt = lib.CustomTimeDay(7) // Set session expiry to match refresh token
 
 	err = session.InsertSession()
 
@@ -328,26 +324,18 @@ func DeleteToken(
 	return true, msg
 }
 
-func GetAccessTokenFromHeader(
+func GetAuthTokenFromHeader(
 	authHeader string,
 ) (
 	accessToken string,
-	msg string,
 ) {
-	if authHeader == "" {
-		msg = "Authorization header is empty"
-
-		return "", msg
-	}
-
 	parts := strings.Split(authHeader, " ")
 	if len(parts) != 2 || parts[0] != "Bearer" {
-		msg = "Invalid Authorization header format"
 
-		return "", msg
+		return ""
 	}
 
 	accessToken = parts[1]
 
-	return accessToken, msg
+	return accessToken
 }

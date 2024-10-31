@@ -11,12 +11,10 @@ import (
 )
 
 var (
-	// Exported session store variable
-	Store *sessions.CookieStore
-	// Production mode flag
-	IsProdMode bool
-	// set parsed domain
+	Store        *sessions.CookieStore
+	IsProdMode   bool
 	ParsedDomain string
+	SameSite     http.SameSite
 )
 
 func InitializeSessionStore() {
@@ -31,29 +29,53 @@ func InitializeSessionStore() {
 		IsProdMode = false
 		ParsedDomain = ""
 		gin.SetMode(gin.DebugMode)
+		SameSite = http.SameSiteLaxMode
 	} else {
 		IsProdMode = true
 		gin.SetMode(gin.ReleaseMode)
 		ParsedDomain = extractDomain(allowOrigin)
+		SameSite = http.SameSiteNoneMode
 	}
 
 	Store = sessions.NewCookieStore([]byte(sessionKey))
 	Store.Options = &sessions.Options{
 		HttpOnly: true,
-		MaxAge:   8 * 60 * 60, // 8 hours
-		SameSite: http.SameSiteStrictMode,
+		MaxAge:   7 * 24 * 60 * 60, // 7 days same as the token expiration
+		SameSite: SameSite,
 		Secure:   IsProdMode,
 		Domain:   ParsedDomain,
 		Path:     "/", // This should be the same as the router group base path
 	}
 
 	fmt.Println("Is in Production mode:", IsProdMode)
+	fmt.Println("maxAge:", Store.Options.MaxAge)
 	fmt.Println("Parsed Domain:", ParsedDomain)
+	fmt.Println("Same Site:", SameSite)
 }
 
-// Helper function to extract base domain from a full URL
 func extractDomain(fullUrl string) string {
 	fullUrl = strings.TrimPrefix(fullUrl, "https://")
 	fullUrl = strings.TrimPrefix(fullUrl, "http://")
 	return fullUrl
+}
+
+func SessionMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		session, err := Store.Get(c.Request, "session") // Replace with a constant or config
+		if err != nil {
+			c.Error(err) // Handle the error appropriately
+			c.Abort()
+			return
+		}
+
+		c.Set("session", session)
+
+		defer func() {
+			if err := sessions.Save(c.Request, c.Writer); err != nil {
+				c.Error(err) // Handle the error appropriately
+			}
+		}()
+
+		c.Next()
+	}
 }

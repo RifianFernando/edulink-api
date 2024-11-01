@@ -14,7 +14,7 @@ type User struct {
 	UserPlaceOfBirth string    `json:"place_of_birth" binding:"required"`
 	UserDateOfBirth  time.Time `json:"date_of_birth"`
 	UserAddress      string    `json:"address" binding:"required"`
-	UserNumPhone     string    `json:"num_phone" binding:"required"`
+	UserNumPhone     string    `json:"num_phone" binding:"required,e164"`
 	UserEmail        string    `json:"email" binding:"required,email"`
 	UserPassword     string    `json:"password" binding:"required"`
 	Teachers         []Teacher `gorm:"foreignKey:UserID;references:UserID"` // Has-many with Teachersreferences:TeacherID"`

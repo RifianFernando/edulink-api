@@ -98,9 +98,5 @@ func migrateFresh() {
 }
 
 func runSeeders() {
-	seed.UserSeeder()
-	seed.TeacherSeeder()
-	seed.ClassSeeder()
-	seed.StudentSeeder()
-	seed.AdminSeeder()
+	seed.Seed()
 }

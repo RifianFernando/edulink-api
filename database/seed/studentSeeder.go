@@ -3,18 +3,17 @@ package seed
 import (
 	"time"
 
-	"github.com/edulink-api/connections"
 	"github.com/edulink-api/models"
 )
 
 // ClassSeeder seeds the Class data into the database.
-func StudentSeeder() {
-	students := []models.Student{
+func StudentSeeder() (students []models.Student) {
+	students = []models.Student{
 		{
 			ClassID:               1,
 			StudentName:           "Siswa 1",
 			StudentNISN:           "0987654321",
-			StudentGender:         "male",
+			StudentGender:         "Male",
 			StudentPlaceOfBirth:   "Jakarta",
 			StudentDateOfBirth:    time.Now(),
 			StudentReligion:       "Islam",
@@ -32,7 +31,5 @@ func StudentSeeder() {
 		},
 	}
 
-	for _, student := range students {
-		connections.DB.Create(&student)
-	}
+	return students
 }

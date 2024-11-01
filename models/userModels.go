@@ -34,3 +34,12 @@ func (user *User) GetUser() (User, error) {
 
 	return *user, nil
 }
+
+func (user *User) UpdatePassword() error {
+	result := connections.DB.Model(&user).Update("user_password", user.UserPassword)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}

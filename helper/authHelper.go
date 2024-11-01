@@ -71,3 +71,13 @@ func GetUserByEmail(email string) (models.User, error) {
 
 	return user, err
 }
+
+func UpdateUserPassword(user models.User) error {
+	user.UserPassword = lib.HashPassword(user.UserPassword)
+	err := user.UpdatePassword()
+	if err != nil {
+		return err
+	}
+
+	return err
+}

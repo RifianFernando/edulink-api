@@ -98,11 +98,12 @@ func ResetPassword() gin.HandlerFunc {
 		}
 
 		// Update the user's password
-		// err = helper.UpdateUserPassword(user.UserID, req.Password)
-		// if err != nil {
-		// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "Error updating password"})
-		// 	return
-		// }
+		user.UserPassword = req.NewPassword
+		err = helper.UpdateUserPassword(user)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error updating password"})
+			return
+		}
 
 		c.JSON(http.StatusOK, gin.H{
 			"token": req.Token,

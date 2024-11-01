@@ -26,10 +26,10 @@ func Logout() gin.HandlerFunc {
 			})
 			return
 		}
-		accessToken, msg := helper.GetAccessTokenFromHeader(authHeader)
-		if msg != "" || accessToken == "" {
+		accessToken := helper.GetAuthTokenFromHeader(authHeader)
+		if accessToken == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": msg,
+				"error": "No access token provided",
 			})
 			return
 		}

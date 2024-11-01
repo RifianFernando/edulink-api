@@ -20,11 +20,16 @@ type userDetailToken struct {
 	jwt.StandardClaims
 }
 
-var SECRET_KEY string = os.Getenv("SESSION_KEY")
-
-func CustomTimeDay(days int) time.Time {
-	return time.Now().Local().Add(time.Hour * time.Duration(24*days))
+type resetPassDetailToken struct {
+	UserID    int64
+	UserEmail string
+	TokenType string
+	jwt.StandardClaims
 }
+
+var invalidToken = "the token is invalid"
+
+var SECRET_KEY string = os.Getenv("APP_KEY")
 
 func GenerateToken(user models.User, userType string) (signedToken string, signedRefreshToken string, err error) {
 	claims := &userDetailToken{
@@ -33,7 +38,7 @@ func GenerateToken(user models.User, userType string) (signedToken string, signe
 		User_type: userType,
 		TokenType: "access_token",
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: CustomTimeDay(1).Unix(),
+			ExpiresAt: time.Now().Local().Add(time.Minute * 60).Unix(),
 			IssuedAt:  time.Now().Unix(),
 		},
 	}
@@ -44,7 +49,7 @@ func GenerateToken(user models.User, userType string) (signedToken string, signe
 		User_type: userType,
 		TokenType: "refresh_token",
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: CustomTimeDay(7).Unix(),
+			ExpiresAt: lib.CustomTimeDay(7).Unix(),
 			IssuedAt:  time.Now().Unix(),
 		},
 	}
@@ -62,6 +67,30 @@ func GenerateToken(user models.User, userType string) (signedToken string, signe
 	}
 
 	return token, refreshToken, nil
+}
+
+func GenerateResetPasswordToken(
+	userID int64,
+	email string,
+) (string, error) {
+	claims := &resetPassDetailToken{
+		UserID:    userID,
+		UserEmail: email,
+		TokenType: "reset_password",
+		StandardClaims: jwt.StandardClaims{
+			// 5 minutes
+			ExpiresAt: time.Now().Local().Add(time.Minute * 5).Unix(),
+			IssuedAt:  time.Now().Unix(),
+		},
+	}
+
+	resetToken, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(SECRET_KEY))
+	if err != nil {
+		log.Panic(err)
+		return "", err
+	}
+
+	return resetToken, nil
 }
 
 func UpdateSession(refreshToken string, userID int64, ipAddress string, userAgent string) (newToken string, newRefreshToken string, err error) {
@@ -89,7 +118,7 @@ func UpdateSession(refreshToken string, userID int64, ipAddress string, userAgen
 	session.RefreshToken = lib.HashToken(newRefreshToken)
 	session.IPAddress = ipAddress
 	session.UserAgent = userAgent
-	session.ExpiresAt = CustomTimeDay(7) // Extend session expiry
+	session.ExpiresAt = lib.CustomTimeDay(7) // Extend session expiry
 
 	err = session.UpdateSession()
 	if err != nil {
@@ -123,7 +152,7 @@ func InsertSession(
 	session.RefreshToken = lib.HashToken(refreshToken)
 	session.IPAddress = ipAddress
 	session.UserAgent = userAgent
-	session.ExpiresAt = CustomTimeDay(7) // Set session expiry to match refresh token
+	session.ExpiresAt = lib.CustomTimeDay(7) // Set session expiry to match refresh token
 
 	err = session.InsertSession()
 
@@ -141,8 +170,6 @@ func ValidateToken(
 	claims *userDetailToken,
 	msg string,
 ) {
-	var invalidToken = "The token is invalid"
-
 	token, err := jwt.ParseWithClaims(
 		signedToken,
 		&userDetailToken{},
@@ -207,6 +234,49 @@ func ValidateRefreshToken(
 	return claims, msg
 }
 
+func ValidateResetPasswordToken(
+	signedToken string,
+) (
+	claims *resetPassDetailToken,
+	msg string,
+) {
+
+	token, err := jwt.ParseWithClaims(
+		signedToken,
+		&resetPassDetailToken{},
+		func(token *jwt.Token) (interface{}, error) {
+			return []byte(SECRET_KEY), nil
+		},
+	)
+
+	if err != nil {
+		msg = err.Error()
+
+		return
+	}
+
+	claims, ok := token.Claims.(*resetPassDetailToken)
+	if !ok {
+		msg = invalidToken
+
+		return
+	}
+
+	if claims.ExpiresAt < time.Now().Local().Unix() {
+		msg = "the token is expired"
+
+		return
+	}
+
+	if claims.TokenType != "reset_password" {
+		msg = invalidToken
+
+		return
+	}
+
+	return claims, msg
+}
+
 func DeleteToken(
 	accessToken string,
 	refreshToken string,
@@ -214,8 +284,6 @@ func DeleteToken(
 	isDeleted bool,
 	msg string,
 ) {
-	var invalidToken = "The token is invalid"
-
 	// validate the token
 	claims, msgAccess := ValidateToken(accessToken, "access_token")
 	claimsRefresh, msgRefresh := ValidateRefreshToken(refreshToken)
@@ -256,26 +324,18 @@ func DeleteToken(
 	return true, msg
 }
 
-func GetAccessTokenFromHeader(
+func GetAuthTokenFromHeader(
 	authHeader string,
 ) (
 	accessToken string,
-	msg string,
 ) {
-	if authHeader == "" {
-		msg = "Authorization header is empty"
-
-		return "", msg
-	}
-
 	parts := strings.Split(authHeader, " ")
 	if len(parts) != 2 || parts[0] != "Bearer" {
-		msg = "Invalid Authorization header format"
 
-		return "", msg
+		return ""
 	}
 
 	accessToken = parts[1]
 
-	return accessToken, msg
+	return accessToken
 }

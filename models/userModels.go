@@ -10,12 +10,12 @@ import (
 type User struct {
 	UserID           int64     `gorm:"primaryKey" json:"id"`
 	UserName         string    `json:"name" binding:"required"`
-	UserGender       string    `json:"gender" binding:"required"`
+	UserGender       string    `json:"gender" binding:"required,oneof=Male Female"`
 	UserPlaceOfBirth string    `json:"place_of_birth" binding:"required"`
 	UserDateOfBirth  time.Time `json:"date_of_birth"`
 	UserAddress      string    `json:"address" binding:"required"`
 	UserNumPhone     string    `json:"num_phone" binding:"required"`
-	UserEmail        string    `json:"email" binding:"required"`
+	UserEmail        string    `json:"email" binding:"required,email"`
 	UserPassword     string    `json:"password" binding:"required"`
 	Teachers         []Teacher `gorm:"foreignKey:UserID;references:UserID"` // Has-many with Teachersreferences:TeacherID"`
 	lib.BaseModel

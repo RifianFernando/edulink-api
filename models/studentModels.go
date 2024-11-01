@@ -19,16 +19,16 @@ type Student struct {
 	StudentDateOfBirth    time.Time `json:"date_of_birth"`
 	StudentReligion       string    `json:"religion" binding:"required"`
 	StudentAddress        string    `json:"address" binding:"required"`
-	StudentNumPhone       string    `json:"number_phone" binding:"required,e164"`
+	StudentNumPhone       string    `json:"number_phone" binding:"required"`
 	StudentEmail          string    `json:"email" binding:"required,email"`
 	StudentAcceptedDate   time.Time `json:"accepted_date"`
 	StudentSchoolOrigin   string    `json:"school_origin" binding:"required"`
 	StudentFatherName     string    `json:"father_name" binding:"required"`
 	StudentFatherJob      string    `json:"father_job" binding:"required"`
-	StudentFatherNumPhone string    `json:"father_number_phone" binding:"required,e164"`
+	StudentFatherNumPhone string    `json:"father_number_phone" binding:"required"`
 	StudentMotherName     string    `json:"mother_name" binding:"required"`
 	StudentMotherJob      string    `json:"mother_job" binding:"required"`
-	StudentMotherNumPhone string    `json:"mother_number_phone" binding:"required,e164"`
+	StudentMotherNumPhone string    `json:"mother_number_phone" binding:"required"`
 	lib.BaseModel
 }
 

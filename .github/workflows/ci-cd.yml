@@ -30,7 +30,7 @@ jobs:
                   DB_TIMEZONE=Asia/Jakarta
                   TZ=Asia/Jakarta
                   EOF
-            - name: Login to Docker Hub
+            - name: Login to Docker Hub for build
               run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
             - name: Build Docker Image
               run: docker build -t rfjst4real/edulink-api .
@@ -40,6 +40,8 @@ jobs:
         needs: build
         runs-on: ubuntu-latest
         steps:
+            - name: Login to Docker Hub for deployment
+              run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
             - name: Pull docker image
               run: docker pull rfjst4real/edulink-api:latest
             - name: Delete old container

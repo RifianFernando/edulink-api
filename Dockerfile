@@ -1,5 +1,5 @@
 # Use the official Go image with a specific version
-FROM golang:1.23.1-alpine as builder
+FROM golang:1.23.1-alpine
 
 # Set the working directory
 WORKDIR /app
@@ -15,15 +15,6 @@ COPY . .
 
 # Build the Go application
 RUN go build -o main ./main.go
-
-# Start a new stage from a lightweight base image
-FROM alpine:latest
-
-# Set the working directory in the new image
-WORKDIR /app
-
-# Copy the binary from the builder stage to the new image
-COPY --from=builder /app/main .
 
 # Make the binary executable (this may not be necessary since it's already done in the builder stage)
 RUN chmod +x main

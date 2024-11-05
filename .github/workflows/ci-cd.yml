@@ -13,21 +13,23 @@ jobs:
               uses: actions/checkout@v4
 
             - name: Create .env file
-              run: # Create the .env file and populate it line by line
-                  echo "APP_KEY=YjfB4cZWo5pCEJXhX6Hmq47WpHUodrjB" > .env
-                  echo "PORT=8000" >> .env
-                  echo "ALLOW_ORIGIN=http://localhost:3000" >> .env
-                  echo "API_V1=/api/v1" >> .env
-                  echo "GIN_MODE=release" >> .env
-                  echo "DB_CONNECTION=postgres" >> .env
-                  echo "DB_HOST=autorack.proxy.rlwy.net" >> .env
-                  echo "DB_PORT=10765" >> .env
-                  echo "DB_NAME=railway" >> .env
-                  echo "DB_USERNAME=$postgres" >> .env
-                  echo "DB_PASSWORD=rFlvGMQagzroWQBQMbTHFbRZorMXEYlp" >> .env
-                  echo "DB_SSLMODE=disable" >> .env
-                  echo "DB_TIMEZONE=Asia/Jakarta" >> .env
-                  echo "TZ=Asia/Jakarta" >> .env
+              run: |
+                  cat <<EOF > .env
+                  APP_KEY=${{ secrets.ENV_APP_KEY }}
+                  PORT=${{ secrets.ENV_PORT }}
+                  ALLOW_ORIGIN=${{ secrets.ENV_ALLOW_ORIGIN }}
+                  API_V1=/api/v1
+                  GIN_MODE=release
+                  DB_CONNECTION=${{ secrets.DB_CONNECTION }}
+                  DB_HOST=${{ secrets.DB_HOST }}
+                  DB_PORT=${{ secrets.DB_PORT }}
+                  DB_NAME=${{ secrets.DB_NAME }}
+                  DB_USERNAME=${{ secrets.DB_USERNAME }}
+                  DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+                  DB_SSLMODE=disable
+                  DB_TIMEZONE=Asia/Jakarta
+                  TZ=Asia/Jakarta
+                  EOF
 
             - name: Login to Docker Hub for build
               run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin

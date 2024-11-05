@@ -45,6 +45,6 @@ jobs:
                   TZ=Asia/Jakarta
                   EOF
             - name: Delete old container
-              run: docker rm -f edulink-api-container
+              run: docker rm -f edulink-api-container || true
             - name: Run docker container
-              run: docker run -d -p 8000:8000 --name edulink-api-container rfjst4real/edulink-api:latest
+              run: docker run -d -p 8000:8000 --name edulink-api-container --env-file .env rfjst4real/edulink-api:latest

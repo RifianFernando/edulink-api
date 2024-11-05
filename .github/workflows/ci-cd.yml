@@ -27,8 +27,12 @@ jobs:
               run: docker pull rfjst4real/edulink-api:latest
             - name: Set up .env file
               run: |
+                  # Generate APP_KEY inside the container and capture the output
+                  APP_KEY=$(docker run --rm rfjst4real/edulink-api:latest go run database/database.go -key:generate)
+
+                  # Create the .env file
                   cat <<EOF > .env
-                  APP_KEY=
+                  APP_KEY=${APP_KEY}
                   PORT=${{ secrets.ENV_PORT }}
                   ALLOW_ORIGIN=${{ secrets.ENV_ALLOW_ORIGIN }}
                   API_V1=/api/v1

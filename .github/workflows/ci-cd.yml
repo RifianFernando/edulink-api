@@ -13,8 +13,16 @@ jobs:
               uses: actions/checkout@v4
             - name: Login to Docker Hub for build
               run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
             - name: Build Docker Image
-              run: docker build -t rfjst4real/edulink-api .
+              run: |
+                docker build -t rfjst4real/edulink-api \
+                  --build-arg APP_KEY=${{ secrets.APP_KEY }} \
+                  --build-arg DB_HOST=${{ secrets.DB_HOST }} \
+                  --build-arg DB_USERNAME=${{ secrets.DB_USERNAME }} \
+                  --build-arg DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+                  --build-arg ENV_PORT=${{ secrets.ENV_PORT }} \
+                  --build-arg ENV_ALLOW_ORIGIN=${{ secrets.ENV_ALLOW_ORIGIN }} .
             - name: Push Docker Image to Docker Hub
               run: docker push rfjst4real/edulink-api:latest
     deploy:
@@ -46,5 +54,13 @@ jobs:
                   EOF
             - name: Delete old container
               run: docker rm -f edulink-api-container || true
-            - name: Run docker container
-              run: docker run -d -p 8000:8000 --name edulink-api-container --env-file .env rfjst4real/edulink-api:latest
+            - name: Run container with environment variables
+              run: |
+                docker run -d -p 8000:8000 --name edulink-api-container \
+                  -e APP_KEY=${{ secrets.APP_KEY }} \
+                  -e DB_HOST=${{ secrets.DB_HOST }} \
+                  -e DB_USERNAME=${{ secrets.DB_USERNAME }} \
+                  -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+                  -e PORT=${{ secrets.ENV_PORT }} \
+                  -e ALLOW_ORIGIN=${{ secrets.ENV_ALLOW_ORIGIN }} \
+                  rfjst4real/edulink-api:latest

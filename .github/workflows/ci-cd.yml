@@ -14,12 +14,12 @@ jobs:
 
             - name: Create .env file
               run: # Create the .env file and populate it line by line
-                  echo "APP_KEY=YjfB4cZWo5pCEJXhX6Hmq47WpHUodrjB" > .env
+                  echo "APP_KEY=${{ secrets.ENV_APP_KEY }}" > .env
                   echo "PORT=${{ secrets.ENV_PORT }}" >> .env
                   echo "ALLOW_ORIGIN=${{ secrets.ENV_ALLOW_ORIGIN }}" >> .env
                   echo "API_V1=/api/v1" >> .env
                   echo "GIN_MODE=release" >> .env
-                  echo "DB_CONNECTION=postgres" >> .env
+                  echo "DB_CONNECTION=${{ secrets.DB_CONNECTION }}" >> .env
                   echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
                   echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
                   echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env

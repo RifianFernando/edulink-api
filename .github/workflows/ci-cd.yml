@@ -17,6 +17,7 @@ jobs:
               run: docker build -t rfjst4real/edulink-api .
             - name: Push Docker Image to Docker Hub
               run: docker push rfjst4real/edulink-api:latest
+
     deploy:
         needs: build
         runs-on: self-hosted
@@ -25,30 +26,33 @@ jobs:
               run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
             - name: Pull docker image
               run: docker pull rfjst4real/edulink-api:latest
-            - name: Set up .env file
+            - name: Run container and generate APP_KEY
               run: |
-                  # Generate APP_KEY inside the container and capture the output
-                  APP_KEY=$(docker run --rm rfjst4real/edulink-api:latest go run database/database.go -key:generate)
+                  # Start the container in detached mode
+                  CONTAINER_ID=$(docker run -d rfjst4real/edulink-api:latest)
 
-                  # Create the .env file
-                  cat <<EOF > .env
-                  APP_KEY=${APP_KEY}
-                  PORT=${{ secrets.ENV_PORT }}
-                  ALLOW_ORIGIN=${{ secrets.ENV_ALLOW_ORIGIN }}
-                  API_V1=/api/v1
+                  # Generate the APP_KEY
+                  APP_KEY=$(docker exec $CONTAINER_ID go run database/database.go -key:generate)
 
-                  GIN_MODE=release
-                  DB_CONNECTION=postgres
-                  DB_HOST=${{ secrets.DB_HOST }}
-                  DB_PORT=${{ secrets.DB_PORT }}
-                  DB_NAME=${{ secrets.DB_NAME }}
-                  DB_USERNAME=${{ secrets.DB_USERNAME }}
-                  DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-                  DB_SSLMODE=disable
-                  DB_TIMEZONE=Asia/Jakarta
-                  TZ=Asia/Jakarta
-                  EOF
+                  # Create the .env file with the generated APP_KEY and other secrets
+                  docker exec $CONTAINER_ID sh -c "echo 'APP_KEY=${APP_KEY}' > /app/.env"
+                  docker exec $CONTAINER_ID sh -c "echo 'PORT=${{ secrets.ENV_PORT }}' >> /app/.env"
+                  docker exec $CONTAINER_ID sh -c "echo 'ALLOW_ORIGIN=${{ secrets.ENV_ALLOW_ORIGIN }}' >> /app/.env"
+                  docker exec $CONTAINER_ID sh -c "echo 'DB_CONNECTION=postgres' >> /app/.env"
+                  docker exec $CONTAINER_ID sh -c "echo 'DB_HOST=${{ secrets.DB_HOST }}' >> /app/.env"
+                  docker exec $CONTAINER_ID sh -c "echo 'DB_PORT=${{ secrets.DB_PORT }}' >> /app/.env"
+                  docker exec $CONTAINER_ID sh -c "echo 'DB_NAME=${{ secrets.DB_NAME }}' >> /app/.env"
+                  docker exec $CONTAINER_ID sh -c "echo 'DB_USERNAME=${{ secrets.DB_USERNAME }}' >> /app/.env"
+                  docker exec $CONTAINER_ID sh -c "echo 'DB_PASSWORD=${{ secrets.DB_PASSWORD }}' >> /app/.env"
+                  docker exec $CONTAINER_ID sh -c "echo 'DB_SSLMODE=disable' >> /app/.env"
+                  docker exec $CONTAINER_ID sh -c "echo 'DB_TIMEZONE=Asia/Jakarta' >> /app/.env"
+                  docker exec $CONTAINER_ID sh -c "echo 'TZ=Asia/Jakarta' >> /app/.env"
+
+                  # Start the application if it's not already running
+                  docker exec $CONTAINER_ID ./main
+
             - name: Delete old container
               run: docker rm -f edulink-api-container || true
+
             - name: Run docker container
-              run: docker run -d -p 8000:8000 --name edulink-api-container --env-file .env rfjst4real/edulink-api:latest
+              run: docker run -d -p 8000:8000 --name edulink-api-container rfjst4real/edulink-api:latest

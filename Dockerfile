@@ -13,27 +13,6 @@ RUN go mod tidy
 # Copy the rest of the application code to the working directory
 COPY . .
 
-COPY .env.example .env
-
-# Accept build arguments
-ARG APP_KEY
-ARG DB_HOST
-ARG DB_USERNAME
-ARG DB_PASSWORD
-ARG ENV_PORT
-ARG ENV_ALLOW_ORIGIN
-
-# Set the environment variables
-ENV APP_KEY=$APP_KEY
-ENV DB_HOST=$DB_HOST
-ENV DB_USERNAME=$DB_USERNAME
-ENV DB_PASSWORD=$DB_PASSWORD
-ENV ENV_PORT=$ENV_PORT
-ENV ENV_ALLOW_ORIGIN=$ENV_ALLOW_ORIGIN
-
-# generate the session key
-RUN go run database/database.go -key:generate
-
 # Build the Go application
 RUN go build -o main ./main.go
 

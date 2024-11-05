@@ -12,23 +12,21 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v4
             - name: Set up .env file
-              run: |
-                  cat <<EOF > .env
-                  APP_KEY=YjfB4cZWo5pCEJXhX6Hmq47WpHUodrjB
-                  PORT=${{ secrets.ENV_PORT }}
-                  ALLOW_ORIGIN=${{ secrets.ENV_ALLOW_ORIGIN }}
-                  API_V1=/api/v1
-                  GIN_MODE=release
-                  DB_CONNECTION=postgres
-                  DB_HOST=${{ secrets.DB_HOST }}
-                  DB_PORT=${{ secrets.DB_PORT }}
-                  DB_NAME=${{ secrets.DB_NAME }}
-                  DB_USERNAME=${{ secrets.DB_USERNAME }}
-                  DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-                  DB_SSLMODE=disable
-                  DB_TIMEZONE=Asia/Jakarta
-                  TZ=Asia/Jakarta
-                  EOF
+              run: # Create the .env file and populate it line by line
+                  echo "APP_KEY=YjfB4cZWo5pCEJXhX6Hmq47WpHUodrjB" > .env
+                  echo "PORT=${{ secrets.ENV_PORT }}" >> .env
+                  echo "ALLOW_ORIGIN=${{ secrets.ENV_ALLOW_ORIGIN }}" >> .env
+                  echo "API_V1=/api/v1" >> .env
+                  echo "GIN_MODE=release" >> .env
+                  echo "DB_CONNECTION=postgres" >> .env
+                  echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+                  echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
+                  echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+                  echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
+                  echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+                  echo "DB_SSLMODE=disable" >> .env
+                  echo "DB_TIMEZONE=Asia/Jakarta" >> .env
+                  echo "TZ=Asia/Jakarta" >> .env
             - name: Login to Docker Hub for build
               run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
             - name: Build Docker Image

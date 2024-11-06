@@ -58,11 +58,8 @@ COPY controllers ./controllers/
 # Copy the models directory
 COPY models ./models/
 
-# Build the Go application
-RUN go build -o main ./main.go
-
-# Make the binary executable (this may not be necessary since it's already done in the builder stage)
-RUN chmod +x main
+# Build the Go application & make it executable by changing the permissions
+RUN go build -o main ./main.go && chmod +x main
 
 # Expose the port the application runs on
 EXPOSE 8000

@@ -1,0 +1,8 @@
+.env.example
+.git
+.gitignore
+.dockerignore
+Dockerfile
+Makefile
+readme.md
+.github

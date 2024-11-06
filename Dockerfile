@@ -1,13 +1,10 @@
 # Use the official Go image with a specific version
 FROM golang:1.23.1-alpine
 
-# Install shadow package to provide useradd command
-RUN apk update && apk add --no-cache shadow
+# Create a group and user
+RUN addgroup -S edulinkgroup && adduser -S edulink -G edulinkgroup
 
-# Create a non-root user
-RUN useradd -m edulink
-
-# Set the non-root user to run the app
+# Tell docker that all future commands should run as the edulink user
 USER edulink
 
 # Set the working directory

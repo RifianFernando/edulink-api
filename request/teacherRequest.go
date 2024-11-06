@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/skripsi-be/models"
+	"github.com/edulink-api/models"
 )
 
 /*
@@ -15,7 +15,7 @@ import (
  */
 type InsertTeacherRequest struct {
 	models.User
-	TeachingHour int32       `json:"teaching_hour" binding:"required"`
+	TeachingHour int32  `json:"teaching_hour" binding:"required"`
 	DateOfBirth  string `json:"date_of_birth" binding:"required"`
 }
 

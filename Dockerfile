@@ -19,8 +19,44 @@ USER edulink
 # Install dependencies
 RUN go mod tidy
 
-# Copy the rest of the application code to the working directory
-COPY . .
+# Copy go.mod and go.sum files to the working directory
+COPY go.mod go.sum ./
+
+# Copy the .env file
+COPY .env ./
+
+# Copy the config directory
+COPY config ./config/
+
+# Copy the database directory
+COPY database ./database/
+
+# Copy the helper directory
+COPY helper ./helper/
+
+# Copy the main.go file
+COPY main.go ./
+
+# Copy the request directory
+COPY request ./request/
+
+# Copy the connections directory
+COPY connections ./connections/
+
+# Copy the lib directory
+COPY lib ./lib/
+
+# Copy the middleware directory
+COPY middleware ./middleware/
+
+# Copy the routes directory
+COPY routes ./routes/
+
+# Copy the controllers directory
+COPY controllers ./controllers/
+
+# Copy the models directory
+COPY models ./models/
 
 # Build the Go application
 RUN go build -o main ./main.go

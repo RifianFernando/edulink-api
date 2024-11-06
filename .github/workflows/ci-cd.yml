@@ -3,7 +3,7 @@ name: Deploy CI/CD Pipeline
 on:
     push:
         branches:
-            - dev/web-feature
+            - dev/auto-deply
 
 jobs:
     build:

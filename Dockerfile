@@ -1,6 +1,12 @@
 # Use the official Go image with a specific version
 FROM golang:1.23.1-alpine
 
+# Create a non-root user
+RUN useradd -m edulink
+
+# Set the non-root user to run the app
+USER edulink
+
 # Set the working directory
 WORKDIR /app
 

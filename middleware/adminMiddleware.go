@@ -3,8 +3,8 @@ package middleware
 import (
 	"net/http"
 
+	"github.com/edulink-api/models"
 	"github.com/gin-gonic/gin"
-	"github.com/skripsi-be/models"
 )
 
 func AdminOnly() gin.HandlerFunc {

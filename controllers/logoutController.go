@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/skripsi-be/config"
-	"github.com/skripsi-be/helper"
+	"github.com/edulink-api/config"
+	"github.com/edulink-api/helper"
 )
 
 func Logout() gin.HandlerFunc {
@@ -26,10 +26,10 @@ func Logout() gin.HandlerFunc {
 			})
 			return
 		}
-		accessToken, msg := helper.GetAccessTokenFromHeader(authHeader)
-		if msg != "" || accessToken == "" {
+		accessToken := helper.GetAuthTokenFromHeader(authHeader)
+		if accessToken == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": msg,
+				"error": "No access token provided",
 			})
 			return
 		}

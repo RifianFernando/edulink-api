@@ -3,11 +3,11 @@ package main
 import (
 	"net/http"
 
+	"github.com/edulink-api/config"
+	"github.com/edulink-api/connections"
+	"github.com/edulink-api/lib"
+	"github.com/edulink-api/routes"
 	"github.com/gin-gonic/gin"
-	"github.com/skripsi-be/config"
-	"github.com/skripsi-be/connections"
-	"github.com/skripsi-be/lib"
-	"github.com/skripsi-be/routes"
 )
 
 func init() {
@@ -29,10 +29,12 @@ func main() {
 }
 
 func setupRouter() *gin.Engine {
-	r := gin.Default()
-	r.Use(config.SetSecurityHeaders())
+	r := gin.New() // Creates a bare instance without Logger or Recovery
 	r.Use(config.Cors())
+	r.Use(config.SetSecurityHeaders())
+	r.Use(config.SessionMiddleware())
 	r.Use(gin.Logger())
+	r.Use(gin.Recovery())
 
 	r.GET("/", func(c *gin.Context) {
 		cookieResult, err := c.Cookie("token")

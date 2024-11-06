@@ -3,7 +3,7 @@ package migration
 import (
 	"time"
 
-	"github.com/skripsi-be/database/migration/lib"
+	"github.com/edulink-api/database/migration/lib"
 )
 
 /*

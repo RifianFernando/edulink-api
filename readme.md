@@ -47,10 +47,10 @@
     go run database/database.go -seed
     ```
 
-    if you want to generate the session_key for auth use the following command
+    if you want to generate the app_key for auth use the following command
 
     ```bash
-    go run database/database.go -session:generate
+    go run database/database.go -key:generate
     ```
 
 10. run the project using the following command
@@ -58,7 +58,7 @@
 - Run Project with CompileDaemon **(RECOMMENDED)**
 
     ```bash
-    CompileDaemon -command="./skripsi-be"
+    CompileDaemon -command="./edulink-api"
     ```
 
 - Run Project

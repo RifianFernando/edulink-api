@@ -1,8 +1,8 @@
 package request
 
 import (
+	"github.com/edulink-api/models"
 	"github.com/go-playground/validator/v10"
-	"github.com/skripsi-be/models"
 )
 
 type InsertClassRequest struct {

@@ -1,14 +1,16 @@
 package routes
 
 import (
+	"os"
+
+	"github.com/edulink-api/controllers"
+	"github.com/edulink-api/middleware"
 	"github.com/gin-gonic/gin"
-	"github.com/skripsi-be/controllers"
-	"github.com/skripsi-be/middleware"
 )
 
 func Route(router *gin.Engine) {
 	// Initialize Version
-	apiV1 := router.Group("/api/v1")
+	apiV1 := router.Group(os.Getenv("API_V1"))
 	{
 		// Student CRUD
 		student := apiV1.Group("/student")
@@ -109,9 +111,25 @@ func Route(router *gin.Engine) {
 				middleware.AlreadyLoggedIn(),
 				controllers.Logout(),
 			)
+			// validate access token
+			auth.GET(
+				"/validate-token",
+				controllers.ValidateAccessToken(),
+			)
+			auth.GET(
+				"/refresh-token",
+				middleware.IsNotLoggedIn(),
+				controllers.RefreshToken(),
+			)
 			auth.POST(
-				"/get-access-token",
-				middleware.AlreadyLoggedIn(),
+				"/forget-password",
+				middleware.IsNotLoggedIn(),
+				controllers.ForgetPassword(),
+			)
+			auth.POST(
+				"/reset-password",
+				middleware.IsNotLoggedIn(),
+				controllers.ResetPassword(),
 			)
 		}
 	}

@@ -3,10 +3,10 @@ package controllers
 import (
 	"net/http"
 
+	"github.com/edulink-api/config"
+	"github.com/edulink-api/helper"
+	"github.com/edulink-api/request"
 	"github.com/gin-gonic/gin"
-	"github.com/skripsi-be/config"
-	"github.com/skripsi-be/helper"
-	"github.com/skripsi-be/request"
 )
 
 func Login() gin.HandlerFunc {
@@ -62,12 +62,12 @@ func Login() gin.HandlerFunc {
 		}
 
 		// Set the refresh token in an HttpOnly cookie (valid for 1 day)
-		c.SetCookie("token", refreshToken, 3600*24*7, "/", config.ParsedDomain, config.IsProdMode, true) // HttpOnly = true
+		c.SetCookie("token", refreshToken, 3600*24*7, "/", config.ParsedDomain, config.IsProdMode, true)     // HttpOnly = true
 		c.SetCookie("access_token", accessToken, 3600*24, "/", config.ParsedDomain, config.IsProdMode, true) // HttpOnly = false
 
 		// Return success message and send the access token in the response body (optional)
 		c.JSON(http.StatusOK, gin.H{
-			"message":      "Login successful",
+			"message": "Login successful",
 		})
 	}
 }

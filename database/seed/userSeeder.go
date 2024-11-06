@@ -3,17 +3,16 @@ package seed
 import (
 	"time"
 
-	"github.com/skripsi-be/connections"
-	"github.com/skripsi-be/lib"
-	"github.com/skripsi-be/models"
+	"github.com/edulink-api/lib"
+	"github.com/edulink-api/models"
 )
 
 // ClassSeeder seeds the Class data into the database.
-func UserSeeder() {
-	users := []models.User{
+func UserSeeder()(users []models.User) {
+	users = []models.User{
 		{
 			UserName:         "guru1",
-			UserGender:       "male",
+			UserGender:       "Male",
 			UserPlaceOfBirth: "Jakarta",
 			UserDateOfBirth:  time.Now(),
 			UserAddress:      "Jl. Jakarta",
@@ -23,7 +22,7 @@ func UserSeeder() {
 		},
 		{
 			UserName:         "guru2",
-			UserGender:       "female",
+			UserGender:       "Female",
 			UserPlaceOfBirth: "Jakarta",
 			UserDateOfBirth:  time.Now(),
 			UserAddress:      "Jl. Raya Bogor",
@@ -33,7 +32,7 @@ func UserSeeder() {
 		},
 		{
 			UserName:         "Admin1",
-			UserGender:       "male",
+			UserGender:       "Male",
 			UserPlaceOfBirth: "Jakarta",
 			UserDateOfBirth:  time.Now(),
 			UserAddress:      "Jl. Jakarta",
@@ -43,7 +42,5 @@ func UserSeeder() {
 		},
 	}
 
-	for _, user := range users {
-		connections.DB.Create(&user)
-	}
+	return users
 }

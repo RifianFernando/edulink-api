@@ -1,6 +1,9 @@
 # Use the official Go image with a specific version
 FROM golang:1.23.1-alpine
 
+# Install shadow package to provide useradd command
+RUN apk update && apk add --no-cache shadow
+
 # Create a non-root user
 RUN useradd -m edulink
 

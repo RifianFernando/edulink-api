@@ -3,6 +3,7 @@ package models
 import (
 	"github.com/edulink-api/connections"
 	"github.com/edulink-api/database/migration/lib"
+	"gorm.io/gorm"
 )
 
 type Teacher struct {

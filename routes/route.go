@@ -50,10 +50,10 @@ func Route(router *gin.Engine) {
 				"/",
 				controllers.GetAllTeacher(),
 			)
-			// teacher.GET(
-			// 	"/:teacher_id",
-			// 	controllers.GetTeacherById(),
-			// )
+			teacher.GET(
+				"/:teacher_id",
+				controllers.GetTeacherById(),
+			)
 			teacher.POST(
 				"/create",
 				controllers.CreateTeacher(),
@@ -67,10 +67,10 @@ func Route(router *gin.Engine) {
 			// 	// middleware.HaveStore(),
 			// 	controllers.UpdateTeacherById(),
 			// )
-			// teacher.DELETE(
-			// 	"/delete/:teacher_id",
-			// 	controllers.DeleteTeacherById(),
-			// )
+			teacher.DELETE(
+				"/delete/:teacher_id",
+				controllers.DeleteTeacherById(),
+			)
 		}
 
 		// Class CRUD

@@ -273,32 +273,32 @@ func GetAllTeacher() gin.HandlerFunc {
 	}
 }
 
-// func GetTeacherById() gin.HandlerFunc {
-// 	return func(c *gin.Context) {
-// 		id := c.Param("teacher_id")
+func GetTeacherById() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		id := c.Param("teacher_id")
 
-// 		var teacher models.Teacher
-// 		result, err := teacher.GetTeacherById(id)
+		var teacher models.Teacher
+		result, err := teacher.GetTeacherById(id)
 
-// 		if err != nil {
-// 			c.JSON(http.StatusBadRequest, gin.H{
-// 				"error": err.Error(),
-// 			})
-// 			return
-// 		}
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
 
-// 		if result.TeacherID == 0 {
-// 			c.JSON(http.StatusNotFound, gin.H{
-// 				"error": "Teacher not found",
-// 			})
-// 			return
-// 		}
+		if result.TeacherID == 0 {
+			c.JSON(http.StatusNotFound, gin.H{
+				"error": "Teacher not found",
+			})
+			return
+		}
 
-// 		c.JSON(http.StatusOK, gin.H{
-// 			"teacher": result,
-// 		})
-// 	}
-// }
+		c.JSON(http.StatusOK, gin.H{
+			"teacher": result,
+		})
+	}
+}
 
 // func UpdateTeacherById() gin.HandlerFunc {
 // 	return func(c *gin.Context) {
@@ -321,7 +321,7 @@ func GetAllTeacher() gin.HandlerFunc {
 // 		}
 
 // 		// Parse date strings to time.Time
-// 		dateOfBirth, acceptedDate, err := request.ParseDates()
+// 		dateOfBirth, err := request.ParseDates()
 // 		if err != nil {
 // 			c.JSON(http.StatusBadRequest, gin.H{
 // 				"error": "Invalid date format",
@@ -384,21 +384,21 @@ func GetAllTeacher() gin.HandlerFunc {
 // 	}
 // }
 
-// func DeleteTeacherById() gin.HandlerFunc {
-// 	return func(c *gin.Context) {
-// 		id := c.Param("teacher_id")
+func DeleteTeacherById() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		id := c.Param("teacher_id")
 
-// 		var teacher models.Teacher
-// 		// if teacher exist
-// 		err := teacher.DeleteTeacherById(id)
-// 		if err != nil {
-// 			c.JSON(http.StatusBadRequest, gin.H{
-// 				"error": err.Error(),
-// 			})
-// 		}
+		var teacher models.Teacher
+		// if teacher exist
+		err := teacher.DeleteTeacherById(id)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": err.Error(),
+			})
+		}
 
-// 		c.JSON(http.StatusOK, gin.H{
-// 			"teacher": "deleted teacher with id " + id,
-// 		})
-// 	}
-// }
+		c.JSON(http.StatusOK, gin.H{
+			"teacher": "deleted teacher with id " + id,
+		})
+	}
+}

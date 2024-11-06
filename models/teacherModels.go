@@ -20,7 +20,6 @@ func (Teacher) TableName() string {
 }
 
 // Create teacher
-
 func (teacher *Teacher) CreateTeacher() error {
 	result := connections.DB.Create(&teacher)
 	if result.Error != nil {
@@ -29,6 +28,7 @@ func (teacher *Teacher) CreateTeacher() error {
 	return nil
 }
 
+// Get all teacher
 func (teacher *Teacher) GetAllUserTeachers() (
 	teachers []Teacher,
 	msg string,
@@ -41,4 +41,39 @@ func (teacher *Teacher) GetAllUserTeachers() (
 	}
 
 	return teachers, ""
+}
+
+// Get teacher by id
+func (teacher *Teacher) GetTeacherById(id string) (Teacher, error) {
+	var teachers Teacher
+	result := connections.DB.First(&teachers, id)
+
+	if result.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			return teachers, nil
+		}
+		return teachers, result.Error
+	}
+
+	return teachers, nil
+}
+
+// Update teacher by id
+func (teacher *Teacher) UpdateTeacherById(teachers *Teacher) error {
+	result := connections.DB.Model(&teacher).Updates(&teachers)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
+
+// Delete teacher by id
+func (teacher *Teacher) DeleteTeacherById(id string) error {
+	result := connections.DB.Delete(&teacher, id)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
 }

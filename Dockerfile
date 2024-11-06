@@ -4,14 +4,17 @@ FROM golang:1.23.1-alpine
 # Create a group and user
 RUN addgroup -S edulinkgroup && adduser -S edulink -G edulinkgroup
 
-# Tell docker that all future commands should run as the edulink user
-USER edulink
-
 # Set the working directory
 WORKDIR /app
 
 # Copy go.mod and go.sum files to the working directory
 COPY go.mod go.sum ./
+
+# Change ownership of the files to the non-root user (edulink)
+RUN chown -R edulink:edulinkgroup /app
+
+# Tell Docker that all future commands should run as the edulink user
+USER edulink
 
 # Install dependencies
 RUN go mod tidy

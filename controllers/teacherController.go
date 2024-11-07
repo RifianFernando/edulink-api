@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"strconv"
 
 	// "strconv"
 	// "time"
@@ -378,7 +379,15 @@ func DeleteTeacherById() gin.HandlerFunc {
 
 		var teacher models.TeacherModel
 		// if teacher exist
-		err := teacher.User.DeleteUserById(id)
+		teacher, err := teacher.GetTeacherById(id)
+		if err != nil || teacher.TeacherID == 0 {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+
+		err = teacher.User.DeleteUserById(strconv.FormatInt(teacher.UserID, 10))
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": err.Error(),

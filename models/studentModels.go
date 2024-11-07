@@ -11,7 +11,7 @@ import (
 
 type Student struct {
 	StudentID             int64     `gorm:"primaryKey"`
-	ClassID               int64     `json:"id_class" binding:"required"`
+	ClassNameID           int64     `json:"id_class" binding:"required"`
 	StudentName           string    `json:"name" binding:"required"`
 	StudentNISN           string    `json:"nisn" binding:"required,len=10"`
 	StudentGender         string    `json:"gender" binding:"required,oneof=Male Female"`
@@ -32,7 +32,16 @@ type Student struct {
 	lib.BaseModel
 }
 
+type StudentModel struct {
+	Student
+	ClassName ClassNameGrade `gorm:"foreignKey:ClassNameID;references:ClassNameID"`
+}
+
 func (Student) TableName() string {
+	return lib.GenerateTableName(lib.Academic, "students")
+}
+
+func (StudentModel) TableName() string {
 	return lib.GenerateTableName(lib.Academic, "students")
 }
 
@@ -46,11 +55,11 @@ func (student *Student) CreateStudent() error {
 }
 
 // Get all students
-func (student *Student) GetAllStudents() (
-	students []Student,
+func (student *StudentModel) GetAllStudents() (
+	students []StudentModel,
 	msg string,
 ) {
-	result := connections.DB.Find(&students)
+	result := connections.DB.Preload("ClassName.Grade").Find(&students)
 	if result.Error != nil {
 		return nil, result.Error.Error()
 	} else if result.RowsAffected == 0 {

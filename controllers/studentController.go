@@ -3,10 +3,10 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/gin-gonic/gin"
 	"github.com/edulink-api/helper"
 	"github.com/edulink-api/models"
 	"github.com/edulink-api/request"
+	"github.com/gin-gonic/gin"
 )
 
 func CreateStudent() gin.HandlerFunc {
@@ -40,7 +40,7 @@ func CreateStudent() gin.HandlerFunc {
 
 		// create student
 		var student = models.Student{
-			ClassID:               request.ClassID,
+			ClassNameID:           request.ClassNameID,
 			StudentName:           request.StudentName,
 			StudentNISN:           request.StudentNISN,
 			StudentGender:         request.StudentGender,
@@ -107,7 +107,7 @@ func CreateAllStudent() gin.HandlerFunc {
 
 func GetAllStudent() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var students models.Student
+		var students models.StudentModel
 		result, err := students.GetAllStudents()
 		if err != "" {
 			c.JSON(http.StatusBadRequest, gin.H{
@@ -200,7 +200,7 @@ func UpdateStudentById() gin.HandlerFunc {
 
 		// update student if exist
 		student.StudentID = result.StudentID
-		student.ClassID = request.ClassID
+		student.ClassNameID = request.ClassNameID
 		student.StudentName = request.StudentName
 		student.StudentNISN = request.StudentNISN
 		student.StudentGender = request.StudentGender

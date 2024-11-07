@@ -33,14 +33,14 @@ func PrepareStudents(requestedStudents []request.InsertStudentRequest, c *gin.Co
 			return nil, err
 		}
 
-		classIDStr := strconv.FormatInt(student.ClassID, 10)
+		classIDStr := strconv.FormatInt(student.ClassNameID, 10)
 		if err := checkClassExistence(classIDStr, index); err != nil {
 			return nil, err
 		}
 
 		// Add the validated student to the slice
 		students = append(students, models.Student{
-			ClassID:               student.ClassID,
+			ClassNameID:           student.ClassNameID,
 			StudentName:           student.StudentName,
 			StudentNISN:           student.StudentNISN,
 			StudentGender:         student.StudentGender,
@@ -135,7 +135,7 @@ func checkStudentExistence(student request.InsertStudentRequest, index int) erro
 			return err
 		}
 
-		if result.StudentID != 0 || result.ClassID != 0 {
+		if result.StudentID != 0 || result.ClassNameID != 0 {
 			return errors.New("Student " + criteria.field + ": " + criteria.value + " already exist on index: " + strconv.Itoa(index))
 		}
 	}

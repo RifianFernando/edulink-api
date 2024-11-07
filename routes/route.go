@@ -34,7 +34,6 @@ func Route(router *gin.Engine) {
 			)
 			student.PUT(
 				"/update/:student_id",
-				// middleware.HaveStore(),
 				controllers.UpdateStudentById(),
 			)
 			student.DELETE(
@@ -62,11 +61,10 @@ func Route(router *gin.Engine) {
 			// 	"/create-all",
 			// 	controllers.CreateAllTeacher(),
 			// )
-			// teacher.PUT(
-			// 	"/update/:teacher_id",
-			// 	// middleware.HaveStore(),
-			// 	controllers.UpdateTeacherById(),
-			// )
+			teacher.PUT(
+				"/update/:teacher_id",
+				controllers.UpdateTeacherById(),
+			)
 			teacher.DELETE(
 				"/delete/:teacher_id",
 				controllers.DeleteTeacherById(),

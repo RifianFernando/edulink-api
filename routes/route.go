@@ -34,12 +34,40 @@ func Route(router *gin.Engine) {
 			)
 			student.PUT(
 				"/update/:student_id",
-				// middleware.HaveStore(),
 				controllers.UpdateStudentById(),
 			)
 			student.DELETE(
 				"/delete/:student_id",
 				controllers.DeleteStudentById(),
+			)
+		}
+
+		// Teacher CRUD
+		teacher := apiV1.Group("/teacher")
+		{
+			teacher.GET(
+				"/",
+				controllers.GetAllTeacher(),
+			)
+			teacher.GET(
+				"/:teacher_id",
+				controllers.GetTeacherById(),
+			)
+			teacher.POST(
+				"/create",
+				controllers.CreateTeacher(),
+			)
+			// teacher.POST(
+			// 	"/create-all",
+			// 	controllers.CreateAllTeacher(),
+			// )
+			teacher.PUT(
+				"/update/:teacher_id",
+				controllers.UpdateTeacherById(),
+			)
+			teacher.DELETE(
+				"/delete/:teacher_id",
+				controllers.DeleteTeacherById(),
 			)
 		}
 

@@ -60,7 +60,7 @@ func CreateClass() gin.HandlerFunc {
 
 func GetAllClass() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var ClassName models.ClassName
+		var ClassName models.ClassNameModel
 		result, err := ClassName.GetAllClassName()
 		if err != "" {
 			c.JSON(http.StatusBadRequest, gin.H{

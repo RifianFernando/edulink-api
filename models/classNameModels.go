@@ -11,9 +11,18 @@ type ClassName struct {
 	GradeID     int64   `json:"id_grade" binding:"required"`
 	TeacherID   int64   `json:"id_teacher" binding:"required"`
 	Name        string  `json:"name" binding:"required" validate:"len=1"`
+	lib.BaseModel
+}
+
+type ClassNameModel struct {
+	ClassName
 	Teacher     Teacher `gorm:"foreignKey:TeacherID;references:TeacherID"`
 	Grade       Grade   `gorm:"foreignKey:GradeID;references:GradeID"`
-	lib.BaseModel
+}
+
+type ClassNameGrade struct {
+	ClassName
+	Grade Grade `gorm:"foreignKey:GradeID;references:GradeID"`
 }
 
 func (ClassName) TableName() string {
@@ -30,8 +39,8 @@ func (className *ClassName) CreateClassName() error {
 }
 
 // Get all ClassName
-func (class *ClassName) GetAllClassName() (
-	className []ClassName,
+func (class *ClassNameModel) GetAllClassName() (
+	className []ClassNameModel,
 	msg string,
 ) {
 	result := connections.DB.Preload("Teacher.User").Preload("Grade").Find(&className)

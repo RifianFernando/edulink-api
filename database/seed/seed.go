@@ -53,4 +53,5 @@ func Seed() {
 	Validate(ClassSeeder())
 	Validate(StudentSeeder())
 	Validate(AdminSeeder())
+	Validate(SubjectSeeder())
 }

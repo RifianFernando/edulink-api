@@ -8,13 +8,14 @@ import (
 )
 
 // ClassSeeder seeds the Class data into the database.
-func UserSeeder()(users []models.User) {
+func UserSeeder() (users []models.User) {
 	users = []models.User{
 		{
 			UserName:         "guru1",
 			UserGender:       "Male",
 			UserPlaceOfBirth: "Jakarta",
 			UserDateOfBirth:  time.Now(),
+			UserReligion:     "Islam",
 			UserAddress:      "Jl. Jakarta",
 			UserNumPhone:     "08123456789",
 			UserEmail:        "test@gmail.com",
@@ -24,6 +25,7 @@ func UserSeeder()(users []models.User) {
 			UserName:         "guru2",
 			UserGender:       "Female",
 			UserPlaceOfBirth: "Jakarta",
+			UserReligion:     "Katholik",
 			UserDateOfBirth:  time.Now(),
 			UserAddress:      "Jl. Raya Bogor",
 			UserNumPhone:     "08123456798",
@@ -34,6 +36,7 @@ func UserSeeder()(users []models.User) {
 			UserName:         "Admin1",
 			UserGender:       "Male",
 			UserPlaceOfBirth: "Jakarta",
+			UserReligion:     "Kristen",
 			UserDateOfBirth:  time.Now(),
 			UserAddress:      "Jl. Jakarta",
 			UserNumPhone:     "08123456781",

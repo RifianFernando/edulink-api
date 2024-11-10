@@ -5,7 +5,7 @@ import (
 
 	"github.com/edulink-api/config"
 	"github.com/edulink-api/helper"
-	"github.com/edulink-api/request"
+	"github.com/edulink-api/request/auth"
 	"github.com/gin-gonic/gin"
 )
 

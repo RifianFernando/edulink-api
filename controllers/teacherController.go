@@ -364,25 +364,6 @@ func UpdateTeacherById() gin.HandlerFunc {
 			return
 		}
 
-		// var teacher models.TeacherModel
-		// teacher, err = teacher.GetTeacherById(id)
-		// if err != nil {
-		// 	c.JSON(http.StatusInternalServerError, gin.H{
-		// 		"error": err.Error(),
-		// 	})
-
-		// 	return
-		// }
-
-		// update user and teacher
-		// teacher.User.UserName = request.UserName
-		// teacher.User.UserGender = request.UserGender
-		// teacher.User.UserPlaceOfBirth = request.UserPlaceOfBirth
-		// teacher.User.UserDateOfBirth = DateOfBirth
-		// teacher.User.UserAddress = request.UserAddress
-		// teacher.User.UserNumPhone = request.UserNumPhone
-		// teacher.User.UserEmail = request.UserEmail
-
 		// Return success response
 		c.JSON(http.StatusOK, gin.H{
 			"success":     "Updated teacher with ID: " + id,

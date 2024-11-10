@@ -3,7 +3,8 @@ package routes
 import (
 	"os"
 
-	"github.com/edulink-api/controllers"
+	controllers "github.com/edulink-api/controllers"
+	authController "github.com/edulink-api/controllers/auth"
 	"github.com/edulink-api/middleware"
 	"github.com/gin-gonic/gin"
 )
@@ -102,32 +103,32 @@ func Route(router *gin.Engine) {
 			auth.POST(
 				"/login",
 				middleware.IsNotLoggedIn(),
-				controllers.Login(),
+				authController.Login(),
 			)
 			auth.POST(
 				"/logout",
 				middleware.AlreadyLoggedIn(),
-				controllers.Logout(),
+				authController.Logout(),
 			)
 			// validate access token
 			auth.GET(
 				"/validate-token",
-				controllers.ValidateAccessToken(),
+				authController.ValidateAccessToken(),
 			)
 			auth.GET(
 				"/refresh-token",
 				middleware.IsNotLoggedIn(),
-				controllers.RefreshToken(),
+				authController.RefreshToken(),
 			)
 			auth.POST(
 				"/forget-password",
 				middleware.IsNotLoggedIn(),
-				controllers.ForgetPassword(),
+				authController.ForgetPassword(),
 			)
 			auth.POST(
 				"/reset-password",
 				middleware.IsNotLoggedIn(),
-				controllers.ResetPassword(),
+				authController.ResetPassword(),
 			)
 		}
 	}

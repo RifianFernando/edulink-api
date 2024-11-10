@@ -5,7 +5,7 @@ import (
 
 	"github.com/edulink-api/helper"
 	"github.com/edulink-api/models"
-	"github.com/edulink-api/request"
+	request "github.com/edulink-api/request/student"
 	"github.com/gin-gonic/gin"
 )
 
@@ -229,6 +229,32 @@ func UpdateStudentById() gin.HandlerFunc {
 
 		c.JSON(http.StatusOK, gin.H{
 			"student": student,
+		})
+	}
+}
+
+func UpdateManyStudentClassID() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var request request.UpdateManyStudentClassRequest
+
+		if err := c.ShouldBindJSON(&request); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "should bind json: " + err.Error()})
+			return
+		}
+
+		if err := request.Validate(); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "validation error: " + err.Error()})
+			return
+		}
+
+		// TODO: update all students class id with db transaction for safety reason
+		// if err := models.UpdateAllStudentsClassID(students); err != nil {
+		// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		// 	return
+		// }
+
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Students updated",
 		})
 	}
 }

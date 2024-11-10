@@ -33,6 +33,10 @@ func Route(router *gin.Engine) {
 				"/create-all",
 				controllers.CreateAllStudent(),
 			)
+			student.POST(
+				"/update-all",
+				controllers.UpdateManyStudentClassID(),
+			)
 			student.PUT(
 				"/update/:student_id",
 				controllers.UpdateStudentById(),

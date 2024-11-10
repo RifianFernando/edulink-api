@@ -4,12 +4,14 @@ package request
 import (
 	"time"
 
-	"github.com/go-playground/validator/v10"
 	"github.com/edulink-api/models"
+	"github.com/go-playground/validator/v10"
 )
 
 /*
 * InsertTeacherRequest struct
+*
+*
 * see the documentation about binding and validation here:
 * https://blog.logrocket.com/gin-binding-in-go-a-tutorial-with-examples/#validating-date-time
  */
@@ -40,6 +42,8 @@ func (r *InsertTeacherRequest) ParseDates() (time.Time, error) {
 
 /*
 * InsertAllTeacherRequest struct
+*
+* 
 * see the documentation about binding and validation here:
 * https://blog.logrocket.com/gin-binding-in-go-a-tutorial-with-examples/#validating-date-time
  */

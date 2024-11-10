@@ -9,7 +9,7 @@ import (
 
 	"github.com/edulink-api/lib"
 	"github.com/edulink-api/models"
-	"github.com/edulink-api/request"
+	"github.com/edulink-api/request/teacher"
 	"github.com/gin-gonic/gin"
 )
 
@@ -307,7 +307,7 @@ func GetTeacherById() gin.HandlerFunc {
 // TODO: UpdateTeacherById need update password or not?
 func UpdateTeacherById() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var request request.InsertTeacherRequest
+		var request request.UpdateTeacherRequest
 		// Bind the request JSON to the InsertTeacherRequest struct
 		if err := c.ShouldBindJSON(&request); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
@@ -337,8 +337,26 @@ func UpdateTeacherById() gin.HandlerFunc {
 		id := c.Param("teacher_id")
 
 		var teacher models.TeacherModel
-		err = teacher.UpdateTeacherById(&teacher)
+		teacher, err = teacher.GetTeacherById(id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
 
+		// update teacher and user
+		teacher.User.UserName = request.UserName
+		teacher.User.UserGender = request.UserGender
+		teacher.User.UserPlaceOfBirth = request.UserPlaceOfBirth
+		teacher.User.UserReligion = request.UserReligion
+		teacher.User.UserDateOfBirth = DateOfBirth
+		teacher.User.UserAddress = request.UserAddress
+		teacher.User.UserNumPhone = request.UserNumPhone
+		teacher.User.UserEmail = request.UserEmail
+		teacher.TeachingHour = request.TeachingHour
+
+		err = teacher.UpdateTeacherById(&teacher)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": err.Error(),

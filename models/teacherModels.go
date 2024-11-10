@@ -67,37 +67,33 @@ func (teacher *TeacherModel) GetTeacherById(id string) (TeacherModel, error) {
 
 // Update teacher and user
 func (teacher *TeacherModel) UpdateTeacherById(teacherData *TeacherModel) error {
-	teacher.TeacherID = teacherData.TeacherID
-
-	// 1. Find the teacher
-	result := connections.DB.First(&teacher)
+	// 1. Update teacher fields (excluding User and BaseModel)
+	result := connections.DB.Model(&teacher.Teacher).Updates(
+		&Teacher{
+			TeachingHour: teacherData.TeachingHour,
+		},
+	)
 	if result.Error != nil {
 		return result.Error
+	} else if result.RowsAffected == 0 {
+		return fmt.Errorf("teacher not found")
 	}
 
-	// 2. Update teacher fields (excluding User and BaseModel)
-	result = connections.DB.Model(&teacher).Updates(Teacher{
-		TeachingHour: teacherData.TeachingHour,
-	})
-	if result.Error != nil {
-		fmt.Println("error update teacher")
-		return result.Error
-	}
-
-	// 3. Update associated user
+	// 2. Update associated user
 	userData := teacherData.User
-	result = connections.DB.Model(&teacher.User).Updates(User{
-		UserName:         userData.UserName,
-		UserGender:       userData.UserGender,
-		UserPlaceOfBirth: userData.UserPlaceOfBirth,
-		UserDateOfBirth:  userData.UserDateOfBirth,
-		UserAddress:      userData.UserAddress,
-		UserNumPhone:     userData.UserNumPhone,
-		UserReligion:     userData.UserReligion,
-		UserEmail:        userData.UserEmail,
-	})
+	result = connections.DB.Model(&teacher.User).Updates(
+		&User{
+			UserName:         userData.UserName,
+			UserGender:       userData.UserGender,
+			UserPlaceOfBirth: userData.UserPlaceOfBirth,
+			UserDateOfBirth:  userData.UserDateOfBirth,
+			UserAddress:      userData.UserAddress,
+			UserNumPhone:     userData.UserNumPhone,
+			UserReligion:     userData.UserReligion,
+			UserEmail:        userData.UserEmail,
+		},
+	)
 	if result.Error != nil {
-		fmt.Println("error update user")
 		return result.Error
 	}
 

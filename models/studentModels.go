@@ -125,3 +125,38 @@ func CreateAllStudents(students []Student) error {
 	}
 	return nil
 }
+
+type UpdateManyStudentClass struct {
+	StudentID   int64 `json:"student_id" binding:"required" validate:"required,numeric,gte=1"`
+	ClassNameID int64 `json:"class_name_id" binding:"required" validate:"required,numeric,gte=1"`
+}
+
+func UpdateManyStudentClassID(studentData []UpdateManyStudentClass) error {
+	tx := connections.DB.Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err := tx.Error; err != nil {
+		return err
+	}
+
+	for _, data := range studentData {
+		result := tx.Model(&Student{
+			StudentID: data.StudentID,
+		}).Updates(Student{
+			ClassNameID: data.ClassNameID,
+		})
+		if result.Error != nil {
+			tx.Rollback()
+			return result.Error
+		}
+	}
+
+	return tx.Commit().Error
+}

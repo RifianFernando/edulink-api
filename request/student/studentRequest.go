@@ -54,6 +54,10 @@ type InsertAllStudentRequest struct {
 
 // Validate method
 func (r *InsertAllStudentRequest) ValidateAllStudent() error {
-	validate := validator.New()
-	return validate.Struct(r)
+	for _, data := range r.InsertStudentRequest {
+		if err := data.Validate(); err != nil {
+			return err
+		}
+	}
+	return nil
 }

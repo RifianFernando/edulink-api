@@ -75,7 +75,7 @@ func GetAllClass() gin.HandlerFunc {
 	}
 }
 
-func GetClassById() gin.HandlerFunc {
+func GetClassNameById() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("class_id")
 

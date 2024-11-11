@@ -242,16 +242,25 @@ func UpdateManyStudentClassID() gin.HandlerFunc {
 			return
 		}
 
-		if err := request.Validate(); err != nil {
+		if err := request.ValidateAllData(); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "validation error: " + err.Error()})
 			return
 		}
 
-		// TODO: update all students class id with db transaction for safety reason
-		// if err := models.UpdateAllStudentsClassID(students); err != nil {
-		// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		// 	return
-		// }
+		// Prepare students
+		var students []models.UpdateManyStudentClass
+		for _, student := range request.UpdateStudentClass {
+			students = append(students, models.UpdateManyStudentClass{
+				StudentID:   student.StudentID,
+				ClassNameID: student.ClassNameID,
+			})
+		}
+
+		// Update students
+		if err := models.UpdateManyStudentClassID(students); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Students updated",

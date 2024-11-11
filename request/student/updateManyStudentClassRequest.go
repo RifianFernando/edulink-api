@@ -1,6 +1,7 @@
 package request
 
 import (
+	"github.com/edulink-api/models"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -10,12 +11,15 @@ import (
 * https://blog.logrocket.com/gin-binding-in-go-a-tutorial-with-examples/#validating-date-time
  */
 type UpdateManyStudentClassRequest struct {
-	StudentID int64 `json:"student_id" binding:"required" validate:"required,numeric"`
-	ClassID   int64 `json:"class_id" binding:"required" validate:"required,numeric"`
+	UpdateStudentClass []models.UpdateManyStudentClass `json:"student-data" binding:"required"`
 }
 
 // Validate method
-func (r *UpdateManyStudentClassRequest) Validate() error {
-	validate := validator.New()
-	return validate.Struct(r)
+func (r *UpdateManyStudentClassRequest) ValidateAllData() error {
+	for _, data := range r.UpdateStudentClass {
+		if err := validator.New().Struct(data); err != nil {
+			return err
+		}
+	}
+	return nil
 }

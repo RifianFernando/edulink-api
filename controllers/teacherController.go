@@ -304,7 +304,6 @@ func GetTeacherById() gin.HandlerFunc {
 	}
 }
 
-// TODO: UpdateTeacherById need update password or not?
 func UpdateTeacherById() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var request request.UpdateTeacherRequest

@@ -11,12 +11,21 @@ import (
 * https://gorm.io/docs/data_types.html
 * https://gorm.io/docs/models.html#Fields-Tags
  */
+type AttendanceStatus string
+
+const (
+	Absent  AttendanceStatus = "Absent"
+	Leave   AttendanceStatus = "Leave"
+	Sick    AttendanceStatus = "Sick"
+	Present AttendanceStatus = "Present"
+)
+
 type Attendance struct {
-	AttendanceID     int64     `gorm:"primaryKey;autoIncrement"`
-	StudentID        int64     `gorm:"not null"`
-	AttendanceDate   time.Time `gorm:"not null"`
-	AttendanceStatus string    `gorm:"not null"`
-	lib.BaseModel              /* this type include CreatedAt, UpdatedAt, DeletedAt, I can't use the gorm.models because can't customize the id name */
+	AttendanceID     int64            `gorm:"primaryKey;autoIncrement"`
+	StudentID        int64            `gorm:"not null"`
+	AttendanceDate   time.Time        `gorm:"not null"`
+	AttendanceStatus AttendanceStatus `gorm:"not null;type:VARCHAR(8)"`
+	lib.BaseModel                     /* this type include CreatedAt, UpdatedAt, DeletedAt, I can't use the gorm.models because can't customize the id name */
 }
 
 /*

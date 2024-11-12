@@ -48,16 +48,16 @@ func CreateStudent() gin.HandlerFunc {
 			StudentDateOfBirth:    DateOfBirth,
 			StudentReligion:       request.StudentReligion,
 			StudentAddress:        request.StudentAddress,
-			StudentNumPhone:       request.StudentNumPhone,
+			StudentPhoneNumber:       request.StudentPhoneNumber,
 			StudentEmail:          request.StudentEmail,
 			StudentAcceptedDate:   AcceptedDate,
-			StudentSchoolOrigin:   request.StudentSchoolOrigin,
+			StudentSchoolOfOrigin:   request.StudentSchoolOfOrigin,
 			StudentFatherName:     request.StudentFatherName,
 			StudentFatherJob:      request.StudentFatherJob,
-			StudentFatherNumPhone: request.StudentFatherNumPhone,
+			StudentFatherPhoneNumber: request.StudentFatherPhoneNumber,
 			StudentMotherName:     request.StudentMotherName,
 			StudentMotherJob:      request.StudentMotherJob,
-			StudentMotherNumPhone: request.StudentMotherNumPhone,
+			StudentMotherPhoneNumber: request.StudentMotherPhoneNumber,
 		}
 
 		err = student.CreateStudent()
@@ -208,16 +208,16 @@ func UpdateStudentById() gin.HandlerFunc {
 		student.StudentDateOfBirth = dateOfBirth
 		student.StudentReligion = request.StudentReligion
 		student.StudentAddress = request.StudentAddress
-		student.StudentNumPhone = request.StudentNumPhone
+		student.StudentPhoneNumber = request.StudentPhoneNumber
 		student.StudentEmail = request.StudentEmail
 		student.StudentAcceptedDate = acceptedDate
-		student.StudentSchoolOrigin = request.StudentSchoolOrigin
+		student.StudentSchoolOfOrigin = request.StudentSchoolOfOrigin
 		student.StudentFatherName = request.StudentFatherName
 		student.StudentFatherJob = request.StudentFatherJob
-		student.StudentFatherNumPhone = request.StudentFatherNumPhone
+		student.StudentFatherPhoneNumber = request.StudentFatherPhoneNumber
 		student.StudentMotherName = request.StudentMotherName
 		student.StudentMotherJob = request.StudentMotherJob
-		student.StudentMotherNumPhone = request.StudentMotherNumPhone
+		student.StudentMotherPhoneNumber = request.StudentMotherPhoneNumber
 
 		err = student.UpdateStudentById(&student)
 		if err != nil {

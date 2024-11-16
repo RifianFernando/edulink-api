@@ -15,7 +15,7 @@ func Route(router *gin.Engine) {
 	{
 		// Student CRUD
 		student := apiV1.Group("/student")
-		student.Use(middleware.AlreadyLoggedIn(), middleware.AdminOnly())
+		student.Use(middleware.AlreadyLoggedIn())
 		{
 			student.GET(
 				"/",
@@ -49,6 +49,7 @@ func Route(router *gin.Engine) {
 
 		// Teacher CRUD
 		teacher := apiV1.Group("/teacher")
+		teacher.Use(middleware.AlreadyLoggedIn(), middleware.AdminOnly())
 		{
 			teacher.GET(
 				"/",

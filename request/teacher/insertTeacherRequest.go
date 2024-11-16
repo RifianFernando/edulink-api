@@ -4,7 +4,6 @@ package request
 import (
 	"time"
 
-	"github.com/edulink-api/models"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -16,9 +15,16 @@ import (
 * https://blog.logrocket.com/gin-binding-in-go-a-tutorial-with-examples/#validating-date-time
  */
 type InsertTeacherRequest struct {
-	models.User
-	TeachingHour int32  `json:"teaching_hour" binding:"required"`
-	DateOfBirth  string `json:"date_of_birth" binding:"required"`
+	UserID           int64  `gorm:"primaryKey" json:"id"`
+	UserName         string `json:"name" binding:"required"`
+	UserGender       string `json:"gender" binding:"required,oneof=Male Female"`
+	UserPlaceOfBirth string `json:"place_of_birth" binding:"required"`
+	UserDateOfBirth  time.Time
+	UserReligion     string `json:"religion" binding:"required" validate:"required,oneof=Islam Kristen Katholik Hindu Buddha Konghucu"`
+	UserAddress      string `json:"address" binding:"required"`
+	UserNumPhone     string `json:"num_phone" binding:"required,e164"`
+	UserEmail        string `json:"email" binding:"required,email"`
+	DateOfBirth      string `json:"date_of_birth" binding:"required"`
 }
 
 // Validate method
@@ -43,7 +49,7 @@ func (r *InsertTeacherRequest) ParseDates() (time.Time, error) {
 /*
 * InsertAllTeacherRequest struct
 *
-* 
+*
 * see the documentation about binding and validation here:
 * https://blog.logrocket.com/gin-binding-in-go-a-tutorial-with-examples/#validating-date-time
  */

@@ -41,7 +41,7 @@ func (r *Religion) Scan(value interface{}) error {
  */
 type User struct {
 	UserID           int64     `gorm:"primaryKey;autoIncrement"`
-	UserName         string    `gorm:"unique;not null"`
+	UserName         string    `gorm:"not null"`
 	UserGender       Gender    `gorm:"type:VARCHAR(6);not null"`
 	UserPlaceOfBirth string    `gorm:"not null"`
 	UserDateOfBirth  time.Time `gorm:"not null"`

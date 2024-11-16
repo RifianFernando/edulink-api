@@ -4,12 +4,9 @@ import (
 	"net/http"
 	"strconv"
 
-	// "strconv"
-	// "time"
-
 	"github.com/edulink-api/lib"
 	"github.com/edulink-api/models"
-	"github.com/edulink-api/request/teacher"
+	request "github.com/edulink-api/request/teacher"
 	"github.com/gin-gonic/gin"
 )
 
@@ -51,7 +48,9 @@ func CreateTeacher() gin.HandlerFunc {
 			UserAddress:      request.UserAddress,
 			UserNumPhone:     request.UserNumPhone,
 			UserEmail:        request.UserEmail,
-			UserPassword:     lib.HashPassword(request.UserPassword),
+			UserPassword: lib.HashPassword(
+				request.UserEmail + request.DateOfBirth,
+			),
 		}
 
 		err = user.CreateUser()
@@ -66,7 +65,7 @@ func CreateTeacher() gin.HandlerFunc {
 		// create teacher
 		var teacher = models.Teacher{
 			UserID:       user.UserID,
-			TeachingHour: request.TeachingHour,
+			TeachingHour: 0,
 		}
 
 		err = teacher.CreateTeacher()

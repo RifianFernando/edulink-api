@@ -40,23 +40,23 @@ func CreateStudent() gin.HandlerFunc {
 
 		// create student
 		var student = models.Student{
-			ClassNameID:           request.ClassNameID,
-			StudentName:           request.StudentName,
-			StudentNISN:           request.StudentNISN,
-			StudentGender:         request.StudentGender,
-			StudentPlaceOfBirth:   request.StudentPlaceOfBirth,
-			StudentDateOfBirth:    DateOfBirth,
-			StudentReligion:       request.StudentReligion,
-			StudentAddress:        request.StudentAddress,
+			ClassNameID:              request.ClassNameID,
+			StudentName:              request.StudentName,
+			StudentNISN:              request.StudentNISN,
+			StudentGender:            request.StudentGender,
+			StudentPlaceOfBirth:      request.StudentPlaceOfBirth,
+			StudentDateOfBirth:       DateOfBirth,
+			StudentReligion:          request.StudentReligion,
+			StudentAddress:           request.StudentAddress,
 			StudentPhoneNumber:       request.StudentPhoneNumber,
-			StudentEmail:          request.StudentEmail,
-			StudentAcceptedDate:   AcceptedDate,
-			StudentSchoolOfOrigin:   request.StudentSchoolOfOrigin,
-			StudentFatherName:     request.StudentFatherName,
-			StudentFatherJob:      request.StudentFatherJob,
+			StudentEmail:             request.StudentEmail,
+			StudentAcceptedDate:      AcceptedDate,
+			StudentSchoolOfOrigin:    request.StudentSchoolOfOrigin,
+			StudentFatherName:        request.StudentFatherName,
+			StudentFatherJob:         request.StudentFatherJob,
 			StudentFatherPhoneNumber: request.StudentFatherPhoneNumber,
-			StudentMotherName:     request.StudentMotherName,
-			StudentMotherJob:      request.StudentMotherJob,
+			StudentMotherName:        request.StudentMotherName,
+			StudentMotherJob:         request.StudentMotherJob,
 			StudentMotherPhoneNumber: request.StudentMotherPhoneNumber,
 		}
 
@@ -126,7 +126,7 @@ func GetStudentById() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("student_id")
 
-		var student models.Student
+		var student models.StudentModel
 		result, err := student.GetStudentById(id)
 
 		if err != nil {
@@ -182,15 +182,15 @@ func UpdateStudentById() gin.HandlerFunc {
 		// Get student by id
 		id := c.Param("student_id")
 
-		var student models.Student
-		result, err := student.GetStudentById(id)
+		var studentModel models.StudentModel
+		result, err := studentModel.GetStudentById(id)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": err.Error(),
 			})
 
 			return
-		} else if result == (models.Student{}) {
+		} else if result == (models.StudentModel{}) {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": "Student not found",
 			})
@@ -199,6 +199,7 @@ func UpdateStudentById() gin.HandlerFunc {
 		}
 
 		// update student if exist
+		var student models.Student
 		student.StudentID = result.StudentID
 		student.ClassNameID = request.ClassNameID
 		student.StudentName = request.StudentName

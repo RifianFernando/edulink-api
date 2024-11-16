@@ -83,9 +83,9 @@ func (student *Student) GetStudent() (Student, error) {
 }
 
 // get student by id
-func (student *Student) GetStudentById(id string) (Student, error) {
-	var students Student
-	result := connections.DB.First(&students, id)
+func (student *StudentModel) GetStudentById(id string) (StudentModel, error) {
+	var students StudentModel
+	result := connections.DB.Preload("ClassName.Grade").First(&students, id)
 
 	if result.Error != nil {
 		if result.Error == gorm.ErrRecordNotFound {

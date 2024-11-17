@@ -36,7 +36,7 @@ func (teacher *Teacher) CreateTeacher() error {
 }
 
 // Get all teacher
-func (teacher *TeacherModel) GetAllUserTeachers() (
+func (teacher *TeacherModel) GetAllUserTeachersWithUser() (
 	teachers []TeacherModel,
 	msg string,
 ) {

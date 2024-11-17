@@ -262,7 +262,7 @@ func CreateTeacher() gin.HandlerFunc {
 func GetAllTeacher() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var teachers models.TeacherModel
-		result, err := teachers.GetAllUserTeachers()
+		result, err := teachers.GetAllUserTeachersWithUser()
 		if err != "" {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": err,

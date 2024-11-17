@@ -15,13 +15,11 @@ func Validate(models interface{}) {
 	// Use reflection to ensure `models` is a slice
 	slice := reflect.ValueOf(models)
 	if slice.Kind() != reflect.Slice {
-		fmt.Println("Validate function requires a slice")
 		return
 	}
 
 	// Check if the slice is empty
 	if slice.Len() == 0 {
-		fmt.Println("Empty slice provided, nothing to validate")
 		return
 	}
 

@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/edulink-api/helper"
+	"github.com/edulink-api/lib"
 	"github.com/edulink-api/models"
 	request "github.com/edulink-api/request/student"
 	"github.com/gin-gonic/gin"
@@ -12,19 +13,21 @@ import (
 func CreateStudent() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var request request.InsertStudentRequest
+		var allErrors []map[string]string
 
 		// Bind the request JSON to the CreateStudentRequest struct
-		if err := c.ShouldBindJSON(&request); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "should bind json" + err.Error(),
-			})
-			return
+		if err := lib.ResponseMessage(c.ShouldBindJSON(&request)); len(err) > 0 {
+			allErrors = append(allErrors, err...)
 		}
 
 		// Validate the request
-		if err := request.Validate(); err != nil {
+		if err := request.Validate(); len(err) > 0 {
+			allErrors = append(allErrors, err...)
+		}
+
+		if len(allErrors) > 0 {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "when validate" + err.Error(),
+				"error": allErrors,
 			})
 			return
 		}
@@ -79,14 +82,22 @@ func CreateStudent() gin.HandlerFunc {
 func CreateAllStudent() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var request request.InsertAllStudentRequest
+		var allErrors []map[string]string
 
-		if err := c.ShouldBindJSON(&request); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "should bind json: " + err.Error()})
-			return
+		// Bind the request JSON to the CreateStudentRequest struct
+		if err := lib.ResponseMessage(c.ShouldBindJSON(&request)); len(err) > 0 {
+			allErrors = append(allErrors, err...)
 		}
 
-		if err := request.ValidateAllStudent(); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "validation error: " + err.Error()})
+		// Validate the request
+		if err := request.ValidateAllStudent(); len(err) > 0 {
+			allErrors = append(allErrors, err...)
+		}
+
+		if len(allErrors) > 0 {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": allErrors,
+			})
 			return
 		}
 
@@ -152,19 +163,21 @@ func GetStudentById() gin.HandlerFunc {
 func UpdateStudentById() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var request request.InsertStudentRequest
+		var allErrors []map[string]string
 
-		// Bind the request JSON to the UpdateStudentRequest struct
-		if err := c.ShouldBindJSON(&request); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "should bind json" + err.Error(),
-			})
-			return
+		// Bind the request JSON to the CreateStudentRequest struct
+		if err := lib.ResponseMessage(c.ShouldBindJSON(&request)); len(err) > 0 {
+			allErrors = append(allErrors, err...)
 		}
 
 		// Validate the request
-		if err := request.Validate(); err != nil {
+		if err := request.Validate(); len(err) > 0 {
+			allErrors = append(allErrors, err...)
+		}
+
+		if len(allErrors) > 0 {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
+				"error": allErrors,
 			})
 			return
 		}
@@ -223,7 +236,7 @@ func UpdateStudentById() gin.HandlerFunc {
 		err = student.UpdateStudentById(&student)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "while updating" + err.Error(),
+				"error": err.Error(),
 			})
 			return
 		}

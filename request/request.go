@@ -29,17 +29,48 @@ func init() {
 }
 
 func registerTranslations() {
-	_ = registerValidationTranslation("required", "{0} wajib diisi", Trans, Validate)
-	_ = registerValidationTranslation("e164", "nomor telepon harus valid dengan kode negara (misalnya +62)", Trans, Validate)
-	_ = registerValidationTranslation("oneof", "{0} tidak sesuai kriteria: {1}", Trans, Validate)
-	_ = registerValidationTranslation("email", "format email memiliki @ dan .", Trans, Validate)
+	_ = registerValidationTranslation("required", "{field} wajib diisi")
+	_ = registerValidationTranslation("e164", "nomor telepon harus valid dengan kode negara (misalnya +62)")
+	_ = registerValidationTranslation("oneof", "{field} tidak sesuai kriteria: {value}")
+	_ = registerValidationTranslation("email", "format email memiliki @ dan .")
+	_ = registerValidationTranslation("min", "{field} minimal {min} karakter")
+	_ = registerValidationTranslation("max", "{field} maksimal {max} karakter")
+	_ = registerValidationTranslation("len", "panjang {field} harus {len} karakter")
 }
 
-func registerValidationTranslation(rule, defaultMessage string, trans ut.Translator, validate *validator.Validate) error {
-	return validate.RegisterTranslation(rule, trans, func(ut ut.Translator) error {
+func registerValidationTranslation(rule, defaultMessage string) error {
+	return Validate.RegisterTranslation(rule, Trans, func(ut ut.Translator) error {
+		// Add the custom message for each rule
 		return ut.Add(rule, defaultMessage, true)
 	}, func(ut ut.Translator, fe validator.FieldError) string {
-		translatedMessage, _ := ut.T("oneof", fe.Field(), fe.Param())
-		return translatedMessage
+		// Translate based on rule
+		return translateMessage(ut, rule, fe)
 	})
+}
+
+func translateMessage(ut ut.Translator, rule string, fe validator.FieldError) string {
+	// Prepare the map of placeholders for each rule
+	params := make([]interface{}, 0)
+
+	// Check the rule and populate params
+	params = append(params, fe.Field()) // field name
+
+	switch rule {
+	case "oneof":
+		params = append(params, fe.Param()) // value for "oneof" rule
+	case "min", "max":
+		params = append(params, fe.Param()) // min/max values
+	case "len":
+		params = append(params, fe.Param()) // length value
+	}
+
+	// Convert []interface{} to []string for ut.T
+	strParams := make([]string, len(params))
+	for i, v := range params {
+		strParams[i] = v.(string) // Convert each interface{} to string
+	}
+
+	// Translate the message and use the params
+	translatedMessage, _ := ut.T(rule, strParams...)
+	return translatedMessage
 }

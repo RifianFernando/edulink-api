@@ -13,19 +13,21 @@ import (
 func CreateTeacher() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var request request.InsertTeacherRequest
+		var allErrors []map[string]string
 
 		// Bind the request JSON to the CreateStudentRequest struct
-		if err := c.ShouldBindJSON(&request); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "should bind json" + err.Error(),
-			})
-			return
+		if err := lib.ResponseMessage(c.ShouldBindJSON(&request)); len(err) > 0 {
+			allErrors = append(allErrors, err...)
 		}
 
 		// Validate the request
-		if err := request.Validate(); err != nil {
+		if err := request.ValidateTeacher(); len(err) > 0 {
+			allErrors = append(allErrors, err...)
+		}
+
+		if len(allErrors) > 0 {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "when validate" + err.Error(),
+				"error": allErrors,
 			})
 			return
 		}

@@ -14,7 +14,7 @@ import (
 type Student struct {
 	StudentID                int64               `gorm:"primaryKey;autoIncrement"`
 	ClassNameID              int64               `gorm:"not null"`
-	StudentName              string              `gorm:"not null;unique"`
+	StudentName              string              `gorm:"not null"`
 	StudentNISN              string              `gorm:"not null;unique;type:CHAR(10)"`
 	StudentGender            Gender              `gorm:"type:VARCHAR(6);not null"`
 	StudentPlaceOfBirth      string              `gorm:"not null;type:VARCHAR(35)"`

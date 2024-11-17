@@ -4,7 +4,8 @@ package request
 import (
 	"time"
 
-	"github.com/go-playground/validator/v10"
+	"github.com/edulink-api/lib"
+	req "github.com/edulink-api/request"
 )
 
 /*
@@ -15,22 +16,24 @@ import (
 * https://blog.logrocket.com/gin-binding-in-go-a-tutorial-with-examples/#validating-date-time
  */
 type InsertTeacherRequest struct {
-	UserID           int64  `gorm:"primaryKey" json:"id"`
 	UserName         string `json:"name" binding:"required"`
-	UserGender       string `json:"gender" binding:"required,oneof=Male Female"`
+	UserGender       string `json:"gender" binding:"required" validate:"oneof='Male' 'Female'"`
 	UserPlaceOfBirth string `json:"place_of_birth" binding:"required"`
 	UserDateOfBirth  time.Time
-	UserReligion     string `json:"religion" binding:"required" validate:"required,oneof=Islam Kristen Katholik Hindu Buddha Konghucu"`
+	UserReligion     string `json:"religion" binding:"required" validate:"required,oneof='Islam' 'Kristen Protestan' 'Kristen Katolik' 'Hindu' 'Buddha' 'Khonghucu'"`
 	UserAddress      string `json:"address" binding:"required"`
-	UserNumPhone     string `json:"num_phone" binding:"required,e164"`
-	UserEmail        string `json:"email" binding:"required,email"`
-	DateOfBirth      string `json:"date_of_birth" binding:"required"`
+	UserNumPhone     string `json:"num_phone" binding:"required" validate:"required,e164"`
+	UserEmail        string `json:"email" binding:"required" validate:"required,email"`
+	DateOfBirth      string `json:"date_of_birth" binding:"required" validate:"required,datetime=2006-01-02"`
 }
 
 // Validate method
-func (r *InsertTeacherRequest) Validate() error {
-	validate := validator.New()
-	return validate.Struct(r)
+func (r *InsertTeacherRequest) ValidateTeacher() []map[string]string {
+
+	// Validate the struct
+	err := lib.ResponseMessage(req.Validate.Struct(r))
+
+	return err
 }
 
 /*
@@ -58,7 +61,9 @@ type InsertAllTeacherRequest struct {
 }
 
 // Validate method
-func (r *InsertAllTeacherRequest) ValidateAllTeacher() error {
-	validate := validator.New()
-	return validate.Struct(r)
+func (r *InsertAllTeacherRequest) ValidateAllTeacher() []map[string]string {
+	// Validate the struct
+	err := lib.ResponseMessage(req.Validate.Struct(r))
+
+	return err
 }

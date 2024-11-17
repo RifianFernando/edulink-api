@@ -1,11 +1,13 @@
 package models
 
 import (
+	"fmt"
 	"log"
 	"time"
 
 	"github.com/edulink-api/connections"
 	"github.com/edulink-api/database/migration/lib"
+    "github.com/go-sql-driver/mysql"
 	"gorm.io/gorm"
 )
 
@@ -13,14 +15,14 @@ type Student struct {
 	StudentID                int64     `gorm:"primaryKey"`
 	ClassNameID              int64     `json:"id_class" binding:"required"`
 	StudentName              string    `json:"name" binding:"required"`
-	StudentNISN              string    `json:"nisn" binding:"required,len=10"`
-	StudentGender            string    `json:"gender" binding:"required,oneof=Male Female"`
+	StudentNISN              string    `json:"nisn" binding:"required" validate:"len=10"`
+	StudentGender            string    `json:"gender" binding:"required,oneof='Male' 'Female'"`
 	StudentPlaceOfBirth      string    `json:"place_of_birth" binding:"required"`
 	StudentDateOfBirth       time.Time `json:"date_of_birth"`
-	StudentReligion          string    `json:"religion" binding:"required"`
-	StudentAddress           string    `json:"address" binding:"required"`
-	StudentPhoneNumber       string    `json:"number_phone" binding:"required,e164"`
-	StudentEmail             string    `json:"email" binding:"required,email"`
+	StudentReligion          string    `json:"religion" binding:"required" validate:"required,oneof='Islam' 'Kristen Protestan' 'Kristen Katolik' 'Hindu' 'Buddha' 'Khonghucu'"`
+	StudentAddress           string    `json:"address" binding:"required" validate:"required,min=10,max=40"`
+	StudentPhoneNumber       string    `json:"number_phone" binding:"required" validate:"required,e164"`
+	StudentEmail             string    `json:"email" binding:"required" validate:"required,email"`
 	StudentAcceptedDate      time.Time `json:"accepted_date"`
 	StudentSchoolOfOrigin    string    `json:"school_origin" binding:"required"`
 	StudentFatherName        string    `json:"father_name" binding:"required"`
@@ -101,7 +103,18 @@ func (student *StudentModel) GetStudentById(id string) (StudentModel, error) {
 func (student *Student) UpdateStudentById(students *Student) error {
 	result := connections.DB.Model(&student).Updates(&students)
 	if result.Error != nil {
-		return result.Error
+		if mysqlErr, ok := result.Error.(*mysql.MySQLError); ok {
+			switch mysqlErr.Number {
+			case 23505:
+				return fmt.Errorf("Student NISN already exists")
+			default:
+				return result.Error
+			}
+		} else if result.Error == gorm.ErrRecordNotFound {
+			return fmt.Errorf("Student not found")
+		} else {
+			return result.Error
+		}
 	}
 
 	return nil

@@ -6,6 +6,7 @@ import (
 	"github.com/edulink-api/config"
 	"github.com/edulink-api/connections"
 	"github.com/edulink-api/lib"
+	_ "github.com/edulink-api/request"
 	"github.com/edulink-api/routes"
 	"github.com/gin-gonic/gin"
 )

@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/edulink-api/helper"
@@ -16,7 +15,6 @@ func AlreadyLoggedIn() gin.HandlerFunc {
 		// accessToken := helper.GetAuthTokenFromHeader(authHeader)
 
 		accessToken, err := c.Cookie("access_token")
-		fmt.Println("access token: ", accessToken)
 		claims, msg := helper.ValidateToken(accessToken, "access_token")
 		if msg != "" || claims == nil || err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": msg})

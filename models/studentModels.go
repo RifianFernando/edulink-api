@@ -7,13 +7,12 @@ import (
 
 	"github.com/edulink-api/connections"
 	"github.com/edulink-api/database/migration/lib"
-    "github.com/go-sql-driver/mysql"
 	"gorm.io/gorm"
 )
 
 type Student struct {
 	StudentID                int64     `gorm:"primaryKey"`
-	ClassNameID              int64     `json:"id_class" binding:"required"`
+	ClassNameID              int64     `json:"class_id" binding:"required"`
 	StudentName              string    `json:"name" binding:"required"`
 	StudentNISN              string    `json:"nisn" binding:"required" validate:"len=10"`
 	StudentGender            string    `json:"gender" binding:"required,oneof='Male' 'Female'"`
@@ -37,6 +36,11 @@ type Student struct {
 type StudentModel struct {
 	Student
 	ClassName ClassNameGrade `gorm:"foreignKey:ClassNameID;references:ClassNameID"`
+}
+
+type StudentAttendance struct {
+	Student
+	Attendance []Attendance `gorm:"foreignKey:StudentID;references:StudentID"`
 }
 
 func (Student) TableName() string {
@@ -103,18 +107,7 @@ func (student *StudentModel) GetStudentById(id string) (StudentModel, error) {
 func (student *Student) UpdateStudentById(students *Student) error {
 	result := connections.DB.Model(&student).Updates(&students)
 	if result.Error != nil {
-		if mysqlErr, ok := result.Error.(*mysql.MySQLError); ok {
-			switch mysqlErr.Number {
-			case 23505:
-				return fmt.Errorf("Student NISN already exists")
-			default:
-				return result.Error
-			}
-		} else if result.Error == gorm.ErrRecordNotFound {
-			return fmt.Errorf("Student not found")
-		} else {
-			return result.Error
-		}
+		return result.Error
 	}
 
 	return nil
@@ -172,4 +165,21 @@ func UpdateManyStudentClassID(studentData []UpdateManyStudentClass) error {
 	}
 
 	return tx.Commit().Error
+}
+
+func GetAllStudentsAttendanceByClassIDAndDate(class_id string, date time.Time) ([]StudentAttendance, error) {
+	var students []StudentAttendance
+	result := connections.DB.
+		Preload("Attendance", func(db *gorm.DB) *gorm.DB {
+			return db.Where("EXTRACT(YEAR FROM attendance_date) = ? AND EXTRACT(MONTH FROM attendance_date) = ?", date.Year(), int(date.Month()))
+		}).
+		Where("class_name_id = ?", class_id).
+		Find(&students)
+	if result.Error != nil {
+		return []StudentAttendance{}, result.Error
+	} else if result.RowsAffected == 0 {
+		return []StudentAttendance{}, fmt.Errorf("no students found")
+	}
+
+	return students, nil
 }

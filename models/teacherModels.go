@@ -65,6 +65,21 @@ func (teacher *TeacherModel) GetTeacherById(id string) (TeacherModel, error) {
 	return teachers, nil
 }
 
+// Get teacher by user id
+func (teacher *Teacher) GetTeacherByModel() error {
+	var teachers Teacher
+	result := connections.DB.First(&teachers)
+
+	if result.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			return nil
+		}
+		return result.Error
+	}
+
+	return nil
+}
+
 // Update teacher and user
 func (teacher *TeacherModel) UpdateTeacherById(teacherData *TeacherModel) error {
 	// 1. Update teacher fields (excluding User and BaseModel)

@@ -1,55 +1,95 @@
 package seed
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
+	"strings"
 
 	"github.com/edulink-api/connections"
 	"github.com/go-playground/validator/v10"
 )
 
-// Validate function takes a slice of any model and performs validation and insertion.
-func Validate(models interface{}) {
+// Validate function performs validation and insertion for a slice of models.
+func Validate(models interface{}) error {
 	validate := validator.New()
 
-	// Use reflection to ensure `models` is a slice
+	// Ensure `models` is a slice using reflection.
 	slice := reflect.ValueOf(models)
 	if slice.Kind() != reflect.Slice {
-		return
+		return errors.New("provided input is not a slice")
 	}
 
-	// Check if the slice is empty
+	// Check if the slice is empty.
 	if slice.Len() == 0 {
-		return
+		return errors.New("no data to seed")
 	}
 
-	// Iterate over each item in the slice
+	// Aggregate errors.
+	var errs []string
+
+	// Iterate over the items in the slice.
 	for i := 0; i < slice.Len(); i++ {
-		// Assert that each item is a struct and take a pointer to it
+		// Take a pointer to the item for database insertion.
 		item := slice.Index(i).Addr().Interface()
 
-		// TODO: fix the validation gender if lowercase
+		// Perform validation.
 		if err := validate.Struct(item); err != nil {
-			fmt.Printf("Validation failed for item %d: %v\n", i, err)
-			continue // Skip saving this item if validation fails
+			errs = append(errs, fmt.Sprintf("Validation failed for item %d: %v", i, err))
+			continue // Skip saving this item if validation fails.
 		}
 
-		// Insert into the database if validation passes
+		// Insert the item into the database.
 		if result := connections.DB.Create(item); result.Error != nil {
-			fmt.Printf("Failed to insert item %d: %v\n", i, result.Error)
-		} else {
-			fmt.Printf("Item %d inserted successfully!\n", i)
+			errs = append(errs, fmt.Sprintf("Failed to insert item %d: %v", i, result.Error))
 		}
 	}
+
+	// Return aggregated errors, if any.
+	if len(errs) > 0 {
+		return errors.New(strings.Join(errs, "; "))
+	}
+
+	return nil
 }
 
-// Seed function to call each seeder with validation
-func Seed() {
-	Validate(UserSeeder())
-	Validate(TeacherSeeder())
-	Validate(GradeSeeder())
-	Validate(ClassSeeder())
-	Validate(StudentSeeder())
-	Validate(AdminSeeder())
-	Validate(SubjectSeeder())
+// Seed function to seed all necessary data.
+func Seed() error {
+	fmt.Println("Starting database seeding...")
+
+	// Aggregate errors from all seeders.
+	var errs []string
+
+	if err := Validate(UserSeeder()); err != nil {
+		errs = append(errs, fmt.Sprintf("UserSeeder error: %v", err))
+	}
+	if err := Validate(TeacherSeeder()); err != nil {
+		errs = append(errs, fmt.Sprintf("TeacherSeeder error: %v", err))
+	}
+	if err := Validate(GradeSeeder()); err != nil {
+		errs = append(errs, fmt.Sprintf("GradeSeeder error: %v", err))
+	}
+	if err := Validate(ClassSeeder()); err != nil {
+		errs = append(errs, fmt.Sprintf("ClassSeeder error: %v", err))
+	}
+	if err := Validate(StudentSeeder()); err != nil {
+		errs = append(errs, fmt.Sprintf("StudentSeeder error: %v", err))
+	}
+	if err := Validate(AdminSeeder()); err != nil {
+		errs = append(errs, fmt.Sprintf("AdminSeeder error: %v", err))
+	}
+	if err := Validate(SubjectSeeder()); err != nil {
+		errs = append(errs, fmt.Sprintf("SubjectSeeder error: %v", err))
+	}
+	if err := Validate(AttendanceSeeder()); err != nil {
+		errs = append(errs, fmt.Sprintf("SubjectSeeder error: %v", err))
+	}
+
+	// Return aggregated errors, if any.
+	if len(errs) > 0 {
+		return errors.New(strings.Join(errs, "; "))
+	}
+
+	fmt.Println("Database seeding completed!")
+	return nil
 }

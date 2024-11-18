@@ -14,10 +14,10 @@ import (
 type AttendanceStatus string
 
 const (
-	Absent  AttendanceStatus = "Absent"
-	Leave   AttendanceStatus = "Leave"
-	Sick    AttendanceStatus = "Sick"
 	Present AttendanceStatus = "Present"
+	Sick    AttendanceStatus = "Sick"
+	Leave   AttendanceStatus = "Leave"
+	Absent  AttendanceStatus = "Absent"
 )
 
 type Attendance struct {

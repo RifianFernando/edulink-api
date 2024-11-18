@@ -12,7 +12,6 @@ type AcademicYear struct {
 	AcademicYear        string              `gorm:"not null;type:CHAR(4)"`
 	Reports             []Report            `gorm:"foreignKey:AcademicYearID;references:AcademicYearID"`
 	Scores              []Score             `gorm:"foreignKey:AcademicYearID;references:AcademicYearID"`
-	AttendanceSummaries []AttendanceSummary `gorm:"foreignKey:AcademicYearID;references:AcademicYearID"`
 	lib.BaseModel                           /* this type include CreatedAt, UpdatedAt, DeletedAt, I can't use the gorm.models because can't customize the id name */
 }
 

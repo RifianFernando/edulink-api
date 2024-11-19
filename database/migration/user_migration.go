@@ -45,8 +45,8 @@ type User struct {
 	UserGender       Gender    `gorm:"type:VARCHAR(6);not null"`
 	UserPlaceOfBirth string    `gorm:"not null"`
 	UserDateOfBirth  time.Time `gorm:"not null"`
-	UserReligion     Religion  `gorm:"type:VARCHAR(9);not null"`
-	UserAddress      string    `gorm:"not null"`
+	UserReligion     Religion  `gorm:"type:VARCHAR(17);not null"`
+	UserAddress      string    `gorm:"not null;type:VARCHAR(200)"`
 	UserNumPhone     string    `gorm:"unique;not null"`
 	UserEmail        string    `gorm:"unique;not null"`
 	UserPassword     string    `gorm:"not null"`

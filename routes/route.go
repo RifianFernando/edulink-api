@@ -134,7 +134,7 @@ func Route(router *gin.Engine) {
 		attendance.Use(middleware.AlreadyLoggedIn(), middleware.IsTeacherHomeRoom())
 		attendance.GET(
 			"/summary/:class_id/:date",
-			controllers.GetAllAttendanceByClassID(),
+			controllers.GetAllAttendanceMonthSummaryByClassID(), //  homeroom teacher RBAS
 		)
 	}
 }

@@ -39,7 +39,13 @@ func IsTeacherHomeRoom() gin.HandlerFunc {
 		}
 
 		userType := claims.User_type
-		// Check if the user is an admin
+
+		if (userType == "admin" && userTypeCtx == "admin") || (userType == "staff" && userTypeCtx == "staff") {
+			c.Next()
+			return
+		}
+
+		// Check if the user is a home room teacher
 		if userType == "teacher" && userTypeCtx == "teacher" {
 			var teacher models.Teacher
 			// teacher.UserID = claims.UserID
@@ -52,5 +58,6 @@ func IsTeacherHomeRoom() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
+		c.Abort()
 	}
 }

@@ -19,8 +19,8 @@ type Student struct {
 	StudentGender            Gender       `gorm:"type:VARCHAR(6);not null"`
 	StudentPlaceOfBirth      string       `gorm:"not null;type:VARCHAR(35)"`
 	StudentDateOfBirth       time.Time    `gorm:"not null"`
-	StudentReligion          string       `gorm:"not null;type:VARCHAR(35)"`
-	StudentAddress           string       `gorm:"not null;type:VARCHAR(50)"`
+	StudentReligion          string       `gorm:"not null;type:VARCHAR(17)"`
+	StudentAddress           string       `gorm:"not null;type:VARCHAR(200)"`
 	StudentPhoneNumber       string       `gorm:"unique;not null;type:VARCHAR(20)"`
 	StudentEmail             string       `gorm:"unique;not null;type:VARCHAR(40)"`
 	StudentAcceptedDate      time.Time    `gorm:"not null"`

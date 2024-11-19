@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetAllAttendanceByClassID() gin.HandlerFunc {
+func GetAllAttendanceMonthSummaryByClassID() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		// var student models.StudentModel
@@ -22,7 +22,7 @@ func GetAllAttendanceByClassID() gin.HandlerFunc {
 			return
 		}
 
-		result, err := models.GetAllStudentsAttendanceByClassIDAndDate(ClassID, Date)
+		result, err := models.GetAllAttendanceMonthSummaryByClassID(ClassID, Date)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": err.Error(),

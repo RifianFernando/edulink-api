@@ -20,7 +20,7 @@ type InsertTeacherRequest struct {
 	UserGender       string `json:"gender" binding:"required" validate:"oneof='Male' 'Female'"`
 	UserPlaceOfBirth string `json:"place_of_birth" binding:"required"`
 	UserDateOfBirth  time.Time
-	UserReligion     string `json:"religion" binding:"required" validate:"required,oneof='Islam' 'Kristen Protestan' 'Kristen Katolik' 'Hindu' 'Buddha' 'Khonghucu'"`
+	UserReligion     string `json:"religion" binding:"required" validate:"required,oneof='Islam' 'Kristen Protestan' 'Kristen Katolik' 'Hindu' 'Buddha' 'Konghucu'"`
 	UserAddress      string `json:"address" binding:"required"`
 	UserNumPhone     string `json:"num_phone" binding:"required" validate:"required,e164"`
 	UserEmail        string `json:"email" binding:"required" validate:"required,email"`

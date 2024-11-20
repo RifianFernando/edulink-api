@@ -59,7 +59,7 @@ func GetAllAttendanceMonthSummaryByClassID() gin.HandlerFunc {
 		}
 
 		c.JSON(http.StatusOK, gin.H{
-			"data": result,
+			"attendance": result,
 		})
 	}
 }

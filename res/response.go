@@ -1,8 +1,15 @@
-package lib
+package res
 
 import (
+	"net/http"
+
 	"github.com/edulink-api/request"
 	"github.com/go-playground/validator/v10"
+)
+
+var (
+    Forbidden = http.StatusText(http.StatusForbidden)
+    Success   = http.StatusText(http.StatusOK)
 )
 
 func ResponseMessage(err error) []map[string]string {

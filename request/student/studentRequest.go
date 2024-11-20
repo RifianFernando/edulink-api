@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/edulink-api/lib"
 	"github.com/edulink-api/models"
 	req "github.com/edulink-api/request"
+	"github.com/edulink-api/res"
 )
 
 /*
@@ -25,7 +25,7 @@ type InsertStudentRequest struct {
 func (r *InsertStudentRequest) Validate() []map[string]string {
 
 	// Validate the struct
-	err := lib.ResponseMessage(req.Validate.Struct(r))
+	err := res.ResponseMessage(req.Validate.Struct(r))
 
 	return err
 }
@@ -75,9 +75,9 @@ func (r *InsertAllStudentRequest) ValidateAllStudent() []map[string]string {
 		if err := data.Validate(); err != nil {
 			// index with error
 			errorMap := map[string]string{
-				"row-error": fmt.Sprintf("%d", i + 1),
-				"field": err[0]["field"],
-				"message": err[0]["message"],
+				"row-error": fmt.Sprintf("%d", i+1),
+				"field":     err[0]["field"],
+				"message":   err[0]["message"],
 			}
 			allErrors = append(allErrors, errorMap)
 		}

@@ -90,15 +90,14 @@ func (class *ClassName) DeleteClassNameById(id string) error {
 	return nil
 }
 
-func (class *ClassName) GetHomeRoomTeacherByTeacherID() (ClassName, error) {
-	var className ClassName
-	result := connections.DB.Where("teacher_id = ?", class.TeacherID).First(&className)
+func (className *ClassName) GetHomeRoomTeacherByTeacherID() error {
+	result := connections.DB.Where("teacher_id = ?", className.TeacherID).First(&className)
 	if result.Error != nil && result.Error != gorm.ErrRecordNotFound {
 		if result.Error == gorm.ErrRecordNotFound {
-			return ClassName{}, fmt.Errorf("no class found")
+			return fmt.Errorf("no class found")
 		}
-		return ClassName{}, result.Error
+		return result.Error
 	}
 
-	return className, nil
+	return nil
 }

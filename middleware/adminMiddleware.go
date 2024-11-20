@@ -43,12 +43,12 @@ func AdminOnly() gin.HandlerFunc {
 		}
 
 		userId, exist := c.Get("user_id")
-
-		if !exist {
+		if !exist || (userId != claims.UserID) {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "User id not found"})
 			c.Abort()
 			return
 		}
+
 		// Check if the admin exists
 		var admin = models.Admin{
 			UserID: userId.(int64),

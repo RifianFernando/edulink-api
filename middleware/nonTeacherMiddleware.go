@@ -6,11 +6,8 @@ import (
 
 	"github.com/edulink-api/helper"
 	"github.com/edulink-api/models"
+	"github.com/edulink-api/res"
 	"github.com/gin-gonic/gin"
-)
-
-var (
-	forbidden = "Forbidden"
 )
 
 func IsTeacherHomeRoom() gin.HandlerFunc {
@@ -18,7 +15,7 @@ func IsTeacherHomeRoom() gin.HandlerFunc {
 		//  gett user from access token
 		accessToken, err := c.Cookie("access_token")
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": forbidden})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": res.Forbidden})
 			c.Abort()
 			return
 		}
@@ -26,14 +23,21 @@ func IsTeacherHomeRoom() gin.HandlerFunc {
 		// Get the user type from the context
 		userTypeCtx, exist := c.Get("user_type")
 		if !exist {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": forbidden})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": res.Forbidden})
 			c.Abort()
 			return
 		}
 
 		claims, msg := helper.ValidateToken(accessToken, "access_token")
 		if msg != "" || claims == nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": forbidden})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": res.Forbidden})
+			c.Abort()
+			return
+		}
+
+		userId, exist := c.Get("user_id")
+		if !exist || (userId != claims.UserID) {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "User id not found"})
 			c.Abort()
 			return
 		}
@@ -51,27 +55,26 @@ func IsTeacherHomeRoom() gin.HandlerFunc {
 			teacher.UserID = claims.UserID
 			err := teacher.GetTeacherByModel()
 			if err != nil {
-				c.JSON(http.StatusUnauthorized, gin.H{"error": forbidden})
+				c.JSON(http.StatusUnauthorized, gin.H{"error": res.Forbidden})
 				c.Abort()
 				return
 			}
 			fmt.Println("teacherID: ", teacher.TeacherID)
 
-			var class models.ClassName
-			class.TeacherID = teacher.TeacherID
-			resultClass, err := class.GetHomeRoomTeacherByTeacherID()
-
-
-			if (err != nil || resultClass == models.ClassName{}) {
-				c.JSON(http.StatusUnauthorized, gin.H{"error": forbidden})
+			var className models.ClassName
+			className.TeacherID = teacher.TeacherID
+			err = className.GetHomeRoomTeacherByTeacherID()
+			if err != nil || className.ClassNameID == 0 {
+				c.JSON(http.StatusUnauthorized, gin.H{"error": res.Forbidden})
 				c.Abort()
 				return
 			}
+			fmt.Println("className: ", className)
 
 			c.Next()
 			return
 		}
-		c.JSON(http.StatusUnauthorized, gin.H{"error": forbidden})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": res.Forbidden})
 		c.Abort()
 	}
 }

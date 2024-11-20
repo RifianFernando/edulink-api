@@ -67,12 +67,11 @@ func (teacher *TeacherModel) GetTeacherById(id string) (TeacherModel, error) {
 
 // Get teacher by user id
 func (teacher *Teacher) GetTeacherByModel() error {
-	var teachers Teacher
-	result := connections.DB.First(&teachers)
+	result := connections.DB.Where(&teacher).First(&teacher)
 
 	if result.Error != nil {
 		if result.Error == gorm.ErrRecordNotFound {
-			return nil
+			return fmt.Errorf("teacher not found")
 		}
 		return result.Error
 	}

@@ -17,8 +17,8 @@ type Religion string
 
 const (
 	Islam     Religion = "Islam"
-	Christian Religion = "Kristen"
-	Catholic  Religion = "Katholik"
+	Christian Religion = "Kristen Protestan"
+	Catholic  Religion = "Kristen Katolik"
 	Hindu     Religion = "Hindu"
 	Buddha    Religion = "Buddha"
 	Konghucu  Religion = "Konghucu"

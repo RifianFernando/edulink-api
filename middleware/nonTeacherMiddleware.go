@@ -48,16 +48,30 @@ func IsTeacherHomeRoom() gin.HandlerFunc {
 		// Check if the user is a home room teacher
 		if userType == "teacher" && userTypeCtx == "teacher" {
 			var teacher models.Teacher
-			// teacher.UserID = claims.UserID
+			teacher.UserID = claims.UserID
 			err := teacher.GetTeacherByModel()
-			if(err != nil){
+			if err != nil {
+				c.JSON(http.StatusUnauthorized, gin.H{"error": forbidden})
 				c.Abort()
 				return
 			}
-			fmt.Println("Teacher: ", teacher)
-			c.Abort()
+			fmt.Println("teacherID: ", teacher.TeacherID)
+
+			var class models.ClassName
+			class.TeacherID = teacher.TeacherID
+			resultClass, err := class.GetHomeRoomTeacherByTeacherID()
+
+
+			if (err != nil || resultClass == models.ClassName{}) {
+				c.JSON(http.StatusUnauthorized, gin.H{"error": forbidden})
+				c.Abort()
+				return
+			}
+
+			c.Next()
 			return
 		}
+		c.JSON(http.StatusUnauthorized, gin.H{"error": forbidden})
 		c.Abort()
 	}
 }

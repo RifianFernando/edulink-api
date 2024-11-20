@@ -1,6 +1,8 @@
 package models
 
 import (
+	"fmt"
+
 	"github.com/edulink-api/connections"
 	"github.com/edulink-api/database/migration/lib"
 	"gorm.io/gorm"
@@ -86,4 +88,17 @@ func (class *ClassName) DeleteClassNameById(id string) error {
 	}
 
 	return nil
+}
+
+func (class *ClassName) GetHomeRoomTeacherByTeacherID() (ClassName, error) {
+	var className ClassName
+	result := connections.DB.Where("teacher_id = ?", class.TeacherID).First(&className)
+	if result.Error != nil && result.Error != gorm.ErrRecordNotFound {
+		if result.Error == gorm.ErrRecordNotFound {
+			return ClassName{}, fmt.Errorf("no class found")
+		}
+		return ClassName{}, result.Error
+	}
+
+	return className, nil
 }

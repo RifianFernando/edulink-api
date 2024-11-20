@@ -15,6 +15,10 @@ func TeacherSeeder() (teachers []models.Teacher) {
 			UserID:       2,
 			TeachingHour: 20,
 		},
+		{
+			UserID:       3,
+			TeachingHour: 10,
+		},
 	}
 
 	return teachers

@@ -12,7 +12,7 @@ func AdminSeeder() (admins []models.Admin) {
 			Position: "admin",
 		},
 		{
-			UserID:   3,
+			UserID:   4,
 			Position: "admin",
 		},
 	}

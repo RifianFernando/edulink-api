@@ -35,7 +35,7 @@ func Validate(models interface{}) error {
 
 		// Perform validation.
 		if err := validate.Struct(item); err != nil {
-			errs = append(errs, fmt.Sprintf("Validation failed for item %d: %v", i, err))
+			errs = append(errs, fmt.Sprintf("Validation failed for item %d: %v", i + 1, err))
 			continue // Skip saving this item if validation fails.
 		}
 
@@ -77,6 +77,9 @@ func Seed() error {
 	}
 	if err := Validate(AdminSeeder()); err != nil {
 		errs = append(errs, fmt.Sprintf("AdminSeeder error: %v", err))
+	}
+	if err := Validate(StaffSeeder()); err != nil {
+		errs = append(errs, fmt.Sprintf("StaffSeeder error: %v", err))
 	}
 	if err := Validate(SubjectSeeder()); err != nil {
 		errs = append(errs, fmt.Sprintf("SubjectSeeder error: %v", err))

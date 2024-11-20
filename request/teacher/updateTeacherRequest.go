@@ -16,7 +16,7 @@ type UpdateTeacherRequest struct {
 	UserName         string `json:"name" binding:"required"`
 	UserGender       string `json:"gender" binding:"required,oneof=Male Female"`
 	UserPlaceOfBirth string `json:"place_of_birth" binding:"required"`
-	UserReligion     string `json:"religion" binding:"required" validate:"required,oneof=Islam Kristen Katholik Hindu Buddha Konghucu"`
+	UserReligion     string `json:"religion" binding:"required" validate:"required,oneof='Islam' 'Kristen Katolik' 'Kristen Protestan 'Hindu' 'Buddha' 'Konghucu'"`
 	DateOfBirth      string `json:"date_of_birth" binding:"required"`
 	UserAddress      string `json:"address" binding:"required"`
 	UserNumPhone     string `json:"num_phone" binding:"required,e164"`

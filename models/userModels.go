@@ -13,7 +13,7 @@ type User struct {
 	UserGender       string    `json:"gender" binding:"required,oneof=Male Female"`
 	UserPlaceOfBirth string    `json:"place_of_birth" binding:"required"`
 	UserDateOfBirth  time.Time `json:"date_of_birth"`
-	UserReligion     string    `json:"religion" binding:"required" validate:"required,oneof=Islam Kristen Katholik Hindu Buddha Konghucu"`
+	UserReligion     string    `json:"religion" binding:"required" validate:"required,oneof='Islam' 'Kristen Protestan' 'Kristen Katolik' 'Hindu' 'Buddha' 'Konghucu'"`
 	UserAddress      string    `json:"address" binding:"required" validate:"required,min=10,max=200"`
 	UserNumPhone     string    `json:"num_phone" binding:"required,e164"`
 	UserEmail        string    `json:"email" binding:"required,email"`

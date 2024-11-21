@@ -148,5 +148,9 @@ func Route(router *gin.Engine) {
 			"/summary/:class_id/:date",
 			controllers.GetAllAttendanceMonthSummaryByClassID(),
 		)
+		attendance.GET(
+			"/all-student/:class_id/:date",
+			controllers.GetAllStudentAttendanceDateByClassID(),
+		)
 	}
 }

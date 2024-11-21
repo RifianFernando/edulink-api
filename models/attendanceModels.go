@@ -50,3 +50,28 @@ func GetAllAttendanceMonthSummaryByClassID(class_id string, date time.Time) (int
 
 	return attendanceStats, nil
 }
+
+func GetAllStudentAttendanceDateByClassID(class_id string, date time.Time) (interface{}, error) {
+	// type AttendanceStats struct {
+	// 	StudentName      string `json:"student_name"`
+	// 	StudentGender    string `json:"student_gender"`
+	// 	AttendanceStatus string `json:"attendance_status"`
+	// }
+
+	// var attendanceStats []AttendanceStats
+	// err := connections.DB.Model(Attendance{}).
+	// 	Select("student_name AS name, "+
+	// 		"student_gender AS sex, "+
+	// 		"attendance_status AS reason").
+	// 	Joins("JOIN academic.students s ON attendances.student_id = s.student_id").
+	// 	Where("EXTRACT(YEAR FROM attendance_date) = ? AND EXTRACT(MONTH FROM attendance_date) = ? AND EXTRACT(DATE FROM attendance_date) = ? AND s.class_name_id = ?", date.Year(), int(date.Month()), date.Day(), class_id).
+	// 	Order("s.student_name ASC").
+	// 	Scan(&attendanceStats).Error
+
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	// return attendanceStats, nil
+	return nil, nil
+}

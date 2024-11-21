@@ -5,15 +5,17 @@
 3. pull this project from github and locate it in your go workspace where the src folder is located
 4. open the project in your favorite IDE
 5. open the terminal and run the following command to install the dependencies
+    **_install all package_**
 
     ```bash
-    go mod download #same as npm install
+    go mod download
     ```
 
-    if you want to clean the package that not used in the project use the following command
+    if you want to clean the package that not used in the project use the following command **(Recommended)**
+    **_remove unused package + install all package that called in project_**
 
     ```bash
-    go mod tidy #same as npm install bur remove the unused package
+    go mod tidy
     ```
 
 6. try to install all package
@@ -27,8 +29,11 @@
     ```
     make install-tools
     ```
+8. Generate App key Encryption
 
-8. create a new file named .env in the root of the project and copy the content of .env.example to .env
+    ```
+    go run database/database.go -key:generate
+    ```
 9. **IMPORTANT** If u're new on this project try to migrate the database first
 
     ```bash
@@ -61,7 +66,7 @@
     CompileDaemon -command="./edulink-api"
     ```
 
-- Run Project
+- Build The Project And Host It
 
     ```bash
     go run main.go
@@ -90,6 +95,6 @@
     - PostgreeSQL driver: [jdbc](https://jdbc.postgresql.org/download/)
 4. env: [godotenv](https://github.com/joho/godotenv)
 5. compiler: go with [CompileDaemon](https://github.com/githubnemo/CompileDaemon)
-6. session: [session](https://github.com/gorilla/sessions)
-7. hash: [bcrypt](https://pkg.go.dev/golang.org/x/crypto/bcrypt)
+6. session: [gorilla session](https://github.com/gorilla/sessions)
+7. encryption: [golang crypto bcrypt](https://pkg.go.dev/golang.org/x/crypto/bcrypt)
 8. token: [JWT](https://jwt.io/)

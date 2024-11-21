@@ -11,6 +11,11 @@ install-tools:
 	@echo 'Installing CompileDaemon...'
 	@go install github.com/githubnemo/CompileDaemon@v1.4.0
 
+	@echo 'Copy .env.example to .env...'
+	@copy .env.example .env
+
+	@echo 'Finished installing development tools.'
+
 ## build: build the application
 .PHONY: build
 build:

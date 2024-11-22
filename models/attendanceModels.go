@@ -1,10 +1,12 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/edulink-api/connections"
 	"github.com/edulink-api/database/migration/lib"
+	"gorm.io/gorm"
 )
 
 type Attendance struct {
@@ -52,26 +54,38 @@ func GetAllAttendanceMonthSummaryByClassID(class_id string, date time.Time) (int
 }
 
 func GetAllStudentAttendanceDateByClassID(class_id string, date time.Time) (interface{}, error) {
-	// type AttendanceStats struct {
-	// 	StudentName      string `json:"student_name"`
-	// 	StudentGender    string `json:"student_gender"`
-	// 	AttendanceStatus string `json:"attendance_status"`
-	// }
+	targetDate := date.Truncate(24 * time.Hour)
+	type AttendanceStats struct {
+		ID     int64     `json:"id"`
+		Name   string    `json:"name"`
+		Sex    string    `json:"sex"`
+		Reason string    `json:"reason"`
+		Date   time.Time `json:"date"`
+	}
+	var attendanceStats []AttendanceStats
+	err := connections.DB.Model(Attendance{}).
+		Select(
+			"s.student_id AS id, "+
+				"s.student_name AS name, "+
+				"s.student_gender AS sex, "+
+				"attendances.attendance_status AS reason, "+
+				"attendances.attendance_date AS date",
+		).
+		Joins("JOIN academic.students s ON s.student_id = attendances.student_id").
+		Where(
+			"EXTRACT(YEAR FROM attendances.attendance_date) = ? AND "+
+				"EXTRACT(MONTH FROM attendances.attendance_date) = ? AND "+
+				"EXTRACT(DAY FROM attendances.attendance_date) = ?",
+			targetDate.Year(), int(targetDate.Month()), targetDate.Day(),
+		).
+		Order("s.student_name ASC").
+		Find(&attendanceStats).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return AttendanceModel{}, fmt.Errorf("no students found")
+		}
+		return AttendanceModel{}, err
+	}
 
-	// var attendanceStats []AttendanceStats
-	// err := connections.DB.Model(Attendance{}).
-	// 	Select("student_name AS name, "+
-	// 		"student_gender AS sex, "+
-	// 		"attendance_status AS reason").
-	// 	Joins("JOIN academic.students s ON attendances.student_id = s.student_id").
-	// 	Where("EXTRACT(YEAR FROM attendance_date) = ? AND EXTRACT(MONTH FROM attendance_date) = ? AND EXTRACT(DATE FROM attendance_date) = ? AND s.class_name_id = ?", date.Year(), int(date.Month()), date.Day(), class_id).
-	// 	Order("s.student_name ASC").
-	// 	Scan(&attendanceStats).Error
-
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	// return attendanceStats, nil
-	return nil, nil
+	return attendanceStats, nil
 }

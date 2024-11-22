@@ -33,6 +33,11 @@ func AttendanceSeeder() (attendance []models.Attendance) {
 			AttendanceDate:   time.Date(2024, 7, 2, 0, 0, 0, 0, time.Local),
 			AttendanceStatus: "Absent",
 		},
+		{
+			StudentID:        4,
+			AttendanceDate:   time.Date(2024, 8, 1, 0, 0, 0, 0, time.Local),
+			AttendanceStatus: "Absent",
+		},
 	}
 
 	return attendance

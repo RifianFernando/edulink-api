@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"log"
 	"time"
 
@@ -165,21 +164,4 @@ func UpdateManyStudentClassID(studentData []UpdateManyStudentClass) error {
 	}
 
 	return tx.Commit().Error
-}
-
-func GetAllStudentsAttendanceByClassIDAndDate(class_id string, date time.Time) ([]StudentAttendance, error) {
-	var students []StudentAttendance
-	result := connections.DB.
-		Preload("Attendance", func(db *gorm.DB) *gorm.DB {
-			return db.Where("EXTRACT(YEAR FROM attendance_date) = ? AND EXTRACT(MONTH FROM attendance_date) = ?", date.Year(), int(date.Month()))
-		}).
-		Where("class_name_id = ?", class_id).
-		Find(&students)
-	if result.Error != nil {
-		return []StudentAttendance{}, result.Error
-	} else if result.RowsAffected == 0 {
-		return []StudentAttendance{}, fmt.Errorf("no students found")
-	}
-
-	return students, nil
 }

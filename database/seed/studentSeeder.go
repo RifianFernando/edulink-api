@@ -69,6 +69,26 @@ func StudentSeeder() (students []models.Student) {
 			StudentMotherJob:         "PNS",
 			StudentMotherPhoneNumber: "+62123456789",
 		},
+		{
+			ClassNameID:              1,
+			StudentName:              "Arif",
+			StudentNISN:              "0987654222",
+			StudentGender: 			  "Male",
+			StudentPlaceOfBirth:      "Jakarta",
+			StudentDateOfBirth:       time.Now(),
+			StudentReligion:          "Konghucu",
+			StudentAddress:           "Jl. Jakarta",
+			StudentPhoneNumber:       "+62123456098",
+			StudentEmail:             "arif@gmail.com",
+			StudentAcceptedDate:      time.Now(),
+			StudentSchoolOfOrigin:    "SMP 1",
+			StudentFatherName:        "Ayah 1",
+			StudentFatherJob:         "PNS",
+			StudentFatherPhoneNumber: "+62123456999",
+			StudentMotherName:        "Ibu 1",
+			StudentMotherJob:         "PNS",
+			StudentMotherPhoneNumber: "+62123456999",
+		},
 	}
 
 	return students

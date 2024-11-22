@@ -68,7 +68,6 @@ type GetTeacherByIDWithoutPassword struct {
 // Get teacher by id
 func (teacher *TeacherModel) GetTeacherById(id string) (GetTeacherByIDWithoutPassword, error) {
 
-
 	result := connections.DB.Preload("User").First(&teacher, id)
 	if result.Error != nil {
 		if result.Error == gorm.ErrRecordNotFound {
@@ -79,11 +78,14 @@ func (teacher *TeacherModel) GetTeacherById(id string) (GetTeacherByIDWithoutPas
 
 	var teacherDTO GetTeacherByIDWithoutPassword
 
+	fmt.Println("dob", teacher.User.UserDateOfBirth)
+
 	teacherDTO.TeacherID = teacher.TeacherID
 	teacherDTO.UserID = teacher.UserID
 	teacherDTO.UserName = teacher.User.UserName
 	teacherDTO.UserGender = teacher.User.UserGender
-	teacherDTO.UserPlaceOfBirth = teacher.User.UserDateOfBirth.Format("2006-01-02")
+	teacherDTO.UserPlaceOfBirth = teacher.User.UserPlaceOfBirth
+	teacherDTO.UserDateOfBirth = teacher.User.UserDateOfBirth
 	teacherDTO.UserReligion = teacher.User.UserReligion
 	teacherDTO.UserAddress = teacher.User.UserAddress
 	teacherDTO.UserNumPhone = teacher.User.UserNumPhone

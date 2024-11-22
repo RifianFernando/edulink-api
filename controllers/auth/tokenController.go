@@ -13,7 +13,7 @@ import (
 func RefreshToken() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
-		refreshToken, err := c.Cookie("token");
+		refreshToken, err := c.Cookie("token")
 		if refreshToken == "" || err != nil {
 			fmt.Println("No refresh token provided")
 			c.JSON(http.StatusUnauthorized, gin.H{
@@ -61,7 +61,7 @@ func RefreshToken() gin.HandlerFunc {
 
 func ValidateAccessToken() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		accessToken, err := c.Cookie("access_token");
+		accessToken, err := c.Cookie("access_token")
 
 		if accessToken == "" || err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{

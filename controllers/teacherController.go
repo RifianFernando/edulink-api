@@ -285,17 +285,9 @@ func GetTeacherById() gin.HandlerFunc {
 
 		var teacher models.TeacherModel
 		result, err := teacher.GetTeacherById(id)
-
-		if err != nil {
+		if err != nil || teacher.TeacherID == 0 {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": err.Error(),
-			})
-			return
-		}
-
-		if result.TeacherID == 0 {
-			c.JSON(http.StatusNotFound, gin.H{
-				"error": "Teacher not found",
 			})
 			return
 		}
@@ -338,8 +330,8 @@ func UpdateTeacherById() gin.HandlerFunc {
 		id := c.Param("teacher_id")
 
 		var teacher models.TeacherModel
-		teacher, err = teacher.GetTeacherById(id)
-		if err != nil {
+		_, err = teacher.GetTeacherById(id)
+		if err != nil || teacher.TeacherID == 0 {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"error": err.Error(),
 			})
@@ -379,7 +371,7 @@ func DeleteTeacherById() gin.HandlerFunc {
 
 		var teacher models.TeacherModel
 		// if teacher exist
-		teacher, err := teacher.GetTeacherById(id)
+		_, err := teacher.GetTeacherById(id)
 		if err != nil || teacher.TeacherID == 0 {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": err.Error(),

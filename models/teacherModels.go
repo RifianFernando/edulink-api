@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/edulink-api/connections"
 	"github.com/edulink-api/database/migration/lib"
@@ -50,19 +51,46 @@ func (teacher *TeacherModel) GetAllUserTeachersWithUser() (
 	return teachers, ""
 }
 
-// Get teacher by id
-func (teacher *TeacherModel) GetTeacherById(id string) (TeacherModel, error) {
-	var teachers TeacherModel
-	result := connections.DB.Preload("User").First(&teachers, id)
+type GetTeacherByIDWithoutPassword struct {
+	TeacherID        int64     `json:"teacher_id"`
+	UserID           int64     `json:"user_id"`
+	UserName         string    `json:"name" binding:"required"`
+	UserGender       string    `json:"gender" binding:"required,oneof=Male Female"`
+	UserPlaceOfBirth string    `json:"place_of_birth" binding:"required"`
+	UserDateOfBirth  time.Time `json:"date_of_birth"`
+	UserReligion     string    `json:"religion" binding:"required" validate:"required,oneof='Islam' 'Kristen Protestan' 'Kristen Katolik' 'Hindu' 'Buddha' 'Konghucu'"`
+	UserAddress      string    `json:"address" binding:"required" validate:"required,min=10,max=200"`
+	UserNumPhone     string    `json:"num_phone" binding:"required,e164"`
+	UserEmail        string    `json:"email" binding:"required,email"`
+	TeachingHour     int32     `json:"teaching_hour"`
+}
 
+// Get teacher by id
+func (teacher *TeacherModel) GetTeacherById(id string) (GetTeacherByIDWithoutPassword, error) {
+
+
+	result := connections.DB.Preload("User").First(&teacher, id)
 	if result.Error != nil {
 		if result.Error == gorm.ErrRecordNotFound {
-			return teachers, nil
+			return GetTeacherByIDWithoutPassword{}, fmt.Errorf("no teacher found")
 		}
-		return teachers, result.Error
+		return GetTeacherByIDWithoutPassword{}, result.Error
 	}
 
-	return teachers, nil
+	var teacherDTO GetTeacherByIDWithoutPassword
+
+	teacherDTO.TeacherID = teacher.TeacherID
+	teacherDTO.UserID = teacher.UserID
+	teacherDTO.UserName = teacher.User.UserName
+	teacherDTO.UserGender = teacher.User.UserGender
+	teacherDTO.UserPlaceOfBirth = teacher.User.UserDateOfBirth.Format("2006-01-02")
+	teacherDTO.UserReligion = teacher.User.UserReligion
+	teacherDTO.UserAddress = teacher.User.UserAddress
+	teacherDTO.UserNumPhone = teacher.User.UserNumPhone
+	teacherDTO.UserEmail = teacher.User.UserEmail
+	teacherDTO.TeachingHour = teacher.TeachingHour
+
+	return teacherDTO, nil
 }
 
 // Get teacher by user id

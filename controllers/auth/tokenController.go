@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/edulink-api/config"
@@ -15,7 +14,6 @@ func RefreshToken() gin.HandlerFunc {
 
 		refreshToken, err := c.Cookie("token")
 		if refreshToken == "" || err != nil {
-			fmt.Println("No refresh token provided")
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"error": "No refresh token provided",
 			})

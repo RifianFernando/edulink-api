@@ -146,7 +146,7 @@ func (teacher *TeacherModel) UpdateTeacherById(teacherData *TeacherModel) error 
 
 // Delete teacher by id
 func (teacher *Teacher) DeleteTeacherById(id string) error {
-	result := connections.DB.Unscoped().Delete(&teacher, id)
+	result := connections.DB.Delete(&teacher, id)
 	if result.Error != nil {
 		return result.Error
 	}

@@ -55,7 +55,7 @@ func (user *User) UpdatePassword() error {
 
 // Delete user
 func (user *User) DeleteUserById(id string) error {
-	result := connections.DB.Unscoped().Delete(&user, id)
+	result := connections.DB.Delete(&user, id)
 	if result.Error != nil {
 		return result.Error
 	}

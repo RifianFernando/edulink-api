@@ -379,11 +379,20 @@ func DeleteTeacherById() gin.HandlerFunc {
 			return
 		}
 
+		err = teacher.DeleteTeacherById(strconv.FormatInt(teacher.UserID, 10))
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+
 		err = teacher.User.DeleteUserById(strconv.FormatInt(teacher.UserID, 10))
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": err.Error(),
 			})
+			return
 		}
 
 		c.JSON(http.StatusOK, gin.H{

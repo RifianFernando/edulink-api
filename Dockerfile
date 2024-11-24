@@ -23,7 +23,7 @@ RUN go mod tidy
 COPY go.mod go.sum ./
 
 # Copy the .env file
-COPY .env ./
+# COPY .env ./ disable for now
 
 # Copy the config directory
 COPY config ./config/

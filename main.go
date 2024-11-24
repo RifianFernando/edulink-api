@@ -1,4 +1,4 @@
-package handler
+package main
 
 import (
 	"net/http"
@@ -21,9 +21,12 @@ func init() {
 	lib.HandleError(err, "Failed to connect db")
 }
 
-func Handler(w http.ResponseWriter, r *http.Request) {
-	router := setupRouter()
-	router.ServeHTTP(w, r)
+func main() {
+	r := setupRouter()
+
+	// Start the server and handle potential errors
+	err := r.Run()
+	lib.HandleError(err, "Failed to serve the server")
 }
 
 func setupRouter() *gin.Engine {

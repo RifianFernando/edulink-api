@@ -64,36 +64,27 @@ func Login() gin.HandlerFunc {
 		// Set the refresh token in an HttpOnly cookie (valid for 1 day)
 		c.SetCookie("token", refreshToken, 3600*24*7, "/", config.ParsedDomain, config.IsProdMode, true)     // HttpOnly = true
 		c.SetCookie("access_token", accessToken, 3600*24, "/", config.ParsedDomain, config.IsProdMode, true) // HttpOnly = false
-		if _, err := c.Request.Cookie("token"); err != nil { 
-			cookie1 := http.Cookie{
-				Name:  "token",
-				Value: refreshToken,
-				MaxAge: 3600 * 24 * 7,
-				Path:  "/",
-				Domain: config.ParsedDomain,
-				Secure: config.IsProdMode,
-				HttpOnly: true,
-			}
-			http.SetCookie(c.Writer, &cookie1)
-
-			cookie2 := http.Cookie{
-				Name:  "access_token",
-				Value: accessToken,
-				MaxAge: 3600 * 24 * 7,
-				Path:  "/",
-				Domain: config.ParsedDomain,
-				Secure: config.IsProdMode,
-				HttpOnly: true,
-			}
-			http.SetCookie(c.Writer, &cookie2)
-
-			if finalCheck, err := c.Request.Cookie("token"); err != nil || finalCheck == nil {
-				c.JSON(http.StatusInternalServerError, gin.H{
-					"error": err.Error(),
-				})
-				return
-			}
+		cookie1 := http.Cookie{
+			Name:  "token",
+			Value: refreshToken,
+			MaxAge: 3600 * 24 * 7,
+			Path:  "/",
+			Domain: config.ParsedDomain,
+			Secure: config.IsProdMode,
+			HttpOnly: true,
 		}
+		http.SetCookie(c.Writer, &cookie1)
+
+		cookie2 := http.Cookie{
+			Name:  "access_token",
+			Value: accessToken,
+			MaxAge: 3600 * 24 * 7,
+			Path:  "/",
+			Domain: config.ParsedDomain,
+			Secure: config.IsProdMode,
+			HttpOnly: true,
+		}
+		http.SetCookie(c.Writer, &cookie2)
 		// Return success message and send the access token in the response body (optional)
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Login successful",

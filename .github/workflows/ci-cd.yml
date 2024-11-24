@@ -59,20 +59,20 @@ jobs:
         runs-on: ubuntu-latest
         container: ghcr.io/railwayapp/cli:latest
         env:
-            SVC_ID: courageous-insight
-        	RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-		steps:
-			- name: Checkout code
-			uses: actions/checkout@v3
+            SVC_ID: testing-deploy
+            RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
 
-			- name: Login to Docker Hub for deployment
-			run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+            - name: Login to Docker Hub for deployment
+              run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-			- name: Pull and run docker image
-			run: |
-				docker pull rfjst4real/edulink-api:latest
-				docker rm -f edulink-api-container
-				docker run -d -p 8000:8000 --name edulink-api-container rfjst4real/edulink-api:latest
+            - name: Pull and run docker image
+              run: |
+                docker pull rfjst4real/edulink-api:latest
+                docker rm -f edulink-api-container
+                docker run -d -p 8000:8000 --name edulink-api-container rfjst4real/edulink-api:latest
 
-			- name: Install Railway CLI
-			- run: railway up --service=${{ env.SVC_ID }}
+            - name: Install Railway CLI
+              run: railway up --service=${{ env.SVC_ID }}

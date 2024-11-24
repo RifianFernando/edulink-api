@@ -10,13 +10,16 @@ import (
 
 func Logout() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		refreshTokenHttp, _ := c.Request.Cookie("token")
 		// Retrieve the refresh token from the cookie
 		refreshToken, err := c.Cookie("token")
-		if err != nil {
+		if (err != nil || refreshToken == "") && refreshTokenHttp == nil {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"error": "token not found",
 			})
 			return
+		} else if refreshToken == "" {
+			refreshToken = refreshTokenHttp.Value
 		}
 
 		authHeader := c.GetHeader("Authorization")

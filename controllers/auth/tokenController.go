@@ -11,13 +11,16 @@ import (
 
 func RefreshToken() gin.HandlerFunc {
 	return func(c *gin.Context) {
-
+		refreshTokenHttp, _ := c.Request.Cookie("token")
+		// Retrieve the refresh token from the cookie
 		refreshToken, err := c.Cookie("token")
-		if refreshToken == "" || err != nil {
+		if (refreshToken == "" || err != nil) && refreshTokenHttp == nil {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"error": "No refresh token provided",
 			})
 			return
+		} else if refreshToken == "" {
+			refreshToken = refreshTokenHttp.Value
 		}
 
 		claims, msg := helper.ValidateRefreshToken(refreshToken)
@@ -59,13 +62,17 @@ func RefreshToken() gin.HandlerFunc {
 
 func ValidateAccessToken() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		accessTokenHttp, _ := c.Request.Cookie("access_token")
+		// Retrieve the refresh token from the cookie
 		accessToken, err := c.Cookie("access_token")
 
-		if accessToken == "" || err != nil {
+		if (accessToken == "" || err != nil) && accessTokenHttp == nil {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"error": "No access token provided",
 			})
 			return
+		} else if accessToken == "" {
+			accessToken = accessTokenHttp.Value
 		}
 
 		claims, msg := helper.ValidateToken(accessToken, "access_token")

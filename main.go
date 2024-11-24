@@ -1,4 +1,5 @@
 package handler
+// package main
 
 import (
     "net/http"
@@ -29,6 +30,13 @@ func Handler(w http.ResponseWriter, r *http.Request) {
     // Use the router to handle the HTTP request
     app.ServeHTTP(w, r)
 }
+// func main() {
+//     // Set up the router
+//     r := setupRouter()
+
+//     // Run the server
+//     r.Run() // listen and serve on
+// }
 
 // Set up the Gin router
 func setupRouter() *gin.Engine {

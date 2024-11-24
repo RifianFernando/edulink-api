@@ -13,11 +13,14 @@ import (
 func IsTeacherHomeRoom() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		//  gett user from access token
+		accessTokenHttp, _ := c.Request.Cookie("access_token")
 		accessToken, err := c.Cookie("access_token")
-		if err != nil {
+		if (accessToken == "" || err != nil) && accessTokenHttp == nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": res.Forbidden})
 			c.Abort()
 			return
+		} else if accessToken == "" {
+			accessToken = accessTokenHttp.Value
 		}
 
 		// Get the user type from the context

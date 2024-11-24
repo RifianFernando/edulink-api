@@ -33,8 +33,7 @@ func InitializeSessionStore() {
 	} else {
 		IsProdMode = true
 		gin.SetMode(gin.ReleaseMode)
-		// ParsedDomain = extractDomain(allowOrigin)
-		ParsedDomain = ""
+		ParsedDomain = extractDomain(allowOrigin)
 		SameSite = http.SameSiteNoneMode
 	}
 

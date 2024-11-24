@@ -29,19 +29,17 @@ func InitializeSessionStore() {
 		IsProdMode = false
 		ParsedDomain = ""
 		gin.SetMode(gin.DebugMode)
-		SameSite = http.SameSiteLaxMode
 	} else {
 		IsProdMode = true
 		gin.SetMode(gin.ReleaseMode)
 		ParsedDomain = extractDomain(allowOrigin)
-		SameSite = http.SameSiteLaxMode
 	}
 
 	Store = sessions.NewCookieStore([]byte(sessionKey))
 	Store.Options = &sessions.Options{
 		HttpOnly: true,
 		MaxAge:   7 * 24 * 60 * 60, // 7 days same as the token expiration
-		SameSite: SameSite,
+		SameSite: http.SameSiteLaxMode,
 		Secure:   IsProdMode,
 		Domain:   ParsedDomain,
 		Path:     "/", // This should be the same as the router group base path

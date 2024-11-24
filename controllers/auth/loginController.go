@@ -72,6 +72,7 @@ func Login() gin.HandlerFunc {
 			Domain: config.ParsedDomain,
 			Secure: config.IsProdMode,
 			HttpOnly: true,
+			SameSite: http.SameSiteLaxMode,
 		}
 		http.SetCookie(c.Writer, &cookie1)
 
@@ -83,6 +84,7 @@ func Login() gin.HandlerFunc {
 			Domain: config.ParsedDomain,
 			Secure: config.IsProdMode,
 			HttpOnly: true,
+			SameSite: http.SameSiteLaxMode,
 		}
 		http.SetCookie(c.Writer, &cookie2)
 		// Return success message and send the access token in the response body (optional)

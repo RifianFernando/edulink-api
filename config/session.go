@@ -29,12 +29,14 @@ func InitializeSessionStore() {
 		IsProdMode = false
 		ParsedDomain = "" // Or you can set it to "localhost" for testing
 		gin.SetMode(gin.DebugMode)
+		SameSite = http.SameSiteLaxMode
 	} else {
 		IsProdMode = true
 		gin.SetMode(gin.ReleaseMode)
-		ParsedDomain = extractDomain(allowOrigin)
+		// ParsedDomain = extractDomain(allowOrigin)
+		ParsedDomain = ".vercel.app"
+		SameSite = http.SameSiteNoneMode
 	}
-	SameSite = http.SameSiteLaxMode
 
 	Store = sessions.NewCookieStore([]byte(sessionKey))
 	Store.Options = &sessions.Options{

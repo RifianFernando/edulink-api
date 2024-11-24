@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/edulink-api/lib"
 	"github.com/edulink-api/models"
-	"github.com/edulink-api/res"
 	"github.com/gin-gonic/gin"
 )
 
@@ -30,7 +30,7 @@ func GetHomeRoomTeacherByTeacherID(c *gin.Context) (string, time.Time, error) {
 		teacher.UserID = userID.(int64)
 		err := teacher.GetTeacherByModel()
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": res.Forbidden})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": lib.ForbiddenMsg})
 			return "", time.Time{}, err
 		}
 
@@ -39,7 +39,7 @@ func GetHomeRoomTeacherByTeacherID(c *gin.Context) (string, time.Time, error) {
 		className.TeacherID = teacher.TeacherID
 		err = className.GetHomeRoomTeacherByTeacherID()
 		if err != nil || className.ClassNameID == 0 {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": res.Forbidden})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": lib.ForbiddenMsg})
 			c.Abort()
 			return "", time.Time{}, err
 		}

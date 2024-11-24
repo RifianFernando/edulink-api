@@ -7,7 +7,6 @@ import (
 	"github.com/edulink-api/lib"
 	"github.com/edulink-api/models"
 	request "github.com/edulink-api/request/teacher"
-	"github.com/edulink-api/res"
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,7 +16,7 @@ func CreateTeacher() gin.HandlerFunc {
 		var allErrors []map[string]string
 
 		// Bind the request JSON to the CreateStudentRequest struct
-		if err := res.ResponseMessage(c.ShouldBindJSON(&request)); len(err) > 0 {
+		if err := lib.ResponseMessage(c.ShouldBindJSON(&request)); len(err) > 0 {
 			allErrors = append(allErrors, err...)
 		}
 

@@ -29,13 +29,14 @@ func InitializeSessionStore() {
 		IsProdMode = false
 		ParsedDomain = ""
 		gin.SetMode(gin.DebugMode)
+		SameSite = http.SameSiteLaxMode
 	} else {
 		IsProdMode = true
 		gin.SetMode(gin.ReleaseMode)
 		// ParsedDomain = extractDomain(allowOrigin)
 		ParsedDomain = ""
+		SameSite = http.SameSiteNoneMode
 	}
-	SameSite = http.SameSiteLaxMode
 
 	Store = sessions.NewCookieStore([]byte(sessionKey))
 	Store.Options = &sessions.Options{

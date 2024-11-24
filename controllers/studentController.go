@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/edulink-api/helper"
-	"github.com/edulink-api/lib"
 	"github.com/edulink-api/models"
 	request "github.com/edulink-api/request/student"
+	"github.com/edulink-api/res"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,7 +16,7 @@ func CreateStudent() gin.HandlerFunc {
 		var allErrors []map[string]string
 
 		// Bind the request JSON to the CreateStudentRequest struct
-		if err := lib.ResponseMessage(c.ShouldBindJSON(&request)); len(err) > 0 {
+		if err := res.ResponseMessage(c.ShouldBindJSON(&request)); len(err) > 0 {
 			allErrors = append(allErrors, err...)
 		}
 
@@ -85,7 +85,7 @@ func CreateAllStudent() gin.HandlerFunc {
 		var allErrors []map[string]string
 
 		// Bind the request JSON to the CreateStudentRequest struct
-		if err := lib.ResponseMessage(c.ShouldBindJSON(&request)); len(err) > 0 {
+		if err := res.ResponseMessage(c.ShouldBindJSON(&request)); len(err) > 0 {
 			allErrors = append(allErrors, err...)
 		}
 
@@ -166,7 +166,7 @@ func UpdateStudentById() gin.HandlerFunc {
 		var allErrors []map[string]string
 
 		// Bind the request JSON to the CreateStudentRequest struct
-		if err := lib.ResponseMessage(c.ShouldBindJSON(&request)); len(err) > 0 {
+		if err := res.ResponseMessage(c.ShouldBindJSON(&request)); len(err) > 0 {
 			allErrors = append(allErrors, err...)
 		}
 

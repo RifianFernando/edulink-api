@@ -46,6 +46,9 @@ COPY connections ./connections/
 # Copy the lib directory
 COPY lib ./lib/
 
+# Copy the lib directory
+COPY res ./res/
+
 # Copy the middleware directory
 COPY middleware ./middleware/
 

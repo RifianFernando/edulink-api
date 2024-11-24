@@ -4,8 +4,8 @@ package request
 import (
 	"time"
 
-	"github.com/edulink-api/lib"
 	req "github.com/edulink-api/request"
+	"github.com/edulink-api/res"
 )
 
 /*
@@ -31,7 +31,7 @@ type InsertTeacherRequest struct {
 func (r *InsertTeacherRequest) ValidateTeacher() []map[string]string {
 
 	// Validate the struct
-	err := lib.ResponseMessage(req.Validate.Struct(r))
+	err := res.ResponseMessage(req.Validate.Struct(r))
 
 	return err
 }
@@ -63,7 +63,7 @@ type InsertAllTeacherRequest struct {
 // Validate method
 func (r *InsertAllTeacherRequest) ValidateAllTeacher() []map[string]string {
 	// Validate the struct
-	err := lib.ResponseMessage(req.Validate.Struct(r))
+	err := res.ResponseMessage(req.Validate.Struct(r))
 
 	return err
 }

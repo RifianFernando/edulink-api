@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/edulink-api/helper"
-	"github.com/edulink-api/lib"
 	"github.com/edulink-api/models"
+	"github.com/edulink-api/res"
 	"github.com/gin-gonic/gin"
 )
 
@@ -70,7 +70,7 @@ func AdminStaffOnly() gin.HandlerFunc {
 		}
 
 		if !isAdmin && !isStaff {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": lib.ForbiddenMsg})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": res.Forbidden})
 			c.Abort()
 			return
 		}

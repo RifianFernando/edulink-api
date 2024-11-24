@@ -1,4 +1,4 @@
-package lib
+package res
 
 import (
 	"net/http"
@@ -8,8 +8,8 @@ import (
 )
 
 var (
-	ForbiddenMsg = http.StatusText(http.StatusForbidden)
-	SuccessMsg   = http.StatusText(http.StatusOK)
+	Forbidden = http.StatusText(http.StatusForbidden)
+	Success   = http.StatusText(http.StatusOK)
 )
 
 func ResponseMessage(err error) []map[string]string {

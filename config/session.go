@@ -34,7 +34,7 @@ func InitializeSessionStore() {
 		IsProdMode = true
 		gin.SetMode(gin.ReleaseMode)
 		ParsedDomain = ".vercel.app"
-		SameSite = http.SameSiteNoneMode
+		SameSite = http.SameSiteLaxMode
 	}
 
 	Store = sessions.NewCookieStore([]byte(sessionKey))

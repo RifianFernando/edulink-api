@@ -62,8 +62,8 @@ func Login() gin.HandlerFunc {
 		}
 
 		// Set the refresh token in an HttpOnly cookie (valid for 1 day)
-		// c.SetCookie("token", refreshToken, 3600*24*7, "/", config.ParsedDomain, config.IsProdMode, true)     // HttpOnly = true
-		// c.SetCookie("access_token", accessToken, 3600*24, "/", config.ParsedDomain, config.IsProdMode, true) // HttpOnly = false
+		c.SetCookie("token", refreshToken, 3600*24*7, "/", config.ParsedDomain, config.IsProdMode, true)     // HttpOnly = true
+		c.SetCookie("access_token", accessToken, 3600*24, "/", config.ParsedDomain, config.IsProdMode, true) // HttpOnly = false
 		refreshTokenCookie := http.Cookie{
 			Name:  "token",
 			Value: refreshToken,

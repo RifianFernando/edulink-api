@@ -33,7 +33,7 @@ func InitializeSessionStore() {
 	} else {
 		IsProdMode = true
 		gin.SetMode(gin.ReleaseMode)
-		ParsedDomain = ".vercel.app"
+		ParsedDomain = extractDomain(allowOrigin)
 		SameSite = http.SameSiteLaxMode
 	}
 

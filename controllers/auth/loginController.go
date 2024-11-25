@@ -64,7 +64,7 @@ func Login() gin.HandlerFunc {
 		// Set the refresh token in an HttpOnly cookie (valid for 1 day)
 		// c.SetCookie("token", refreshToken, 3600*24*7, "/", config.ParsedDomain, config.IsProdMode, true)     // HttpOnly = true
 		// c.SetCookie("access_token", accessToken, 3600*24, "/", config.ParsedDomain, config.IsProdMode, true) // HttpOnly = false
-		cookie1 := http.Cookie{
+		refreshTokenCookie := http.Cookie{
 			Name:  "token",
 			Value: refreshToken,
 			MaxAge: 3600 * 24 * 7,
@@ -74,9 +74,9 @@ func Login() gin.HandlerFunc {
 			HttpOnly: true,
 			SameSite: config.SameSite,
 		}
-		http.SetCookie(c.Writer, &cookie1)
+		http.SetCookie(c.Writer, &refreshTokenCookie)
 
-		cookie2 := http.Cookie{
+		accessTokenCookie := http.Cookie{
 			Name:  "access_token",
 			Value: accessToken,
 			MaxAge: 3600 * 24 * 7,
@@ -86,7 +86,7 @@ func Login() gin.HandlerFunc {
 			HttpOnly: true,
 			SameSite: config.SameSite,
 		}
-		http.SetCookie(c.Writer, &cookie2)
+		http.SetCookie(c.Writer, &accessTokenCookie)
 		// Return success message and send the access token in the response body (optional)
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Login successful",

@@ -33,22 +33,22 @@ func InitializeSessionStore() {
 	} else {
 		IsProdMode = true
 		gin.SetMode(gin.ReleaseMode)
-		// ParsedDomain = extractDomain(allowOrigin)
-		ParsedDomain = ".vercel.app"
+		ParsedDomain = extractDomain(allowOrigin)
 		SameSite = http.SameSiteNoneMode
 	}
 
 	Store = sessions.NewCookieStore([]byte(sessionKey))
-	Store.Options = &sessions.Options{
-		HttpOnly: true,
-		MaxAge:   7 * 24 * 60 * 60, // 7 days same as the token expiration
-		SameSite: SameSite,
-		Secure:   IsProdMode,
-		Domain:   ParsedDomain,
-		Path:     "/",
-	}
+	// Store.Options = &sessions.Options{
+	// HttpOnly: true,
+	// MaxAge:   7 * 24 * 60 * 60, // 7 days same as the token expiration
+	// SameSite: SameSite,
+	// Secure:   IsProdMode,
+	// Domain:   ParsedDomain,
+	// Path:     "/",
+	// }
 
 	fmt.Println("Is in Production mode:", IsProdMode)
+	fmt.Println("SameSite:", SameSite)
 	fmt.Println("maxAge:", Store.Options.MaxAge)
 	fmt.Println("Parsed Domain:", ParsedDomain)
 }

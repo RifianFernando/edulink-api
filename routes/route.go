@@ -17,12 +17,9 @@ func Route(router *gin.Engine) {
 	}
 
 	// Student CRUD
-	student := apiV1.Group(
-		"/student",
-		// middleware.AlreadyLoggedIn(),
-	)
+	student := apiV1.Group("/student", middleware.AlreadyLoggedIn())
 	{
-		student.GET("/", authController.ValidateAccessToken)
+		student.GET("/", controllers.GetAllStudent)
 		student.GET("/:student_id", controllers.GetStudentById)
 	}
 	studentAdminStaff := student.Group("/", middleware.AdminStaffOnly())

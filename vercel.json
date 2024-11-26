@@ -1,18 +1,15 @@
 {
-    "version": 2,
+    "trailingSlash": false,
     "builds": [
         {
             "src": "main.go",
             "use": "@vercel/go"
         }
     ],
-    "routes": [
+    "rewrites": [
         {
-            "src": "/(.*)",
-            "dest": "main.go"
-        },
-        {
-            "handle": "filesystem"
+            "source": "/(.*)",
+            "destination": "/main.go"
         }
     ]
 }

@@ -27,15 +27,14 @@ func InitializeSessionStore() {
 
 	if strings.Contains(allowOrigin, "localhost") {
 		IsProdMode = false
-		ParsedDomain = ""
+		ParsedDomain = "" // Or you can set it to "localhost" for testing
 		gin.SetMode(gin.DebugMode)
-		SameSite = http.SameSiteLaxMode
 	} else {
 		IsProdMode = true
 		gin.SetMode(gin.ReleaseMode)
 		ParsedDomain = extractDomain(allowOrigin)
-		SameSite = http.SameSiteNoneMode
 	}
+	SameSite = http.SameSiteLaxMode
 
 	Store = sessions.NewCookieStore([]byte(sessionKey))
 	Store.Options = &sessions.Options{
@@ -44,19 +43,20 @@ func InitializeSessionStore() {
 		SameSite: SameSite,
 		Secure:   IsProdMode,
 		Domain:   ParsedDomain,
-		Path:     "/", // This should be the same as the router group base path
+		Path:     "/",
 	}
 
 	fmt.Println("Is in Production mode:", IsProdMode)
+	fmt.Println("SameSite:", SameSite)
 	fmt.Println("maxAge:", Store.Options.MaxAge)
 	fmt.Println("Parsed Domain:", ParsedDomain)
-	fmt.Println("Same Site:", SameSite)
+	fmt.Println("allowOrigin:", allowOrigin)
 }
 
-func extractDomain(fullUrl string) string {
-	fullUrl = strings.TrimPrefix(fullUrl, "https://")
-	fullUrl = strings.TrimPrefix(fullUrl, "http://")
-	return fullUrl
+func extractDomain(fullURL string) string {
+	fullURL = strings.TrimPrefix(fullURL, "https://")
+	fullURL = strings.TrimPrefix(fullURL, "http://")
+	return fullURL
 }
 
 func SessionMiddleware() gin.HandlerFunc {

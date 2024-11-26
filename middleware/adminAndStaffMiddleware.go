@@ -4,19 +4,22 @@ import (
 	"net/http"
 
 	"github.com/edulink-api/helper"
-	"github.com/edulink-api/lib"
 	"github.com/edulink-api/models"
+	"github.com/edulink-api/res"
 	"github.com/gin-gonic/gin"
 )
 
 func AdminStaffOnly() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		accessTokenHttp, _ := c.Request.Cookie("access_token")
 		//  gett user from access token
 		accessToken, err := c.Cookie("access_token")
-		if err != nil {
+		if (accessToken == "" || err != nil) && accessTokenHttp == nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Access token not found"})
 			c.Abort()
 			return
+		} else if accessToken == "" {
+			accessToken = accessTokenHttp.Value
 		}
 
 		// Get the user type from the context
@@ -70,7 +73,7 @@ func AdminStaffOnly() gin.HandlerFunc {
 		}
 
 		if !isAdmin && !isStaff {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": lib.ForbiddenMsg})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": res.Forbidden})
 			c.Abort()
 			return
 		}

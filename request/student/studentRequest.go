@@ -7,7 +7,7 @@ import (
 
 	"github.com/edulink-api/models"
 	req "github.com/edulink-api/request"
-	"github.com/edulink-api/lib"
+	"github.com/edulink-api/res"
 )
 
 /*
@@ -25,7 +25,7 @@ type InsertStudentRequest struct {
 func (r *InsertStudentRequest) Validate() []map[string]string {
 
 	// Validate the struct
-	err := lib.ResponseMessage(req.Validate.Struct(r))
+	err := res.ResponseMessage(req.Validate.Struct(r))
 
 	return err
 }

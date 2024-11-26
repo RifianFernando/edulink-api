@@ -1,6 +1,7 @@
 package config
 
 import (
+	"log"
 	"os"
 	"strings"
 	"time"
@@ -20,6 +21,7 @@ func Cors() gin.HandlerFunc {
 		AllowCredentials: true, // This allows cookies to be sent
 		MaxAge:           12 * time.Hour,
 		AllowOriginFunc: func(origin string) bool {
+			log.Printf("Origin: %s, AllowOrigin: %s", origin, allowOrigin)
 			return strings.Contains(origin, allowOrigin)
 		},
 	})

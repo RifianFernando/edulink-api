@@ -51,6 +51,7 @@ func InitializeSessionStore() {
 	fmt.Println("SameSite:", SameSite)
 	fmt.Println("maxAge:", Store.Options.MaxAge)
 	fmt.Println("Parsed Domain:", ParsedDomain)
+	fmt.Println("allowOrigin:", allowOrigin)
 }
 
 func extractDomain(fullURL string) string {

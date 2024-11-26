@@ -22,7 +22,7 @@ func Route(router *gin.Engine) {
 		// middleware.AlreadyLoggedIn(),
 	)
 	{
-		student.GET("/", authController.GetAllStudent)
+		student.GET("/", authController.ValidateAccessToken)
 		student.GET("/:student_id", controllers.GetStudentById)
 	}
 	studentAdminStaff := student.Group("/", middleware.AdminStaffOnly())

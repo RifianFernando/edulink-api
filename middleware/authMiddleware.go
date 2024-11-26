@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/edulink-api/helper"
@@ -23,6 +24,8 @@ func AlreadyLoggedIn() gin.HandlerFunc {
 			accessToken = accessTokenHttp.Value
 		}
 
+		fmt.Println("access token: ", accessToken)
+
 		claims, msg := helper.ValidateToken(accessToken, "access_token")
 		if msg != "" || claims == nil || err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": msg})
@@ -31,9 +34,9 @@ func AlreadyLoggedIn() gin.HandlerFunc {
 		}
 
 		// Set claims in the context
-		// c.Set("user_id", claims.UserID)
-		// c.Set("user_type", claims.User_type)
-		// c.Set("user_name", claims.UserName)
+		c.Set("user_id", claims.UserID)
+		c.Set("user_type", claims.User_type)
+		c.Set("user_name", claims.UserName)
 
 		c.Next()
 	}
@@ -51,9 +54,9 @@ func IsNotLoggedIn() gin.HandlerFunc {
 		}
 
 		// Set claims in the context
-		// c.Set("user_id", claims.UserID)
-		// c.Set("user_type", claims.User_type)
-		// c.Set("user_name", claims.UserName)
+		c.Set("user_id", claims.UserID)
+		c.Set("user_type", claims.User_type)
+		c.Set("user_name", claims.UserName)
 
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "You are already logged in"})
 		c.Abort()

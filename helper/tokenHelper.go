@@ -38,7 +38,7 @@ func GenerateToken(user models.User, userType string) (signedToken string, signe
 		User_type: userType,
 		TokenType: "access_token",
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Local().Add(time.Minute).Unix(),
+			ExpiresAt: time.Now().Local().Add(time.Second * 30).Unix(),
 			IssuedAt:  time.Now().Unix(),
 		},
 	}

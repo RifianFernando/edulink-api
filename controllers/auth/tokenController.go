@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/edulink-api/config"
@@ -21,6 +22,8 @@ func RefreshToken(c *gin.Context) {
 	} else if refreshToken == "" {
 		refreshToken = refreshTokenHttp.Value
 	}
+
+	fmt.Println("refresh token: ", refreshToken)
 
 	claims, msg := helper.ValidateRefreshToken(refreshToken)
 	if msg != "" || claims == nil {

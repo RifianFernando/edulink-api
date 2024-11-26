@@ -78,8 +78,6 @@ func (teacher *TeacherModel) GetTeacherById(id string) (GetTeacherByIDWithoutPas
 
 	var teacherDTO GetTeacherByIDWithoutPassword
 
-	fmt.Println("dob", teacher.User.UserDateOfBirth)
-
 	teacherDTO.TeacherID = teacher.TeacherID
 	teacherDTO.UserID = teacher.UserID
 	teacherDTO.UserName = teacher.User.UserName

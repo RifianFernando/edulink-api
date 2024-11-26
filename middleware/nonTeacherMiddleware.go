@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/edulink-api/helper"
@@ -62,7 +61,6 @@ func IsTeacherHomeRoom() gin.HandlerFunc {
 				c.Abort()
 				return
 			}
-			fmt.Println("teacherID: ", teacher.TeacherID)
 
 			var className models.ClassName
 			className.TeacherID = teacher.TeacherID
@@ -72,7 +70,6 @@ func IsTeacherHomeRoom() gin.HandlerFunc {
 				c.Abort()
 				return
 			}
-			fmt.Println("className: ", className)
 
 			c.Next()
 			return

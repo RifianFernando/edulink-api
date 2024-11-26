@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/edulink-api/config"
@@ -22,8 +21,6 @@ func RefreshToken(c *gin.Context) {
 	} else if refreshToken == "" {
 		refreshToken = refreshTokenHttp.Value
 	}
-
-	fmt.Println("refresh token: ", refreshToken)
 
 	claims, msg := helper.ValidateRefreshToken(refreshToken)
 	if msg != "" || claims == nil {
@@ -46,10 +43,6 @@ func RefreshToken(c *gin.Context) {
 	// Set the refresh token in an HttpOnly cookie (valid for 1 day)
 	c.SetCookie("token", newRefreshToken, 3600*24*7, "/", config.ParsedDomain, config.IsProdMode, true)
 	c.SetCookie("access_token", newToken, 3600*24, "/", config.ParsedDomain, config.IsProdMode, true)
-
-	// for name, values := range c.Writer.Header() {
-	// 	fmt.Printf("Response Header %s: %v\n", name, values)
-	// }
 
 	c.JSON(http.StatusOK, gin.H{
 		"access_token": newToken,

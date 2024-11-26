@@ -64,6 +64,7 @@ func setupRouter() *gin.Engine {
     r.ForwardedByClientIP = true
     err := r.SetTrustedProxies(nil)  // Adjust for production as needed
     lib.HandleError(err, "Failed to set trusted proxies")
+	r.RedirectTrailingSlash = true
 
     // Register routes
     routes.Route(r)

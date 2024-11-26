@@ -51,50 +51,46 @@ func GetHomeRoomTeacherByTeacherID(c *gin.Context) (string, time.Time, error) {
 	return ClassID, Date, nil
 }
 
-func GetAllAttendanceMonthSummaryByClassID() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		ClassID, Date, err := GetHomeRoomTeacherByTeacherID(c)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-
-		result, err := models.GetAllAttendanceMonthSummaryByClassID(ClassID, Date)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-
-		c.JSON(http.StatusOK, gin.H{
-			"attendance": result,
+func GetAllAttendanceMonthSummaryByClassID(c *gin.Context) {
+	ClassID, Date, err := GetHomeRoomTeacherByTeacherID(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
 		})
+		return
 	}
+
+	result, err := models.GetAllAttendanceMonthSummaryByClassID(ClassID, Date)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"attendance": result,
+	})
 }
 
-func GetAllStudentAttendanceDateByClassID() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		ClassID, Date, err := GetHomeRoomTeacherByTeacherID(c)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-
-		result, err := models.GetAllStudentAttendanceDateByClassID(ClassID, Date)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-
-		c.JSON(http.StatusOK, gin.H{
-			"attendance": result,
+func GetAllStudentAttendanceDateByClassID(c *gin.Context) {
+	ClassID, Date, err := GetHomeRoomTeacherByTeacherID(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
 		})
+		return
 	}
+
+	result, err := models.GetAllStudentAttendanceDateByClassID(ClassID, Date)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"attendance": result,
+	})
 }

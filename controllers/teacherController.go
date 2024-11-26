@@ -11,81 +11,79 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func CreateTeacher() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		var request request.InsertTeacherRequest
-		var allErrors []map[string]string
+func CreateTeacher(c *gin.Context) {
+	var request request.InsertTeacherRequest
+	var allErrors []map[string]string
 
-		// Bind the request JSON to the CreateStudentRequest struct
-		if err := res.ResponseMessage(c.ShouldBindJSON(&request)); len(err) > 0 {
-			allErrors = append(allErrors, err...)
-		}
-
-		// Validate the request
-		if err := request.ValidateTeacher(); len(err) > 0 {
-			allErrors = append(allErrors, err...)
-		}
-
-		if len(allErrors) > 0 {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": allErrors,
-			})
-			return
-		}
-
-		// Parse date strings to time.Time
-		DateOfBirth, err := request.ParseDates()
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "Invalid date format",
-			})
-			return
-		}
-
-		var user = models.User{
-			UserName:         request.UserName,
-			UserGender:       request.UserGender,
-			UserPlaceOfBirth: request.UserPlaceOfBirth,
-			UserDateOfBirth:  DateOfBirth,
-			UserReligion:     request.UserReligion,
-			UserAddress:      request.UserAddress,
-			UserNumPhone:     request.UserNumPhone,
-			UserEmail:        request.UserEmail,
-			UserPassword: lib.HashPassword(
-				request.UserEmail + request.DateOfBirth,
-			),
-		}
-
-		err = user.CreateUser()
-
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "while create user: " + err.Error(),
-			})
-			return
-		}
-
-		// create teacher
-		var teacher = models.Teacher{
-			UserID:       user.UserID,
-			TeachingHour: 0,
-		}
-
-		err = teacher.CreateTeacher()
-
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "while create teacher: " + err.Error(),
-			})
-			return
-		}
-
-		// return it
-		c.JSON(http.StatusOK, gin.H{
-			"user":    user,
-			"teacher": teacher,
-		})
+	// Bind the request JSON to the CreateStudentRequest struct
+	if err := res.ResponseMessage(c.ShouldBindJSON(&request)); len(err) > 0 {
+		allErrors = append(allErrors, err...)
 	}
+
+	// Validate the request
+	if err := request.ValidateTeacher(); len(err) > 0 {
+		allErrors = append(allErrors, err...)
+	}
+
+	if len(allErrors) > 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": allErrors,
+		})
+		return
+	}
+
+	// Parse date strings to time.Time
+	DateOfBirth, err := request.ParseDates()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid date format",
+		})
+		return
+	}
+
+	var user = models.User{
+		UserName:         request.UserName,
+		UserGender:       request.UserGender,
+		UserPlaceOfBirth: request.UserPlaceOfBirth,
+		UserDateOfBirth:  DateOfBirth,
+		UserReligion:     request.UserReligion,
+		UserAddress:      request.UserAddress,
+		UserNumPhone:     request.UserNumPhone,
+		UserEmail:        request.UserEmail,
+		UserPassword: lib.HashPassword(
+			request.UserEmail + request.DateOfBirth,
+		),
+	}
+
+	err = user.CreateUser()
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "while create user: " + err.Error(),
+		})
+		return
+	}
+
+	// create teacher
+	var teacher = models.Teacher{
+		UserID:       user.UserID,
+		TeachingHour: 0,
+	}
+
+	err = teacher.CreateTeacher()
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "while create teacher: " + err.Error(),
+		})
+		return
+	}
+
+	// return it
+	c.JSON(http.StatusOK, gin.H{
+		"user":    user,
+		"teacher": teacher,
+	})
 }
 
 // func CreateAllTeacher() gin.HandlerFunc {
@@ -262,141 +260,133 @@ func CreateTeacher() gin.HandlerFunc {
 // 	}
 // }
 
-func GetAllTeacher() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		var teachers models.TeacherModel
-		result, err := teachers.GetAllUserTeachersWithUser()
-		if err != "" {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err,
-			})
-			return
-		}
-
-		c.JSON(http.StatusOK, gin.H{
-			"teachers": result,
+func GetAllTeacher(c *gin.Context) {
+	var teachers models.TeacherModel
+	result, err := teachers.GetAllUserTeachersWithUser()
+	if err != "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err,
 		})
+		return
 	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"teachers": result,
+	})
 }
 
-func GetTeacherById() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		id := c.Param("teacher_id")
+func GetTeacherById(c *gin.Context) {
+	id := c.Param("teacher_id")
 
-		var teacher models.TeacherModel
-		result, err := teacher.GetTeacherById(id)
-		if err != nil || teacher.TeacherID == 0 {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-
-		c.JSON(http.StatusOK, gin.H{
-			"teacher": result,
+	var teacher models.TeacherModel
+	result, err := teacher.GetTeacherById(id)
+	if err != nil || teacher.TeacherID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
 		})
+		return
 	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"teacher": result,
+	})
 }
 
-func UpdateTeacherById() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		var request request.UpdateTeacherRequest
-		// Bind the request JSON to the InsertTeacherRequest struct
-		if err := c.ShouldBindJSON(&request); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "should bind json: " + err.Error(),
-			})
-			return
-		}
-
-		// Validate the request
-		if err := request.Validate(); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-
-		// Parse date strings to time.Time
-		DateOfBirth, err := request.ParseDates()
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "Invalid date format: " + err.Error(),
-			})
-			return
-		}
-
-		// Get teacher id from URL and parse it to int64
-		id := c.Param("teacher_id")
-
-		var teacher models.TeacherModel
-		_, err = teacher.GetTeacherById(id)
-		if err != nil || teacher.TeacherID == 0 {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-
-		// update teacher and user
-		teacher.User.UserName = request.UserName
-		teacher.User.UserGender = request.UserGender
-		teacher.User.UserPlaceOfBirth = request.UserPlaceOfBirth
-		teacher.User.UserReligion = request.UserReligion
-		teacher.User.UserDateOfBirth = DateOfBirth
-		teacher.User.UserAddress = request.UserAddress
-		teacher.User.UserNumPhone = request.UserNumPhone
-		teacher.User.UserEmail = request.UserEmail
-		teacher.TeachingHour = request.TeachingHour
-
-		err = teacher.UpdateTeacherById(&teacher)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-
-		// Return success response
-		c.JSON(http.StatusOK, gin.H{
-			"success":     "Updated teacher with ID: " + id,
-			"DateOfBirth": DateOfBirth,
+func UpdateTeacherById(c *gin.Context) {
+	var request request.UpdateTeacherRequest
+	// Bind the request JSON to the InsertTeacherRequest struct
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "should bind json: " + err.Error(),
 		})
+		return
 	}
+
+	// Validate the request
+	if err := request.Validate(); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	// Parse date strings to time.Time
+	DateOfBirth, err := request.ParseDates()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid date format: " + err.Error(),
+		})
+		return
+	}
+
+	// Get teacher id from URL and parse it to int64
+	id := c.Param("teacher_id")
+
+	var teacher models.TeacherModel
+	_, err = teacher.GetTeacherById(id)
+	if err != nil || teacher.TeacherID == 0 {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	// update teacher and user
+	teacher.User.UserName = request.UserName
+	teacher.User.UserGender = request.UserGender
+	teacher.User.UserPlaceOfBirth = request.UserPlaceOfBirth
+	teacher.User.UserReligion = request.UserReligion
+	teacher.User.UserDateOfBirth = DateOfBirth
+	teacher.User.UserAddress = request.UserAddress
+	teacher.User.UserNumPhone = request.UserNumPhone
+	teacher.User.UserEmail = request.UserEmail
+	teacher.TeachingHour = request.TeachingHour
+
+	err = teacher.UpdateTeacherById(&teacher)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	// Return success response
+	c.JSON(http.StatusOK, gin.H{
+		"success":     "Updated teacher with ID: " + id,
+		"DateOfBirth": DateOfBirth,
+	})
 }
 
-func DeleteTeacherById() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		id := c.Param("teacher_id")
+func DeleteTeacherById(c *gin.Context) {
+	id := c.Param("teacher_id")
 
-		var teacher models.TeacherModel
-		// if teacher exist
-		_, err := teacher.GetTeacherById(id)
-		if err != nil || teacher.TeacherID == 0 {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-
-		err = teacher.DeleteTeacherById(strconv.FormatInt(teacher.UserID, 10))
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-
-		err = teacher.User.DeleteUserById(strconv.FormatInt(teacher.UserID, 10))
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-
-		c.JSON(http.StatusOK, gin.H{
-			"teacher": "deleted teacher with id " + id,
+	var teacher models.TeacherModel
+	// if teacher exist
+	_, err := teacher.GetTeacherById(id)
+	if err != nil || teacher.TeacherID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
 		})
+		return
 	}
+
+	err = teacher.DeleteTeacherById(strconv.FormatInt(teacher.UserID, 10))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	err = teacher.User.DeleteUserById(strconv.FormatInt(teacher.UserID, 10))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"teacher": "deleted teacher with id " + id,
+	})
 }

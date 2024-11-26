@@ -3,7 +3,6 @@ package config
 import (
 	"log"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -12,17 +11,21 @@ import (
 
 // Cors is a function to enable cors
 func Cors() gin.HandlerFunc {
-	var allowOrigin = os.Getenv("ALLOW_ORIGIN")
+	allowOrigin := os.Getenv("ALLOW_ORIGIN")
+	if allowOrigin == "" {
+		log.Println("Warning: ALLOW_ORIGIN is not set. Defaulting to '*' (not recommended in production).")
+		allowOrigin = "*" // Fallback for development; restrict this in production.
+	}
+
 	return cors.New(cors.Config{
 		AllowOrigins:     []string{allowOrigin},
 		AllowMethods:     []string{"PUT", "PATCH", "GET", "POST", "OPTIONS", "DELETE"},
 		AllowHeaders:     []string{"Content-Type", "Authorization", "X-Requested-With", "Accept"},
 		ExposeHeaders:    []string{"Content-Length", "Authorization"},
-		AllowCredentials: true, // This allows cookies to be sent
+		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 		AllowOriginFunc: func(origin string) bool {
-			log.Printf("Origin: %s, AllowOrigin: %s", origin, allowOrigin)
-			return strings.Contains(origin, allowOrigin)
+			return origin == allowOrigin
 		},
 	})
 }

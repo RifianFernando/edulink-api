@@ -14,14 +14,14 @@ func Cors() gin.HandlerFunc {
 	allowOrigin := os.Getenv("ALLOW_ORIGIN")
 	if allowOrigin == "" {
 		log.Println("Warning: ALLOW_ORIGIN is not set. Defaulting to '*' (not recommended in production).")
-		allowOrigin = "*" // Fallback for development; restrict this in production.
+		allowOrigin = "*"
 	}
 
 	return cors.New(cors.Config{
 		AllowOrigins:     []string{allowOrigin},
 		AllowMethods:     []string{"PUT", "PATCH", "GET", "POST", "OPTIONS", "DELETE"},
 		AllowHeaders:     []string{"Content-Type", "Authorization", "X-Requested-With", "Accept"},
-		ExposeHeaders:    []string{"Content-Length", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length", "Authorization", "Cookie"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 		AllowOriginFunc: func(origin string) bool {

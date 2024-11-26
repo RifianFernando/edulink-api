@@ -80,14 +80,7 @@ func ValidateAccessToken(c *gin.Context) {
 		return
 	}
 
-	var students models.StudentModel
-	result, errStd := students.GetAllStudents()
-	if errStd != "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err})
-		return
-	}
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Access token is valid",
-		"student": result,
 	})
 }

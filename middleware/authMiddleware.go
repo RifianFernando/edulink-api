@@ -31,9 +31,9 @@ func AlreadyLoggedIn() gin.HandlerFunc {
 		}
 
 		// Set claims in the context
-		c.Set("user_id", claims.UserID)
-		c.Set("user_type", claims.User_type)
-		c.Set("user_name", claims.UserName)
+		// c.Set("user_id", claims.UserID)
+		// c.Set("user_type", claims.User_type)
+		// c.Set("user_name", claims.UserName)
 
 		c.Next()
 	}
@@ -51,9 +51,9 @@ func IsNotLoggedIn() gin.HandlerFunc {
 		}
 
 		// Set claims in the context
-		c.Set("user_id", claims.UserID)
-		c.Set("user_type", claims.User_type)
-		c.Set("user_name", claims.UserName)
+		// c.Set("user_id", claims.UserID)
+		// c.Set("user_type", claims.User_type)
+		// c.Set("user_name", claims.UserName)
 
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "You are already logged in"})
 		c.Abort()

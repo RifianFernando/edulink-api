@@ -19,6 +19,7 @@ func Route(router *gin.Engine) {
 	// Student CRUD
 	student := apiV1.Group("/student", middleware.AlreadyLoggedIn())
 	{
+		student.GET("", controllers.GetAllStudent)
 		student.GET("/", controllers.GetAllStudent)
 		student.GET("/:student_id", controllers.GetStudentById)
 	}

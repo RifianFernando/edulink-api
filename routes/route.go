@@ -39,7 +39,7 @@ func Route(router *gin.Engine) {
 	// Teacher CRUD
 	teacher := apiV1.Group("/teacher", middleware.AlreadyLoggedIn(), middleware.AdminStaffOnly())
 	{
-		teacher.GET("/", controllers.GetAllTeacher)
+		teacher.GET("", controllers.GetAllTeacher)
 		teacher.GET("/:teacher_id", controllers.GetTeacherById)
 		teacher.POST(create, controllers.CreateTeacher)
 		teacher.PUT("/update/:teacher_id", controllers.UpdateTeacherById)
@@ -49,7 +49,7 @@ func Route(router *gin.Engine) {
 	// Class CRUD
 	class := apiV1.Group("/class")
 	{
-		class.GET("/", controllers.GetAllClass)
+		class.GET("", controllers.GetAllClass)
 		class.GET("/:class_id", controllers.GetClassNameById)
 		class.POST(create, controllers.CreateClass)
 		class.PUT("/update/:class_id", controllers.UpdateClassById)

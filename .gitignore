@@ -3,3 +3,5 @@ edulink-api.exe
 edulink-api.exe~
 .DS_Store
 edulink-api
+.vscode
+.vercel

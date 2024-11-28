@@ -1,0 +1,58 @@
+name: Deploy CI/CD Pipeline
+
+on:
+    push:
+        branches:
+            - dev/web-feature
+            - master
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Create .env file
+              run: |
+                  cat <<EOF > .env
+                  APP_KEY=${{ secrets.ENV_APP_KEY }}
+                  PORT=${{ secrets.ENV_PORT }}
+                  ALLOW_ORIGIN=${{ secrets.ENV_ALLOW_ORIGIN }}
+                  API_V1=/api/v1
+                  GIN_MODE=release
+                  DB_CONNECTION=${{ secrets.DB_CONNECTION }}
+                  DB_HOST=${{ secrets.DB_HOST }}
+                  DB_PORT=${{ secrets.DB_PORT }}
+                  DB_NAME=${{ secrets.DB_NAME }}
+                  DB_USERNAME=${{ secrets.DB_USERNAME }}
+                  DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+                  DB_SSLMODE=${{ secrets.DB_SSLMODE }}
+                  DB_TIMEZONE=Asia/Jakarta
+                  TZ=Asia/Jakarta
+                  EOF
+
+            - name: Login to Docker Hub for build
+              run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+            - name: Build Docker Image
+              run: docker build -t rfjst4real/edulink-api .
+
+            - name: Push Docker Image to Docker Hub
+              run: docker push rfjst4real/edulink-api:latest
+    deploy:
+        if: false
+        needs: build
+        runs-on: self-hosted
+        steps:
+            - name: Login to Docker Hub for deployment
+              run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+            - name: Pull docker image
+              run: docker pull rfjst4real/edulink-api:latest
+
+            - name: Delete old container
+              run: docker rm -f edulink-api-container
+
+            - name: Run docker container
+              run: docker run -d -p 8000:8000 --name edulink-api-container rfjst4real/edulink-api:latest

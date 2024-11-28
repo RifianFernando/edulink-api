@@ -1,19 +1,30 @@
 package models
 
 import (
+	"fmt"
+
 	"github.com/edulink-api/connections"
 	"github.com/edulink-api/database/migration/lib"
 	"gorm.io/gorm"
 )
 
 type ClassName struct {
-	ClassNameID int64   `gorm:"primaryKey" json:"id"`
-	GradeID     int64   `json:"id_grade" binding:"required"`
-	TeacherID   int64   `json:"id_teacher" binding:"required"`
-	Name        string  `json:"name" binding:"required" validate:"len=1"`
-	Teacher     Teacher `gorm:"foreignKey:TeacherID;references:TeacherID"`
-	Grade       Grade   `gorm:"foreignKey:GradeID;references:GradeID"`
+	ClassNameID int64  `gorm:"primaryKey" json:"id"`
+	GradeID     int64  `json:"id_grade" binding:"required"`
+	TeacherID   int64  `json:"id_teacher" binding:"required"`
+	Name        string `json:"name" binding:"required" validate:"len=1"`
 	lib.BaseModel
+}
+
+type ClassNameModel struct {
+	ClassName
+	Teacher Teacher `gorm:"foreignKey:TeacherID;references:TeacherID"`
+	Grade   Grade   `gorm:"foreignKey:GradeID;references:GradeID"`
+}
+
+type ClassNameGrade struct {
+	ClassName
+	Grade Grade `gorm:"foreignKey:GradeID;references:GradeID"`
 }
 
 func (ClassName) TableName() string {
@@ -30,11 +41,11 @@ func (className *ClassName) CreateClassName() error {
 }
 
 // Get all ClassName
-func (class *ClassName) GetAllClassName() (
-	className []ClassName,
+func (class *ClassNameModel) GetAllClassName() (
+	className []ClassNameModel,
 	msg string,
 ) {
-	result := connections.DB.Preload("Teacher.User").Preload("Grade").Find(&className)
+	result := connections.DB.Preload("Teacher").Preload("Grade").Find(&className)
 	if result.Error != nil {
 		return nil, result.Error.Error()
 	} else if result.RowsAffected == 0 {
@@ -73,6 +84,18 @@ func (class *ClassName) UpdateClassNameByObject() error {
 func (class *ClassName) DeleteClassNameById(id string) error {
 	result := connections.DB.Delete(&class, id)
 	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
+
+func (className *ClassName) GetHomeRoomTeacherByTeacherID() error {
+	result := connections.DB.Where("teacher_id = ?", className.TeacherID).First(&className)
+	if result.Error != nil && result.Error != gorm.ErrRecordNotFound {
+		if result.Error == gorm.ErrRecordNotFound {
+			return fmt.Errorf("no class found")
+		}
 		return result.Error
 	}
 

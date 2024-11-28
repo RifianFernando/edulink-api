@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/edulink-api/models"
-	"github.com/edulink-api/request"
+	"github.com/edulink-api/request/student"
 	"github.com/gin-gonic/gin"
 )
 
@@ -33,14 +33,14 @@ func PrepareStudents(requestedStudents []request.InsertStudentRequest, c *gin.Co
 			return nil, err
 		}
 
-		classIDStr := strconv.FormatInt(student.ClassID, 10)
+		classIDStr := strconv.FormatInt(student.ClassNameID, 10)
 		if err := checkClassExistence(classIDStr, index); err != nil {
 			return nil, err
 		}
 
 		// Add the validated student to the slice
 		students = append(students, models.Student{
-			ClassID:               student.ClassID,
+			ClassNameID:           student.ClassNameID,
 			StudentName:           student.StudentName,
 			StudentNISN:           student.StudentNISN,
 			StudentGender:         student.StudentGender,
@@ -48,16 +48,16 @@ func PrepareStudents(requestedStudents []request.InsertStudentRequest, c *gin.Co
 			StudentDateOfBirth:    parsedDates.DateOfBirth,
 			StudentReligion:       student.StudentReligion,
 			StudentAddress:        student.StudentAddress,
-			StudentNumPhone:       student.StudentNumPhone,
+			StudentPhoneNumber:       student.StudentPhoneNumber,
 			StudentEmail:          student.StudentEmail,
 			StudentAcceptedDate:   parsedDates.AcceptedDate,
-			StudentSchoolOrigin:   student.StudentSchoolOrigin,
+			StudentSchoolOfOrigin:   student.StudentSchoolOfOrigin,
 			StudentFatherName:     student.StudentFatherName,
 			StudentFatherJob:      student.StudentFatherJob,
-			StudentFatherNumPhone: student.StudentFatherNumPhone,
+			StudentFatherPhoneNumber: student.StudentFatherPhoneNumber,
 			StudentMotherName:     student.StudentMotherName,
 			StudentMotherJob:      student.StudentMotherJob,
-			StudentMotherNumPhone: student.StudentMotherNumPhone,
+			StudentMotherPhoneNumber: student.StudentMotherPhoneNumber,
 		})
 	}
 
@@ -75,8 +75,8 @@ func checkForDuplicates(student request.InsertStudentRequest, index int, nameMap
 	if nisnMap[student.StudentNISN] {
 		return errors.New(customErrorForDuplicate("StudentNISN", student.StudentNISN, index))
 	}
-	if numPhoneMap[student.StudentNumPhone] {
-		return errors.New(customErrorForDuplicate("StudentNumPhone", student.StudentNumPhone, index))
+	if numPhoneMap[student.StudentPhoneNumber] {
+		return errors.New(customErrorForDuplicate("StudentPhoneNumber", student.StudentPhoneNumber, index))
 	}
 	if emailMap[student.StudentEmail] {
 		return errors.New(customErrorForDuplicate("StudentEmail", student.StudentEmail, index))
@@ -84,7 +84,7 @@ func checkForDuplicates(student request.InsertStudentRequest, index int, nameMap
 
 	nameMap[student.StudentName] = true
 	nisnMap[student.StudentNISN] = true
-	numPhoneMap[student.StudentNumPhone] = true
+	numPhoneMap[student.StudentPhoneNumber] = true
 	emailMap[student.StudentEmail] = true
 	return nil
 }
@@ -113,7 +113,7 @@ func checkStudentExistence(student request.InsertStudentRequest, index int) erro
 	}{
 		{student.StudentName, "name"},
 		{student.StudentNISN, "NISN"},
-		{student.StudentNumPhone, "number phone"},
+		{student.StudentPhoneNumber, "number phone"},
 		{student.StudentEmail, "email"},
 	}
 
@@ -125,7 +125,7 @@ func checkStudentExistence(student request.InsertStudentRequest, index int) erro
 		case "NISN":
 			studentSearch.StudentNISN = criteria.value
 		case "number phone":
-			studentSearch.StudentNumPhone = criteria.value
+			studentSearch.StudentPhoneNumber = criteria.value
 		case "email":
 			studentSearch.StudentEmail = criteria.value
 		}
@@ -135,7 +135,7 @@ func checkStudentExistence(student request.InsertStudentRequest, index int) erro
 			return err
 		}
 
-		if result.StudentID != 0 || result.ClassID != 0 {
+		if result.StudentID != 0 || result.ClassNameID != 0 {
 			return errors.New("Student " + criteria.field + ": " + criteria.value + " already exist on index: " + strconv.Itoa(index))
 		}
 	}

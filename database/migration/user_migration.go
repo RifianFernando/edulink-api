@@ -13,8 +13,24 @@ const (
 	Female Gender = "Female"
 )
 
+type Religion string
+
+const (
+	Islam     Religion = "Islam"
+	Christian Religion = "Kristen Protestan"
+	Catholic  Religion = "Kristen Katolik"
+	Hindu     Religion = "Hindu"
+	Buddha    Religion = "Buddha"
+	Konghucu  Religion = "Konghucu"
+)
+
 func (g *Gender) Scan(value interface{}) error {
 	*g = Gender(value.([]byte))
+	return nil
+}
+
+func (r *Religion) Scan(value interface{}) error {
+	*r = Religion(value.([]byte))
 	return nil
 }
 
@@ -25,11 +41,12 @@ func (g *Gender) Scan(value interface{}) error {
  */
 type User struct {
 	UserID           int64     `gorm:"primaryKey;autoIncrement"`
-	UserName         string    `gorm:"unique;not null"`
+	UserName         string    `gorm:"not null"`
 	UserGender       Gender    `gorm:"type:VARCHAR(6);not null"`
 	UserPlaceOfBirth string    `gorm:"not null"`
 	UserDateOfBirth  time.Time `gorm:"not null"`
-	UserAddress      string    `gorm:"not null"`
+	UserReligion     Religion  `gorm:"type:VARCHAR(17);not null"`
+	UserAddress      string    `gorm:"not null;type:VARCHAR(200)"`
 	UserNumPhone     string    `gorm:"unique;not null"`
 	UserEmail        string    `gorm:"unique;not null"`
 	UserPassword     string    `gorm:"not null"`

@@ -1,77 +1,60 @@
 package middleware
 
 import (
-	"net/http"
-
 	"github.com/edulink-api/helper"
 	"github.com/edulink-api/models"
 	"github.com/edulink-api/res"
 	"github.com/gin-gonic/gin"
 )
 
+// IsTeacherHomeRoom middleware checks if the user is authorized as a home room teacher.
 func IsTeacherHomeRoom() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		//  gett user from access token
 		accessToken, err := helper.GetCookieValue(c, "access_token")
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
-			c.Abort()
+			res.AbortUnauthorized(c)
 			return
 		}
 
-		// Get the user type from the context
-		userTypeCtx, exist := c.Get("user_type")
-		if !exist {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": res.Forbidden})
-			c.Abort()
+		userTypeCtx, err := getUserTypeFromContext(c)
+		if err != nil {
+			res.AbortUnauthorized(c)
 			return
 		}
 
 		claims, msg := helper.ValidateToken(accessToken, "access_token")
 		if msg != "" || claims == nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": res.Forbidden})
-			c.Abort()
+			res.AbortUnauthorized(c)
 			return
 		}
 
-		userId, exist := c.Get("user_id")
-		if !exist || (userId != claims.UserID) {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "User id not found"})
-			c.Abort()
-			return
-		}
-
-		userType := claims.User_type
-
-		if (userType == "admin" && userTypeCtx == "admin") || (userType == "staff" && userTypeCtx == "staff") {
+		if isAdminOrStaff(claims.UserID) {
 			c.Next()
 			return
 		}
 
-		// Check if the user is a home room teacher
-		if userType == "teacher" && userTypeCtx == "teacher" {
-			var teacher models.Teacher
-			teacher.UserID = claims.UserID
-			err := teacher.GetTeacherByModel()
-			if err != nil {
-				c.JSON(http.StatusUnauthorized, gin.H{"error": res.Forbidden})
-				c.Abort()
-				return
-			}
-
-			var className models.ClassName
-			className.TeacherID = teacher.TeacherID
-			err = className.GetHomeRoomTeacherByTeacherID()
-			if err != nil || className.ClassNameID == 0 {
-				c.JSON(http.StatusUnauthorized, gin.H{"error": res.Forbidden})
-				c.Abort()
-				return
-			}
-
+		if isTeacherHomeRoom(claims.UserID, claims.User_type, userTypeCtx) {
 			c.Next()
 			return
 		}
-		c.JSON(http.StatusUnauthorized, gin.H{"error": res.Forbidden})
-		c.Abort()
+
+		res.AbortUnauthorized(c)
 	}
+}
+
+func isTeacherHomeRoom(userID int64, userType string, userTypeCtx interface{}) bool {
+	if userType != "teacher" || userTypeCtx != "teacher" {
+		return false
+	}
+
+	var teacher models.Teacher
+	teacher.UserID = userID
+	if err := teacher.GetTeacherByModel(); err != nil {
+		return false
+	}
+
+	var className models.ClassName
+	className.TeacherID = teacher.TeacherID
+	err := className.GetHomeRoomTeacherByTeacherID()
+	return err == nil && className.ClassNameID != 0
 }

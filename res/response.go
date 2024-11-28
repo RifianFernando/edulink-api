@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/edulink-api/request"
+	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -30,4 +31,9 @@ func ResponseMessage(err error) []map[string]string {
 		}
 	}
 	return errorMessages
+}
+
+func AbortUnauthorized(c *gin.Context) {
+	c.JSON(http.StatusUnauthorized, gin.H{"error": Forbidden})
+	c.Abort()
 }

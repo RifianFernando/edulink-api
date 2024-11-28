@@ -57,14 +57,6 @@ func AdminStaffOnly() gin.HandlerFunc {
 	}
 }
 
-func getUserTypeFromContext(c *gin.Context) (string, error) {
-	userTypeCtx, exist := c.Get("user_type")
-	if !exist {
-		return "", errors.New("user type not found")
-	}
-	return userTypeCtx.(string), nil
-}
-
 func isAuthorizedUser(userType, userTypeCtx string) bool {
 	return (userType == "admin" || userTypeCtx == "admin") || (userType == "staff" || userTypeCtx == "staff")
 }

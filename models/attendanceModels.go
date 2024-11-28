@@ -25,7 +25,7 @@ func (Attendance) TableName() string {
 	return lib.GenerateTableName(lib.Administration, "attendances")
 }
 
-func GetAllAttendanceMonthSummaryByClassID(class_id string, date time.Time) (interface{}, error) {
+func GetAllAttendanceMonthSummaryByClassID(classID string, date time.Time) (interface{}, error) {
 	type AttendanceStats struct {
 		Date         time.Time `json:"date"`
 		PresentTotal int       `json:"present_total"`
@@ -41,7 +41,7 @@ func GetAllAttendanceMonthSummaryByClassID(class_id string, date time.Time) (int
 			"SUM(CASE WHEN attendance_status = 'Leave' THEN 1 ELSE 0 END) AS leave_total, "+
 			"SUM(CASE WHEN attendance_status = 'Absent' THEN 1 ELSE 0 END) AS absent_total").
 		Joins("JOIN academic.students s ON attendances.student_id = s.student_id").
-		Where("EXTRACT(YEAR FROM attendance_date) = ? AND EXTRACT(MONTH FROM attendance_date) = ? AND s.class_name_id = ?", date.Year(), int(date.Month()), class_id).
+		Where("EXTRACT(YEAR FROM attendance_date) = ? AND EXTRACT(MONTH FROM attendance_date) = ? AND s.class_name_id = ?", date.Year(), int(date.Month()), classID).
 		Group("attendance_date").
 		Order("attendance_date DESC").
 		Scan(&attendanceStats).Error
@@ -53,7 +53,7 @@ func GetAllAttendanceMonthSummaryByClassID(class_id string, date time.Time) (int
 	return attendanceStats, nil
 }
 
-func GetAllStudentAttendanceDateByClassID(class_id string, date time.Time) (interface{}, error) {
+func GetAllStudentAttendanceDateByClassID(classID string, date time.Time) (interface{}, error) {
 	targetDate := date.Truncate(24 * time.Hour)
 	type AttendanceStats struct {
 		ID     int64     `json:"id"`
@@ -73,9 +73,10 @@ func GetAllStudentAttendanceDateByClassID(class_id string, date time.Time) (inte
 		).
 		Joins("JOIN academic.students s ON s.student_id = attendances.student_id").
 		Where(
+			"s.class_name_id = ? AND "+
 			"EXTRACT(YEAR FROM attendances.attendance_date) = ? AND "+
 				"EXTRACT(MONTH FROM attendances.attendance_date) = ? AND "+
-				"EXTRACT(DAY FROM attendances.attendance_date) = ?",
+				"EXTRACT(DAY FROM attendances.attendance_date) = ?", classID,
 			targetDate.Year(), int(targetDate.Month()), targetDate.Day(),
 		).
 		Order("s.student_name ASC").

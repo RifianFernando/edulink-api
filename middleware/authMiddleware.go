@@ -10,9 +10,6 @@ import (
 func AlreadyLoggedIn() gin.HandlerFunc {
 	// validate access token
 	return func(c *gin.Context) {
-		// Get the Authorization header
-		// authHeader := c.GetHeader("Authorization")
-		// accessToken := helper.GetAuthTokenFromHeader(authHeader)
 		accessToken, err := helper.GetCookieValue(c, "access_token")
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})

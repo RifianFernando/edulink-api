@@ -9,6 +9,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var (
+	create = "/create"
+)
+
 func Route(router *gin.Engine) {
 	// Initialize Version
 	apiV1 := router.Group(os.Getenv("API_V1"))
@@ -20,12 +24,12 @@ func Route(router *gin.Engine) {
 	student := apiV1.Group("/student", middleware.AlreadyLoggedIn())
 	{
 		student.GET("", controllers.GetAllStudent)
-		student.GET("/", controllers.GetAllStudent)
+		// student.GET("/", controllers.GetAllStudent)
 		student.GET("/:student_id", controllers.GetStudentById)
 	}
 	studentAdminStaff := student.Group("/", middleware.AdminStaffOnly())
 	{
-		studentAdminStaff.POST("/create", controllers.CreateStudent)
+		studentAdminStaff.POST(create, controllers.CreateStudent)
 		studentAdminStaff.POST("/create-all", controllers.CreateAllStudent)
 		studentAdminStaff.PUT("/update-all-student-class-id", controllers.UpdateManyStudentClassID)
 		studentAdminStaff.PUT("/update/:student_id", controllers.UpdateStudentById)
@@ -37,7 +41,7 @@ func Route(router *gin.Engine) {
 	{
 		teacher.GET("/", controllers.GetAllTeacher)
 		teacher.GET("/:teacher_id", controllers.GetTeacherById)
-		teacher.POST("/create", controllers.CreateTeacher)
+		teacher.POST(create, controllers.CreateTeacher)
 		teacher.PUT("/update/:teacher_id", controllers.UpdateTeacherById)
 		teacher.DELETE("/delete/:teacher_id", controllers.DeleteTeacherById)
 	}
@@ -47,7 +51,7 @@ func Route(router *gin.Engine) {
 	{
 		class.GET("/", controllers.GetAllClass)
 		class.GET("/:class_id", controllers.GetClassNameById)
-		class.POST("/create", controllers.CreateClass)
+		class.POST(create, controllers.CreateClass)
 		class.PUT("/update/:class_id", controllers.UpdateClassById)
 		class.DELETE("/delete/:class_id", controllers.DeleteClassById)
 	}

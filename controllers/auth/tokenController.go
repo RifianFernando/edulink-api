@@ -10,16 +10,13 @@ import (
 )
 
 func RefreshToken(c *gin.Context) {
-	refreshTokenHttp, _ := c.Request.Cookie("token")
 	// Retrieve the refresh token from the cookie
-	refreshToken, err := c.Cookie("token")
-	if (refreshToken == "" || err != nil) && refreshTokenHttp == nil {
+	refreshToken, err := helper.GetCookieValue(c, "token")
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "No refresh token provided",
+			"error": err.Error(),
 		})
 		return
-	} else if refreshToken == "" {
-		refreshToken = refreshTokenHttp.Value
 	}
 
 	claims, msg := helper.ValidateRefreshToken(refreshToken)
@@ -55,17 +52,13 @@ func RefreshToken(c *gin.Context) {
 }
 
 func ValidateAccessToken(c *gin.Context) {
-	accessTokenHttp, _ := c.Request.Cookie("access_token")
 	// Retrieve the refresh token from the cookie
-	accessToken, err := c.Cookie("access_token")
-
-	if (accessToken == "" || err != nil) && accessTokenHttp == nil {
+	accessToken, err := helper.GetCookieValue(c, "access_token")
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "No access token provided",
+			"error": err.Error(),
 		})
 		return
-	} else if accessToken == "" {
-		accessToken = accessTokenHttp.Value
 	}
 
 	claims, msg := helper.ValidateToken(accessToken, "access_token")

@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/edulink-api/helper"
@@ -11,21 +12,16 @@ import (
 
 func AdminStaffOnly() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		accessTokenHttp, _ := c.Request.Cookie("access_token")
-		//  gett user from access token
-		accessToken, err := c.Cookie("access_token")
-		if (accessToken == "" || err != nil) && accessTokenHttp == nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Access token not found"})
+		accessToken, err := helper.GetCookieValue(c, "access_token")
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 			c.Abort()
 			return
-		} else if accessToken == "" {
-			accessToken = accessTokenHttp.Value
 		}
 
-		// Get the user type from the context
-		userTypeCtx, exist := c.Get("user_type")
-		if !exist {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "User type not found"})
+		userTypeCtx, err := getUserTypeFromContext(c)
+		if err != nil || userTypeCtx == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 			c.Abort()
 			return
 		}
@@ -37,42 +33,20 @@ func AdminStaffOnly() gin.HandlerFunc {
 			return
 		}
 
-		//
-		userType := claims.User_type
-		// Check if the user is an admin
-		if (userType != "admin" && userTypeCtx != "admin") && (userType != "staff" && userTypeCtx != "staff") {
+		if !isAuthorizedUser(claims.User_type, userTypeCtx) {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "You are not authorized to access this route"})
 			c.Abort()
 			return
 		}
 
-		userId, exist := c.Get("user_id")
-		if !exist || (userId != claims.UserID) {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "User id not found"})
+		userId, err := getUserIdFromContext(c, claims.UserID)
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 			c.Abort()
 			return
 		}
 
-		var isAdmin, isStaff bool
-		// Check if the admin exists
-		var admin = models.Admin{
-			UserID: userId.(int64),
-		}
-		err = admin.GetAdminByUserID()
-		if err == nil && admin.UserID != 0 && admin != (models.Admin{}) {
-			isAdmin = true
-		}
-
-		// check if the staff exists
-		var staff = models.Staff{
-			UserID: userId.(int64),
-		}
-		err = staff.GetStaffByModel()
-		if err == nil && staff.UserID != 0 && staff != (models.Staff{}) {
-			isStaff = true
-		}
-
-		if !isAdmin && !isStaff {
+		if !isAdminOrStaff(userId) {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": res.Forbidden})
 			c.Abort()
 			return
@@ -81,4 +55,38 @@ func AdminStaffOnly() gin.HandlerFunc {
 		// Proceed to the next handler
 		c.Next()
 	}
+}
+
+func getUserTypeFromContext(c *gin.Context) (string, error) {
+	userTypeCtx, exist := c.Get("user_type")
+	if !exist {
+		return "", errors.New("user type not found")
+	}
+	return userTypeCtx.(string), nil
+}
+
+func isAuthorizedUser(userType, userTypeCtx string) bool {
+	return (userType == "admin" || userTypeCtx == "admin") || (userType == "staff" || userTypeCtx == "staff")
+}
+
+func getUserIdFromContext(c *gin.Context, expectedUserId int64) (int64, error) {
+	userId, exist := c.Get("user_id")
+	if !exist || (userId != expectedUserId) {
+		return 0, errors.New("user id not found")
+	}
+	return userId.(int64), nil
+}
+
+func isAdminOrStaff(userId int64) bool {
+	userType := helper.GetUserTypeByUID(
+		models.User{
+			UserID: userId,
+		},
+	)
+
+	if userType == "admin" || userType == "staff" {
+		return true
+	}
+
+	return false
 }

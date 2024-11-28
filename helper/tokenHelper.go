@@ -9,6 +9,7 @@ import (
 
 	"github.com/edulink-api/lib"
 	"github.com/edulink-api/models"
+	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 )
 
@@ -338,4 +339,15 @@ func GetAuthTokenFromHeader(
 	accessToken = parts[1]
 
 	return accessToken
+}
+
+func GetCookieValue(c *gin.Context, cookieName string) (string, error) {
+	tokenRequest, _ := c.Request.Cookie(cookieName)
+	token, err := c.Cookie(cookieName)
+	if (token == "" || err != nil) && tokenRequest == nil {
+		return "", errors.New(cookieName + " not found")
+	} else if token == "" {
+		token = tokenRequest.Value
+	}
+	return token, nil
 }

@@ -13,14 +13,11 @@ func AlreadyLoggedIn() gin.HandlerFunc {
 		// Get the Authorization header
 		// authHeader := c.GetHeader("Authorization")
 		// accessToken := helper.GetAuthTokenFromHeader(authHeader)
-		accessTokenHttp, _ := c.Request.Cookie("access_token")
-		accessToken, err := c.Cookie("access_token")
-		if accessToken == "" || err != nil {
-			if accessTokenHttp.Value == "" {
-				c.Abort()
-				return
-			}
-			accessToken = accessTokenHttp.Value
+		accessToken, err := helper.GetCookieValue(c, "access_token")
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+			c.Abort()
+			return
 		}
 
 		claims, msg := helper.ValidateToken(accessToken, "access_token")

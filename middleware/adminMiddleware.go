@@ -10,15 +10,11 @@ import (
 
 func AdminOnly() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		accessTokenHttp, _ := c.Request.Cookie("access_token")
-		//  gett user from access token
-		accessToken, err := c.Cookie("access_token")
-		if (accessToken == "" || err != nil) && accessTokenHttp == nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Access token not found"})
+		accessToken, err := helper.GetCookieValue(c, "access_token")
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 			c.Abort()
 			return
-		} else if accessToken == "" {
-			accessToken = accessTokenHttp.Value
 		}
 
 		// Get the user type from the context

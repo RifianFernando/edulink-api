@@ -2,14 +2,15 @@ package handler
 // package main
 
 import (
-    "net/http"
+	"net/http"
 
-    "github.com/edulink-api/config"
-    "github.com/edulink-api/connections"
-    "github.com/edulink-api/lib"
-    _ "github.com/edulink-api/request"
-    "github.com/edulink-api/routes"
-    "github.com/gin-gonic/gin"
+	"github.com/edulink-api/config"
+	"github.com/edulink-api/connections"
+	"github.com/edulink-api/helper"
+	"github.com/edulink-api/lib"
+	_ "github.com/edulink-api/request"
+	"github.com/edulink-api/routes"
+	"github.com/gin-gonic/gin"
 )
 
 // init function for environment setup
@@ -24,12 +25,11 @@ func init() {
 
 // Vercel requires an HTTP handler function that serves the API
 func Handler(w http.ResponseWriter, r *http.Request) {
-    // Set up the router (you don't need r.Run() in serverless)
     app := setupRouter()
 
-    // Use the router to handle the HTTP request
     app.ServeHTTP(w, r)
 }
+
 // func main() {
 //     // Set up the router
 //     r := setupRouter()
@@ -48,7 +48,7 @@ func setupRouter() *gin.Engine {
     r.Use(gin.Recovery())
 
     r.GET("/", func(c *gin.Context) {
-        cookieResult, err := c.Cookie("token")
+        cookieResult, err := helper.GetCookieValue(c, "token")
         if err != nil {
             cookieResult = "No cookie"
         }

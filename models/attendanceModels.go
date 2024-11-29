@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/edulink-api/connections"
@@ -74,7 +75,7 @@ func GetAllStudentAttendanceDateByClassID(classID string, date time.Time) (inter
 		Joins("JOIN academic.students s ON s.student_id = attendances.student_id").
 		Where(
 			"s.class_name_id = ? AND "+
-			"EXTRACT(YEAR FROM attendances.attendance_date) = ? AND "+
+				"EXTRACT(YEAR FROM attendances.attendance_date) = ? AND "+
 				"EXTRACT(MONTH FROM attendances.attendance_date) = ? AND "+
 				"EXTRACT(DAY FROM attendances.attendance_date) = ?", classID,
 			targetDate.Year(), int(targetDate.Month()), targetDate.Day(),
@@ -89,4 +90,61 @@ func GetAllStudentAttendanceDateByClassID(classID string, date time.Time) (inter
 	}
 
 	return attendanceStats, nil
+}
+
+type UpdateClassDateAttendanceStudent struct {
+	StudentID string `json:"student_id" binding:"required" validate:"required"`
+	Reason    string `json:"reason" binding:"required" validate:"required,oneof='Present' 'Sick' 'Leave' 'Absent'"`
+}
+
+func UpdateStudentAttendanceByClassIDAndDate(classID string, date time.Time, studentData []UpdateClassDateAttendanceStudent) error {
+	tx := connections.DB.Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err := tx.Error; err != nil {
+		return err
+	}
+
+	for _, data := range studentData {
+		studentID, err := strconv.ParseInt(data.StudentID, 10, 64)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		query := `
+				UPDATE administration.attendances a
+				SET attendance_status = ?
+				FROM academic.students s
+				WHERE s.student_id = a.student_id
+				AND s.class_name_id = ?
+				AND a.student_id = ?
+				AND EXTRACT(YEAR FROM a.attendance_date) = ?
+				AND EXTRACT(MONTH FROM a.attendance_date) = ?
+				AND EXTRACT(DAY FROM a.attendance_date) = ?
+			`
+
+		result := tx.Exec(query,
+			data.Reason,
+			classID,
+			studentID,
+			date.Year(),
+			int(date.Month()),
+			date.Day(),
+		)
+
+		if result.Error != nil || result.RowsAffected == 0 {
+			tx.Rollback()
+			return result.Error
+		}
+	}
+
+	return tx.Commit().Error
 }

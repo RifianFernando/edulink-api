@@ -193,3 +193,18 @@ func CreateStudentClassAttendance(classID string, date time.Time, studentData []
 
 	return tx.Commit().Error
 }
+
+// TODO: fix attendance already exist issue
+func CheckAttendanceExist(classID string, date time.Time) (bool, error) {
+	var count int64
+	err := connections.DB.Model(Attendance{}).
+		Where("class_name_id = ? AND attendance_date = ?", classID, date).
+		Count(&count).Error
+	if err != nil {
+		return false, err
+	} else if count == 0 {
+		return false, fmt.Errorf("attendance not found")
+	}
+
+	return count > 0, nil
+}

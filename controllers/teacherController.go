@@ -22,10 +22,7 @@ func getHomeRoomTeacherByTeacherID(c *gin.Context) (string, time.Time, error) {
 	// var student models.StudentModel
 	ClassID := c.Param("class_id")
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
-		return "", time.Time{}, err
+		Date = time.Now()
 	}
 
 	if userRole != "admin" && userRole != "staff" {

@@ -74,6 +74,22 @@ func (student *StudentModel) GetAllStudents() (
 	return students, ""
 }
 
+func (student *Student) GetAllStudentByClassNameID() (
+	students []Student,
+	msg string,
+) {
+	result := connections.DB.
+				Where("class_name_id = ?", student.ClassNameID).
+				Find(&students)
+	if result.Error != nil {
+		return nil, result.Error.Error()
+	} else if result.RowsAffected == 0 {
+		return nil, "No students found"
+	}
+
+	return students, ""
+}
+
 func (student *Student) GetStudent() (Student, error) {
 	// get result by model
 	result := connections.DB.Where(&student).First(&student)

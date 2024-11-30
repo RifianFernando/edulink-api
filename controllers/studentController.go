@@ -285,11 +285,16 @@ func DeleteStudentById(c *gin.Context) {
 }
 
 func GetAllStudentByClassNameID(c *gin.Context) {
-	classID := c.Param("class_id")
+	ClassID, _, err := getHomeRoomTeacherByTeacherID(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
 
-	var students models.StudentModel
-	var err error
-	students.ClassNameID, err = strconv.ParseInt(classID, 10, 64)
+	var students models.Student
+	students.ClassNameID, err = strconv.ParseInt(ClassID, 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "class id not found",
@@ -297,8 +302,8 @@ func GetAllStudentByClassNameID(c *gin.Context) {
 		return
 	}
 
-	result, errStr := students.GetAllStudents()
-	if errStr != "" {
+	result, msg := students.GetAllStudentByClassNameID()
+	if msg != "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}

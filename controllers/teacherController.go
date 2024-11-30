@@ -338,7 +338,7 @@ func UpdateTeacherById(c *gin.Context) {
 	teacher.User.UserReligion = request.UserReligion
 	teacher.User.UserDateOfBirth = DateOfBirth
 	teacher.User.UserAddress = request.UserAddress
-	teacher.User.UserNumPhone = request.UserNumPhone
+	teacher.User.UserPhoneNum = request.UserPhoneNum
 	teacher.User.UserEmail = request.UserEmail
 	teacher.TeachingHour = request.TeachingHour
 

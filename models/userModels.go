@@ -15,7 +15,7 @@ type User struct {
 	UserDateOfBirth  time.Time `json:"date_of_birth"`
 	UserReligion     string    `json:"religion" binding:"required" validate:"required,oneof='Islam' 'Kristen Protestan' 'Kristen Katolik' 'Hindu' 'Buddha' 'Konghucu'"`
 	UserAddress      string    `json:"address" binding:"required" validate:"required,min=10,max=200"`
-	UserNumPhone     string    `json:"num_phone" binding:"required,e164"`
+	UserPhoneNum     string    `json:"num_phone" binding:"required,e164"`
 	UserEmail        string    `json:"email" binding:"required,email"`
 	UserPassword     string    `json:"password" binding:"required"`
 	lib.BaseModel

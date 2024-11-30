@@ -221,8 +221,8 @@ func UpdateStudentAttendance(c *gin.Context) {
 	var attendances []models.UpdateClassDateAttendanceStudent
 	for _, attendance := range request.AttendanceRequest {
 		attendances = append(attendances, models.UpdateClassDateAttendanceStudent{
-			StudentID:   attendance.StudentID,
-			Reason: 	attendance.Reason,
+			StudentID: attendance.StudentID,
+			Reason:    attendance.Reason,
 		})
 	}
 

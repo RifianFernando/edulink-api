@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/edulink-api/helper"
 	"github.com/edulink-api/models"
@@ -281,4 +282,26 @@ func DeleteStudentById(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"student": "deleted student with id " + id,
 	})
+}
+
+func GetAllStudentByClassNameID(c *gin.Context) {
+	classID := c.Param("class_id")
+
+	var students models.StudentModel
+	var err error
+	students.ClassNameID, err = strconv.ParseInt(classID, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "class id not found",
+		})
+		return
+	}
+
+	result, errStr := students.GetAllStudents()
+	if errStr != "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"students": result})
 }

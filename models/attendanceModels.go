@@ -13,6 +13,7 @@ import (
 type Attendance struct {
 	AttendanceID     int64     `gorm:"primaryKey;autoIncrement"`
 	StudentID        int64     `gorm:"not null"`
+	ClassNameID      int64     `gorm:"not null"`
 	AttendanceDate   time.Time `gorm:"not null"`
 	AttendanceStatus string    `gorm:"not null" validate:"oneof='Absent' 'Leave' 'Sick' 'Present'"`
 }
@@ -42,7 +43,7 @@ func GetAllAttendanceMonthSummaryByClassID(classID string, date time.Time) (inte
 			"SUM(CASE WHEN attendance_status = 'Leave' THEN 1 ELSE 0 END) AS leave_total, "+
 			"SUM(CASE WHEN attendance_status = 'Absent' THEN 1 ELSE 0 END) AS absent_total").
 		Joins("JOIN academic.students s ON attendances.student_id = s.student_id").
-		Where("EXTRACT(YEAR FROM attendance_date) = ? AND EXTRACT(MONTH FROM attendance_date) = ? AND s.class_name_id = ?", date.Year(), int(date.Month()), classID).
+		Where("EXTRACT(YEAR FROM attendance_date) = ? AND EXTRACT(MONTH FROM attendance_date) = ? AND attendances.class_name_id = ?", date.Year(), int(date.Month()), classID).
 		Group("attendance_date").
 		Order("attendance_date DESC").
 		Scan(&attendanceStats).Error
@@ -74,7 +75,7 @@ func GetAllStudentAttendanceDateByClassID(classID string, date time.Time) (inter
 		).
 		Joins("JOIN academic.students s ON s.student_id = attendances.student_id").
 		Where(
-			"s.class_name_id = ? AND "+
+			"attendances.class_name_id = ? AND "+
 				"EXTRACT(YEAR FROM attendances.attendance_date) = ? AND "+
 				"EXTRACT(MONTH FROM attendances.attendance_date) = ? AND "+
 				"EXTRACT(DAY FROM attendances.attendance_date) = ?", classID,
@@ -124,7 +125,7 @@ func UpdateStudentAttendanceByClassIDAndDate(classID string, date time.Time, stu
 				SET attendance_status = ?
 				FROM academic.students s
 				WHERE s.student_id = a.student_id
-				AND s.class_name_id = ?
+				AND a.class_name_id = ?
 				AND a.student_id = ?
 				AND EXTRACT(YEAR FROM a.attendance_date) = ?
 				AND EXTRACT(MONTH FROM a.attendance_date) = ?

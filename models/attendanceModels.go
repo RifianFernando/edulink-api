@@ -93,12 +93,12 @@ func GetAllStudentAttendanceDateByClassID(classID string, date time.Time) (inter
 	return attendanceStats, nil
 }
 
-type UpdateClassDateAttendanceStudent struct {
+type ClassDateAttendanceStudent struct {
 	StudentID string `json:"student_id" binding:"required" validate:"required"`
 	Reason    string `json:"reason" binding:"required" validate:"required,oneof='Present' 'Sick' 'Leave' 'Absent'"`
 }
 
-func UpdateStudentAttendanceByClassIDAndDate(classID string, date time.Time, studentData []UpdateClassDateAttendanceStudent) error {
+func UpdateStudentAttendanceByClassIDAndDate(classID string, date time.Time, studentData []ClassDateAttendanceStudent) error {
 	tx := connections.DB.Begin()
 	if tx.Error != nil {
 		return tx.Error
@@ -142,6 +142,50 @@ func UpdateStudentAttendanceByClassIDAndDate(classID string, date time.Time, stu
 		)
 
 		if result.Error != nil || result.RowsAffected == 0 {
+			tx.Rollback()
+			return result.Error
+		}
+	}
+
+	return tx.Commit().Error
+}
+
+func CreateStudentClassAttendance(classID string, date time.Time, studentData []ClassDateAttendanceStudent) error {
+	tx := connections.DB.Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err := tx.Error; err != nil {
+		return err
+	}
+
+	for _, data := range studentData {
+		studentID, err := strconv.ParseInt(data.StudentID, 10, 64)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+		classID, err := strconv.ParseInt(classID, 10, 64)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		attendance := Attendance{
+			StudentID:        studentID,
+			ClassNameID:      classID,
+			AttendanceDate:   date,
+			AttendanceStatus: data.Reason,
+		}
+
+		result := tx.Create(&attendance)
+		if result.Error != nil {
 			tx.Rollback()
 			return result.Error
 		}

@@ -2,8 +2,6 @@ package controllers
 
 import (
 	"net/http"
-	"strconv"
-	"time"
 
 	"github.com/edulink-api/models"
 	req "github.com/edulink-api/request/attendance"
@@ -76,78 +74,31 @@ func CreateStudentAttendance(c *gin.Context) {
 		return
 	}
 
-	// get user role
-	userRole, _ := c.Get("user_type")
-	userID, _ := c.Get("user_id")
-
-	// get date
-	Date, err := time.Parse("2006-01-02", c.Param("date"))
+	ClassID, Date, err := getHomeRoomTeacherByTeacherID(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
 		return
-	}
-
-	// get class id
-	ClassID := c.Param("class_id")
-	if userRole != "admin" && userRole != "staff" {
-		// check homeroom teacher class that he is assigned to
-		var teacher models.Teacher
-		teacher.UserID = userID.(int64)
-		err := teacher.GetTeacherByModel()
-		if err != nil {
-			res.AbortUnauthorized(c)
-			return
-		}
-
-		// get class id
-		var className models.ClassName
-		className.TeacherID = teacher.TeacherID
-		classes, err := className.GetHomeRoomTeacherByTeacherID()
-		if err != nil {
-			res.AbortUnauthorized(c)
-			return
-		}
-
-		if len(classes) == 0 {
-			res.AbortUnauthorized(c)
-			return
-		}
-
-		// check if there's any class that the teacher is assigned to
-		var isAssigned bool
-		for _, class := range classes {
-			if strconv.Itoa(int(class.ClassNameID)) == ClassID {
-				isAssigned = true
-				break
-			}
-		}
-
-		if !isAssigned {
-			res.AbortUnauthorized(c)
-			return
-		}
 	}
 
 	// get attendance
-	var attendance models.Attendance
-	err = c.ShouldBindJSON(&attendance)
+	var attendances []models.ClassDateAttendanceStudent
+	for _, attendance := range request.AttendanceRequest {
+		attendances = append(attendances, models.ClassDateAttendanceStudent{
+			StudentID: attendance.StudentID,
+			Reason:    attendance.Reason,
+		})
+	}
+
+	// create attendance
+	err = models.CreateStudentClassAttendance(ClassID, Date, attendances)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
 		return
 	}
-
-	// create attendance
-	// err = models.CreateAttendance(ClassID, Date, attendance)
-	// if err != nil {
-	// 	c.JSON(http.StatusBadRequest, gin.H{
-	// 		"error": err.Error(),
-	// 	})
-	// 	return
-	// }
 
 	c.JSON(http.StatusCreated, gin.H{
 		"message": "Attendance created successfully",
@@ -192,9 +143,9 @@ func UpdateStudentAttendance(c *gin.Context) {
 	}
 
 	// Prepare students
-	var attendances []models.UpdateClassDateAttendanceStudent
+	var attendances []models.ClassDateAttendanceStudent
 	for _, attendance := range request.AttendanceRequest {
-		attendances = append(attendances, models.UpdateClassDateAttendanceStudent{
+		attendances = append(attendances, models.ClassDateAttendanceStudent{
 			StudentID: attendance.StudentID,
 			Reason:    attendance.Reason,
 		})

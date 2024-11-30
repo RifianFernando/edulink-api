@@ -74,7 +74,7 @@ func Route(router *gin.Engine) {
 	{
 		attendance.GET("/summary/:class_id/:date", controllers.GetAllAttendanceMonthSummaryByClassID)
 		attendance.GET("/all-student/:class_id/:date", controllers.GetAllStudentAttendanceDateByClassID)
-		attendance.POST("/:class_id/:date", controllers.CreateStudentAttendance)
+		attendance.POST("/:class_id", controllers.CreateStudentAttendance)
 		attendance.PUT("/:class_id/:date", controllers.UpdateStudentAttendance)
 	}
 }

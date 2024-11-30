@@ -17,7 +17,7 @@ import (
 * https://blog.logrocket.com/gin-binding-in-go-a-tutorial-with-examples/#validating-date-time
  */
 type AttendanceRequest struct {
-	models.UpdateClassDateAttendanceStudent
+	models.ClassDateAttendanceStudent
 }
 
 // Validate method

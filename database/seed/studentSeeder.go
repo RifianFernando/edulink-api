@@ -46,6 +46,8 @@ func StudentSeeder() (students []models.Student) {
 			"SMP 1", "Ayah 3", "PNS", "+62123458698", "Ibu 4", "PNS", "+62123456789"),
 		createStudent(1, "Arif", "0987654222", "Male", "Jakarta", "Konghucu", "Jl. Jakarta", "+62123456098", "arif@gmail.com",
 			"SMP 1", "Ayah 5", "PNS", "+62123456999", "Ibu 5", "PNS", "+62123456991"),
+		createStudent(4, "Rifian", "0987652222", "Male", "Jakarta", "Konghucu", "Jl. Jakarta Selatan", "+62123456322", "rifian@gmail.com",
+			"SMP 1", "Ayah 6", "PNS", "+62123456999", "Ibu 6", "PNS", "+62123456199"),
 	}
 
 	return students

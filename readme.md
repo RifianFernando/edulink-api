@@ -85,12 +85,16 @@
     act -j <job_name>
     ```
 
+- ERD Diagram for this application
+    <img src="./erd-edulink.jpg" alt="edulink-erd">
+
+
 # Package of this project
 
 1. Framework: [Gin](https://gin-gonic.com/docs/quickstart/)
 2. Golang ORM: [GORM Postgres](https://gorm.io/docs/connecting_to_the_database.html#PostgreSQL)
 3. Database:
-    - PostgreeSQL main: [postgree](https://www.postgresql.org/download/)
+    - PostgreeSQL main: [postgresql](https://www.postgresql.org/download/)
     - PostgreeSQL tools: [dbeaver](https://dbeaver.io/download/)
     - PostgreeSQL driver: [jdbc](https://jdbc.postgresql.org/download/)
 4. env: [godotenv](https://github.com/joho/godotenv)
@@ -98,3 +102,4 @@
 6. session: [gorilla session](https://github.com/gorilla/sessions)
 7. encryption: [golang crypto bcrypt](https://pkg.go.dev/golang.org/x/crypto/bcrypt)
 8. token: [JWT](https://jwt.io/)
+9. Deploy: [Docker](https://www.docker.com/) and [Vercel](https://vercel.com/)

@@ -97,7 +97,7 @@ func CreateStudentAttendance(c *gin.Context) {
 		teacher.UserID = userID.(int64)
 		err := teacher.GetTeacherByModel()
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": res.Forbidden})
+			res.AbortUnauthorized(c)
 			return
 		}
 
@@ -106,12 +106,12 @@ func CreateStudentAttendance(c *gin.Context) {
 		className.TeacherID = teacher.TeacherID
 		classes, err := className.GetHomeRoomTeacherByTeacherID()
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": res.Forbidden})
+			res.AbortUnauthorized(c)
 			return
 		}
 
 		if len(classes) == 0 {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": res.Forbidden})
+			res.AbortUnauthorized(c)
 			return
 		}
 
@@ -125,7 +125,7 @@ func CreateStudentAttendance(c *gin.Context) {
 		}
 
 		if !isAssigned {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": res.Forbidden})
+			res.AbortUnauthorized(c)
 			return
 		}
 	}
@@ -187,7 +187,7 @@ func UpdateStudentAttendance(c *gin.Context) {
 	}
 
 	if ClassID != c.Param("class_id") {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": res.Forbidden})
+		res.AbortUnauthorized(c)
 		return
 	}
 

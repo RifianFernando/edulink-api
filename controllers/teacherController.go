@@ -27,13 +27,14 @@ func getHomeRoomTeacherByTeacherID(c *gin.Context) (string, time.Time, error) {
 		})
 		return "", time.Time{}, err
 	}
+
 	if userRole != "admin" && userRole != "staff" {
 		// check homeroom teacher class that he is assigned to
 		var teacher models.Teacher
 		teacher.UserID = userID.(int64)
 		err := teacher.GetTeacherByModel()
 		if err != nil {
-			c.JSON(http.StatusForbidden, gin.H{"error": res.Forbidden})
+			res.AbortUnauthorized(c)
 			return "", time.Time{}, err
 		}
 
@@ -41,24 +42,22 @@ func getHomeRoomTeacherByTeacherID(c *gin.Context) (string, time.Time, error) {
 		var className models.ClassName
 		className.TeacherID = teacher.TeacherID
 		classes, err := className.GetHomeRoomTeacherByTeacherID()
-		if err != nil || className.ClassNameID == 0 {
-			c.JSON(http.StatusForbidden, gin.H{"error": res.Forbidden})
-			c.Abort()
+		if err != nil {
+			res.AbortUnauthorized(c)
 			return "", time.Time{}, err
 		}
 
 		// check if there's any class that the teacher is assigned to
 		var isAssigned bool
 		for _, className := range classes {
-			if (ClassID == strconv.FormatInt(className.ClassNameID, 10)) {
+			if ClassID == strconv.FormatInt(className.ClassNameID, 10) {
 				isAssigned = true
 				break
 			}
 		}
 
 		if !isAssigned {
-			c.JSON(http.StatusForbidden, gin.H{"error": res.Forbidden})
-			c.Abort()
+			res.AbortUnauthorized(c)
 			return "", time.Time{}, fmt.Errorf("forbidden")
 		}
 	}

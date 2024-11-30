@@ -55,6 +55,14 @@ func isTeacherHomeRoom(userID int64, userType string, userTypeCtx interface{}) b
 
 	var className models.ClassName
 	className.TeacherID = teacher.TeacherID
-	err := className.GetHomeRoomTeacherByTeacherID()
-	return err == nil && className.ClassNameID != 0
+	classes, err := className.GetHomeRoomTeacherByTeacherID()
+	if err != nil {
+		return false
+	}
+
+	if len(classes) == 0 {
+		return false
+	}
+
+	return true
 }

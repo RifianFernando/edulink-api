@@ -11,47 +11,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func getHomeRoomTeacherByTeacherID(c *gin.Context) (string, time.Time, error) {
-	// get user role
-	userRole, _ := c.Get("user_type")
-	userID, _ := c.Get("user_id")
-
-	Date, err := time.Parse("2006-01-02", c.Param("date"))
-	// var student models.StudentModel
-	ClassID := c.Param("class_id")
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
-		return "", time.Time{}, err
-	}
-	if userRole != "admin" && userRole != "staff" {
-		// check homeroom teacher class that he is assigned to
-		var teacher models.Teacher
-		teacher.UserID = userID.(int64)
-		err := teacher.GetTeacherByModel()
-		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": res.Forbidden})
-			return "", time.Time{}, err
-		}
-
-		// get class id
-		var className models.ClassName
-		className.TeacherID = teacher.TeacherID
-		err = className.GetHomeRoomTeacherByTeacherID()
-		if err != nil || className.ClassNameID == 0 {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": res.Forbidden})
-			c.Abort()
-			return "", time.Time{}, err
-		}
-
-		// convert to string
-		ClassID = strconv.FormatInt(className.ClassNameID, 10)
-	}
-
-	return ClassID, Date, nil
-}
-
 func GetAllAttendanceMonthSummaryByClassID(c *gin.Context) {
 	ClassID, Date, err := getHomeRoomTeacherByTeacherID(c)
 	if err != nil {
@@ -145,15 +104,30 @@ func CreateStudentAttendance(c *gin.Context) {
 		// get class id
 		var className models.ClassName
 		className.TeacherID = teacher.TeacherID
-		err = className.GetHomeRoomTeacherByTeacherID()
-		if err != nil || className.ClassNameID == 0 {
+		classes, err := className.GetHomeRoomTeacherByTeacherID()
+		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": res.Forbidden})
-			c.Abort()
 			return
 		}
 
-		// convert to string
-		ClassID = strconv.FormatInt(className.ClassNameID, 10)
+		if len(classes) == 0 {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": res.Forbidden})
+			return
+		}
+
+		// check if there's any class that the teacher is assigned to
+		var isAssigned bool
+		for _, class := range classes {
+			if strconv.Itoa(int(class.ClassNameID)) == ClassID {
+				isAssigned = true
+				break
+			}
+		}
+
+		if !isAssigned {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": res.Forbidden})
+			return
+		}
 	}
 
 	// get attendance

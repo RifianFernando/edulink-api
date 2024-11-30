@@ -1,8 +1,10 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/edulink-api/lib"
 	"github.com/edulink-api/models"
@@ -10,6 +12,59 @@ import (
 	"github.com/edulink-api/res"
 	"github.com/gin-gonic/gin"
 )
+
+func getHomeRoomTeacherByTeacherID(c *gin.Context) (string, time.Time, error) {
+	// get user role
+	userRole, _ := c.Get("user_type")
+	userID, _ := c.Get("user_id")
+
+	Date, err := time.Parse("2006-01-02", c.Param("date"))
+	// var student models.StudentModel
+	ClassID := c.Param("class_id")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return "", time.Time{}, err
+	}
+	if userRole != "admin" && userRole != "staff" {
+		// check homeroom teacher class that he is assigned to
+		var teacher models.Teacher
+		teacher.UserID = userID.(int64)
+		err := teacher.GetTeacherByModel()
+		if err != nil {
+			c.JSON(http.StatusForbidden, gin.H{"error": res.Forbidden})
+			return "", time.Time{}, err
+		}
+
+		// get class id
+		var className models.ClassName
+		className.TeacherID = teacher.TeacherID
+		classes, err := className.GetHomeRoomTeacherByTeacherID()
+		if err != nil || className.ClassNameID == 0 {
+			c.JSON(http.StatusForbidden, gin.H{"error": res.Forbidden})
+			c.Abort()
+			return "", time.Time{}, err
+		}
+
+		// check if there's any class that the teacher is assigned to
+		var isAssigned bool
+		for _, className := range classes {
+			if (ClassID == strconv.FormatInt(className.ClassNameID, 10)) {
+				isAssigned = true
+				break
+			}
+		}
+
+		if !isAssigned {
+			c.JSON(http.StatusForbidden, gin.H{"error": res.Forbidden})
+			c.Abort()
+			return "", time.Time{}, fmt.Errorf("forbidden")
+		}
+	}
+
+	return ClassID, Date, nil
+}
 
 func CreateTeacher(c *gin.Context) {
 	var request request.InsertTeacherRequest
@@ -48,7 +103,7 @@ func CreateTeacher(c *gin.Context) {
 		UserDateOfBirth:  DateOfBirth,
 		UserReligion:     request.UserReligion,
 		UserAddress:      request.UserAddress,
-		UserNumPhone:     request.UserNumPhone,
+		UserPhoneNum:     request.UserPhoneNum,
 		UserEmail:        request.UserEmail,
 		UserPassword: lib.HashPassword(
 			request.UserEmail + request.DateOfBirth,

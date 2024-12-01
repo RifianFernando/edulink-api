@@ -10,11 +10,12 @@ import (
 * https://gorm.io/docs/models.html#Fields-Tags
  */
 type Subject struct {
-	SubjectID              int64  `gorm:"primaryKey;autoIncrement"`
-	GradeID                int64  `gorm:"not null"` // GradeID is the foreign key
-	SubjectName            string `gorm:"unique;not null"`
-	SubjectDurationMinutes int    `gorm:"not null"`
-	lib.BaseModel                 /* this type include CreatedAt, UpdatedAt, DeletedAt, I can't use the gorm.models because can't customize the id name */
+	SubjectID              int64            `gorm:"primaryKey;autoIncrement"`
+	GradeID                int64            `gorm:"not null"` // GradeID is the foreign key
+	SubjectName            string           `gorm:"unique;not null"`
+	SubjectDurationMinutes int              `gorm:"not null"`
+	TeacherSubjects        []TeacherSubject `gorm:"foreignKey:SubjectID;references:SubjectID;constraint:OnUpdate:SET NULL,OnDelete:SET NULL"`
+	lib.BaseModel                           /* this type include CreatedAt, UpdatedAt, DeletedAt, I can't use the gorm.models because can't customize the id name */
 }
 
 /*
@@ -22,5 +23,5 @@ type Subject struct {
 * https://gorm.io/docs/conventions.html
  */
 func (Subject) TableName() string {
-	return lib.GenerateTableName(lib.Public, "subjects")
+	return lib.GenerateTableName(lib.Academic, "subjects")
 }

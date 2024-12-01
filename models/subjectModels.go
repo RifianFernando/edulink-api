@@ -19,5 +19,5 @@ type SubjectModel struct {
 }
 
 func (Subject) TableName() string {
-	return lib.GenerateTableName(lib.Public, "subjects")
+	return lib.GenerateTableName(lib.Academic, "subjects")
 }

@@ -17,20 +17,19 @@ type Subject struct {
 
 type SubjectModel struct {
 	Subject
-	Teacher Teacher `gorm:"foreignKey:TeacherID;references:TeacherID"`
-	Grade   Grade   `gorm:"foreignKey:GradeID;references:GradeID"`
+	Grade Grade `gorm:"foreignKey:GradeID;references:GradeID"`
 }
 
 func (Subject) TableName() string {
 	return lib.GenerateTableName(lib.Academic, "subjects")
 }
 
-func (subject *Subject) GetAllSubjects() (subjects []Subject, err error) {
-	result := connections.DB.Find(&subjects)
+func (subject *SubjectModel) GetAllSubjects() (subjects []SubjectModel, err error) {
+	result := connections.DB.Preload("Grade").Find(&subjects)
 	if result.Error != nil {
-		return []Subject{}, result.Error
+		return []SubjectModel{}, result.Error
 	} else if result.RowsAffected == 0 {
-		return []Subject{}, fmt.Errorf("no subjects found")
+		return []SubjectModel{}, fmt.Errorf("no subjects found")
 	}
 
 	return subjects, nil

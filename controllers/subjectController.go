@@ -11,14 +11,14 @@ func GetAllSubject(c *gin.Context) {
 	// Get all subjects
 	type DTOAllSubjects struct {
 		SubjectID              int64  `json:"subject_id"`
-		GradeID                int64  `json:"grade_id"`
+		Grade                  int    `json:"grade"`
 		SubjectName            string `json:"subject_name"`
 		SubjectDurationMinutes int    `json:"subject_duration_minutes"`
 	}
-	var subject models.Subject
+	var subject models.SubjectModel
 	subjects, err := subject.GetAllSubjects()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -27,7 +27,7 @@ func GetAllSubject(c *gin.Context) {
 	for _, subject := range subjects {
 		subjectsDTO = append(subjectsDTO, DTOAllSubjects{
 			SubjectID:              subject.SubjectID,
-			GradeID:                subject.GradeID,
+			Grade:                  subject.Grade.Grade,
 			SubjectName:            subject.SubjectName,
 			SubjectDurationMinutes: subject.SubjectDurationMinutes,
 		})

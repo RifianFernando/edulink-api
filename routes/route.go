@@ -78,4 +78,10 @@ func Route(router *gin.Engine) {
 		attendance.POST("/:class_id", controllers.CreateStudentAttendance)
 		attendance.PUT("/:class_id/:date", controllers.UpdateStudentAttendance)
 	}
+
+	// Subject
+	subject := apiV1.Group("/subject", middleware.AlreadyLoggedIn(), middleware.AdminStaffOnly())
+	{
+		subject.GET("", controllers.GetAllSubject)
+	}
 }

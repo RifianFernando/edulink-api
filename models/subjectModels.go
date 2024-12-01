@@ -1,6 +1,9 @@
 package models
 
 import (
+	"fmt"
+
+	"github.com/edulink-api/connections"
 	"github.com/edulink-api/database/migration/lib"
 )
 
@@ -20,4 +23,15 @@ type SubjectModel struct {
 
 func (Subject) TableName() string {
 	return lib.GenerateTableName(lib.Academic, "subjects")
+}
+
+func (subject *Subject) GetAllSubjects() (subjects []Subject, err error) {
+	result := connections.DB.Find(&subjects)
+	if result.Error != nil {
+		return []Subject{}, result.Error
+	} else if result.RowsAffected == 0 {
+		return []Subject{}, fmt.Errorf("no subjects found")
+	}
+
+	return subjects, nil
 }

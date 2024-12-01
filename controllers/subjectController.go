@@ -16,5 +16,5 @@ func GetAllSubject(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"students": subjects})
+	c.JSON(http.StatusOK, gin.H{"subjects": subjects})
 }

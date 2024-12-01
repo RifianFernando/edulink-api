@@ -12,7 +12,7 @@ import (
 type Teacher struct {
 	TeacherID    int64 `gorm:"primaryKey"`
 	UserID       int64 `json:"id_user" binding:"required"`
-	TeachingHour int32 `json:"teaching_hour" binding:"required"`
+	TeachingHour int32 `json:"teaching_hour" bainding:"required"`
 	lib.BaseModel
 }
 

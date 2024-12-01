@@ -285,7 +285,7 @@ func DeleteStudentById(c *gin.Context) {
 }
 
 func GetAllStudentByClassNameID(c *gin.Context) {
-	ClassID, _, err := getHomeRoomTeacherByTeacherID(c)
+	ClassID, _, err := helper.GetHomeRoomTeacherByTeacherID(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
@@ -304,7 +304,7 @@ func GetAllStudentByClassNameID(c *gin.Context) {
 
 	result, msg := students.GetAllStudentByClassNameID()
 	if msg != "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		c.JSON(http.StatusBadRequest, gin.H{"error": msg})
 		return
 	}
 

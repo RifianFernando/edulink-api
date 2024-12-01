@@ -65,8 +65,14 @@ func CreateStudentAttendance(c *gin.Context) {
 	}
 
 	if len(result) > 0 {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Attendance already exist",
+		if err := models.UpdateStudentAttendanceByClassIDAndDate(ClassID, Date, attendances); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Attendance updated successfully",
 		})
 		return
 	}

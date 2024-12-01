@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/edulink-api/connections"
@@ -12,6 +13,7 @@ import (
 type Attendance struct {
 	AttendanceID     int64     `gorm:"primaryKey;autoIncrement"`
 	StudentID        int64     `gorm:"not null"`
+	ClassNameID      int64     `gorm:"not null"`
 	AttendanceDate   time.Time `gorm:"not null"`
 	AttendanceStatus string    `gorm:"not null" validate:"oneof='Absent' 'Leave' 'Sick' 'Present'"`
 }
@@ -41,7 +43,7 @@ func GetAllAttendanceMonthSummaryByClassID(classID string, date time.Time) (inte
 			"SUM(CASE WHEN attendance_status = 'Leave' THEN 1 ELSE 0 END) AS leave_total, "+
 			"SUM(CASE WHEN attendance_status = 'Absent' THEN 1 ELSE 0 END) AS absent_total").
 		Joins("JOIN academic.students s ON attendances.student_id = s.student_id").
-		Where("EXTRACT(YEAR FROM attendance_date) = ? AND EXTRACT(MONTH FROM attendance_date) = ? AND s.class_name_id = ?", date.Year(), int(date.Month()), classID).
+		Where("EXTRACT(YEAR FROM attendance_date) = ? AND EXTRACT(MONTH FROM attendance_date) = ? AND attendances.class_name_id = ?", date.Year(), int(date.Month()), classID).
 		Group("attendance_date").
 		Order("attendance_date DESC").
 		Scan(&attendanceStats).Error
@@ -53,16 +55,17 @@ func GetAllAttendanceMonthSummaryByClassID(classID string, date time.Time) (inte
 	return attendanceStats, nil
 }
 
-func GetAllStudentAttendanceDateByClassID(classID string, date time.Time) (interface{}, error) {
+type AttendanceDateByClassID struct {
+	ID     int64     `json:"id"`
+	Name   string    `json:"name"`
+	Sex    string    `json:"sex"`
+	Reason string    `json:"reason"`
+	Date   time.Time `json:"date"`
+}
+
+func GetAllStudentAttendanceDateByClassID(classID string, date time.Time) ([]AttendanceDateByClassID, error) {
 	targetDate := date.Truncate(24 * time.Hour)
-	type AttendanceStats struct {
-		ID     int64     `json:"id"`
-		Name   string    `json:"name"`
-		Sex    string    `json:"sex"`
-		Reason string    `json:"reason"`
-		Date   time.Time `json:"date"`
-	}
-	var attendanceStats []AttendanceStats
+	var attendanceStats []AttendanceDateByClassID
 	err := connections.DB.Model(Attendance{}).
 		Select(
 			"s.student_id AS id, "+
@@ -73,8 +76,8 @@ func GetAllStudentAttendanceDateByClassID(classID string, date time.Time) (inter
 		).
 		Joins("JOIN academic.students s ON s.student_id = attendances.student_id").
 		Where(
-			"s.class_name_id = ? AND "+
-			"EXTRACT(YEAR FROM attendances.attendance_date) = ? AND "+
+			"attendances.class_name_id = ? AND "+
+				"EXTRACT(YEAR FROM attendances.attendance_date) = ? AND "+
 				"EXTRACT(MONTH FROM attendances.attendance_date) = ? AND "+
 				"EXTRACT(DAY FROM attendances.attendance_date) = ?", classID,
 			targetDate.Year(), int(targetDate.Month()), targetDate.Day(),
@@ -83,10 +86,111 @@ func GetAllStudentAttendanceDateByClassID(classID string, date time.Time) (inter
 		Find(&attendanceStats).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			return AttendanceModel{}, fmt.Errorf("no students found")
+			return []AttendanceDateByClassID{}, fmt.Errorf("attendance not found")
 		}
-		return AttendanceModel{}, err
+		return []AttendanceDateByClassID{}, err
 	}
 
 	return attendanceStats, nil
+}
+
+type ClassDateAttendanceStudent struct {
+	StudentID string `json:"student_id" binding:"required" validate:"required"`
+	Reason    string `json:"reason" binding:"required" validate:"required,oneof='Present' 'Sick' 'Leave' 'Absent'"`
+}
+
+func UpdateStudentAttendanceByClassIDAndDate(classID string, date time.Time, studentData []ClassDateAttendanceStudent) error {
+	tx := connections.DB.Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err := tx.Error; err != nil {
+		return err
+	}
+
+	for _, data := range studentData {
+		studentID, err := strconv.ParseInt(data.StudentID, 10, 64)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		query := `
+				UPDATE administration.attendances a
+				SET attendance_status = ?
+				FROM academic.students s
+				WHERE s.student_id = a.student_id
+				AND a.class_name_id = ?
+				AND a.student_id = ?
+				AND EXTRACT(YEAR FROM a.attendance_date) = ?
+				AND EXTRACT(MONTH FROM a.attendance_date) = ?
+				AND EXTRACT(DAY FROM a.attendance_date) = ?
+			`
+
+		result := tx.Exec(query,
+			data.Reason,
+			classID,
+			studentID,
+			date.Year(),
+			int(date.Month()),
+			date.Day(),
+		)
+
+		if result.Error != nil || result.RowsAffected == 0 {
+			tx.Rollback()
+			return result.Error
+		}
+	}
+
+	return tx.Commit().Error
+}
+
+func CreateStudentClassAttendance(classID string, date time.Time, studentData []ClassDateAttendanceStudent) error {
+	tx := connections.DB.Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err := tx.Error; err != nil {
+		return err
+	}
+
+	for _, data := range studentData {
+		studentID, err := strconv.ParseInt(data.StudentID, 10, 64)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+		classID, err := strconv.ParseInt(classID, 10, 64)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		attendance := Attendance{
+			StudentID:        studentID,
+			ClassNameID:      classID,
+			AttendanceDate:   date,
+			AttendanceStatus: data.Reason,
+		}
+
+		result := tx.Create(&attendance)
+		if result.Error != nil {
+			tx.Rollback()
+			return result.Error
+		}
+	}
+
+	return tx.Commit().Error
 }

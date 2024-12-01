@@ -12,7 +12,7 @@ import (
 type Teacher struct {
 	TeacherID    int64 `gorm:"primaryKey"`
 	UserID       int64 `json:"id_user" binding:"required"`
-	TeachingHour int32 `json:"teaching_hour" binding:"required"`
+	TeachingHour int32 `json:"teaching_hour" bainding:"required"`
 	lib.BaseModel
 }
 
@@ -60,7 +60,7 @@ type GetTeacherByIDWithoutPassword struct {
 	UserDateOfBirth  time.Time `json:"date_of_birth"`
 	UserReligion     string    `json:"religion" binding:"required" validate:"required,oneof='Islam' 'Kristen Protestan' 'Kristen Katolik' 'Hindu' 'Buddha' 'Konghucu'"`
 	UserAddress      string    `json:"address" binding:"required" validate:"required,min=10,max=200"`
-	UserNumPhone     string    `json:"num_phone" binding:"required,e164"`
+	UserPhoneNum     string    `json:"num_phone" binding:"required,e164"`
 	UserEmail        string    `json:"email" binding:"required,email"`
 	TeachingHour     int32     `json:"teaching_hour"`
 }
@@ -86,7 +86,7 @@ func (teacher *TeacherModel) GetTeacherById(id string) (GetTeacherByIDWithoutPas
 	teacherDTO.UserDateOfBirth = teacher.User.UserDateOfBirth
 	teacherDTO.UserReligion = teacher.User.UserReligion
 	teacherDTO.UserAddress = teacher.User.UserAddress
-	teacherDTO.UserNumPhone = teacher.User.UserNumPhone
+	teacherDTO.UserPhoneNum = teacher.User.UserPhoneNum
 	teacherDTO.UserEmail = teacher.User.UserEmail
 	teacherDTO.TeachingHour = teacher.TeachingHour
 
@@ -130,7 +130,7 @@ func (teacher *TeacherModel) UpdateTeacherById(teacherData *TeacherModel) error 
 			UserPlaceOfBirth: userData.UserPlaceOfBirth,
 			UserDateOfBirth:  userData.UserDateOfBirth,
 			UserAddress:      userData.UserAddress,
-			UserNumPhone:     userData.UserNumPhone,
+			UserPhoneNum:     userData.UserPhoneNum,
 			UserReligion:     userData.UserReligion,
 			UserEmail:        userData.UserEmail,
 		},

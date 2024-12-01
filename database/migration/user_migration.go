@@ -43,11 +43,11 @@ type User struct {
 	UserID           int64     `gorm:"primaryKey;autoIncrement"`
 	UserName         string    `gorm:"not null"`
 	UserGender       Gender    `gorm:"type:VARCHAR(6);not null"`
-	UserPlaceOfBirth string    `gorm:"not null"`
+	UserPlaceOfBirth string    `gorm:"type:VARCHAR(20);not null"`
 	UserDateOfBirth  time.Time `gorm:"not null"`
 	UserReligion     Religion  `gorm:"type:VARCHAR(17);not null"`
 	UserAddress      string    `gorm:"not null;type:VARCHAR(200)"`
-	UserNumPhone     string    `gorm:"unique;not null"`
+	UserPhoneNum     string    `gorm:"unique;not null"`
 	UserEmail        string    `gorm:"unique;not null"`
 	UserPassword     string    `gorm:"not null"`
 	Teacher          Teacher   `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`

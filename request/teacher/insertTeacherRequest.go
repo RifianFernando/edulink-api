@@ -22,7 +22,7 @@ type InsertTeacherRequest struct {
 	UserDateOfBirth  time.Time
 	UserReligion     string `json:"religion" binding:"required" validate:"required,oneof='Islam' 'Kristen Protestan' 'Kristen Katolik' 'Hindu' 'Buddha' 'Konghucu'"`
 	UserAddress      string `json:"address" binding:"required"`
-	UserNumPhone     string `json:"num_phone" binding:"required" validate:"required,e164"`
+	UserPhoneNum     string `json:"num_phone" binding:"required" validate:"required,e164"`
 	UserEmail        string `json:"email" binding:"required" validate:"required,email"`
 	DateOfBirth      string `json:"date_of_birth" binding:"required" validate:"required,datetime=2006-01-02"`
 }

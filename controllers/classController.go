@@ -3,6 +3,7 @@ package controllers
 import (
 	"net/http"
 
+	"github.com/edulink-api/helper"
 	"github.com/edulink-api/models"
 	"github.com/edulink-api/request"
 	"github.com/gin-gonic/gin"
@@ -57,8 +58,28 @@ func CreateClass(c *gin.Context) {
 }
 
 func GetAllClass(c *gin.Context) {
+	accessToken, error := helper.GetCookieValue(c, "access_token")
+	if error != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": error.Error()})
+		c.Abort()
+		return
+	}
+
+	claims, msg := helper.ValidateToken(accessToken, "access_token")
+	if msg != "" || claims == nil || error != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": msg})
+		c.Abort()
+		return
+	}
+	var userType = claims.User_type
+	var result []models.ClassNameModel
+	var err string
 	var ClassName models.ClassNameModel
-	result, err := ClassName.GetAllClassName()
+	if userType == "teacher" {
+		uid := claims.UserID
+		ClassName.Teacher.UserID = uid
+	}
+	result, err = ClassName.GetAllClassName()
 	if err != "" {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err,

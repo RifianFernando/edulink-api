@@ -23,6 +23,7 @@ const (
 type Attendance struct {
 	AttendanceID     int64            `gorm:"primaryKey;autoIncrement"`
 	StudentID        int64            `gorm:"not null"`
+	ClassNameID      int64            `gorm:"not null"`
 	AttendanceDate   time.Time        `gorm:"not null"`
 	AttendanceStatus AttendanceStatus `gorm:"not null;type:VARCHAR(8)"`
 	lib.BaseModel                     /* this type include CreatedAt, UpdatedAt, DeletedAt, I can't use the gorm.models because can't customize the id name */

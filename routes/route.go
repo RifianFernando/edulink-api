@@ -26,6 +26,7 @@ func Route(router *gin.Engine) {
 		student.GET("", controllers.GetAllStudent)
 		// student.GET("/", controllers.GetAllStudent)
 		student.GET("/:student_id", controllers.GetStudentById)
+		student.GET("/class/:class_id", middleware.IsTeacherHomeRoom(), controllers.GetAllStudentByClassNameID)
 	}
 	studentAdminStaff := student.Group("/", middleware.AdminStaffOnly())
 	{
@@ -65,6 +66,7 @@ func Route(router *gin.Engine) {
 		auth.GET("/refresh-token", middleware.IsNotLoggedIn(), authController.RefreshToken)
 		auth.POST("/forget-password", middleware.IsNotLoggedIn(), authController.ForgetPassword)
 		auth.POST("/reset-password", middleware.IsNotLoggedIn(), authController.ResetPassword)
+		auth.GET("/user-type", middleware.AlreadyLoggedIn(), authController.GetUserType)
 	}
 
 	// Attendance
@@ -72,5 +74,7 @@ func Route(router *gin.Engine) {
 	{
 		attendance.GET("/summary/:class_id/:date", controllers.GetAllAttendanceMonthSummaryByClassID)
 		attendance.GET("/all-student/:class_id/:date", controllers.GetAllStudentAttendanceDateByClassID)
+		attendance.POST("/:class_id", controllers.CreateStudentAttendance)
+		attendance.PUT("/:class_id/:date", controllers.UpdateStudentAttendance)
 	}
 }

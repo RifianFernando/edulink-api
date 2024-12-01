@@ -52,6 +52,16 @@ func (class *ClassNameModel) GetAllClassName() (
 		return nil, "No class found"
 	}
 
+	if class.Teacher.UserID != 0 {
+		var classList []ClassNameModel
+		for _, v := range className {
+			if v.Teacher.UserID == class.Teacher.UserID {
+				classList = append(classList, v)
+			}
+		}
+		return classList, ""
+	}
+
 	return className, ""
 }
 
@@ -90,14 +100,14 @@ func (class *ClassName) DeleteClassNameById(id string) error {
 	return nil
 }
 
-func (className *ClassName) GetHomeRoomTeacherByTeacherID() error {
-	result := connections.DB.Where("teacher_id = ?", className.TeacherID).First(&className)
-	if result.Error != nil && result.Error != gorm.ErrRecordNotFound {
+func (className *ClassName) GetHomeRoomTeacherByTeacherID() (classes []ClassName, err error) {
+	result := connections.DB.Where("teacher_id = ?", className.TeacherID).Find(&classes)
+	if result.Error != nil && result.Error != gorm.ErrRecordNotFound || len(classes) == 0 {
 		if result.Error == gorm.ErrRecordNotFound {
-			return fmt.Errorf("no class found")
+			return []ClassName{}, fmt.Errorf("no class found")
 		}
-		return result.Error
+		return []ClassName{}, result.Error
 	}
 
-	return nil
+	return classes, nil
 }

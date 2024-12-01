@@ -2,57 +2,15 @@ package controllers
 
 import (
 	"net/http"
-	"strconv"
-	"time"
 
+	"github.com/edulink-api/helper"
 	"github.com/edulink-api/models"
-	"github.com/edulink-api/res"
+	req "github.com/edulink-api/request/attendance"
 	"github.com/gin-gonic/gin"
 )
 
-func GetHomeRoomTeacherByTeacherID(c *gin.Context) (string, time.Time, error) {
-	// get user role
-	userRole, _ := c.Get("user_type")
-	userID, _ := c.Get("user_id")
-
-	Date, err := time.Parse("2006-01-02", c.Param("date"))
-	// var student models.StudentModel
-	ClassID := c.Param("class_id")
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
-		return "", time.Time{}, err
-	}
-	if userRole != "admin" && userRole != "staff" {
-		// check homeroom teacher class that he is assigned to
-		var teacher models.Teacher
-		teacher.UserID = userID.(int64)
-		err := teacher.GetTeacherByModel()
-		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": res.Forbidden})
-			return "", time.Time{}, err
-		}
-
-		// get class id
-		var className models.ClassName
-		className.TeacherID = teacher.TeacherID
-		err = className.GetHomeRoomTeacherByTeacherID()
-		if err != nil || className.ClassNameID == 0 {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": res.Forbidden})
-			c.Abort()
-			return "", time.Time{}, err
-		}
-
-		// convert to string
-		ClassID = strconv.FormatInt(className.ClassNameID, 10)
-	}
-
-	return ClassID, Date, nil
-}
-
 func GetAllAttendanceMonthSummaryByClassID(c *gin.Context) {
-	ClassID, Date, err := GetHomeRoomTeacherByTeacherID(c)
+	ClassID, Date, err := helper.GetHomeRoomTeacherByTeacherID(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
@@ -74,7 +32,7 @@ func GetAllAttendanceMonthSummaryByClassID(c *gin.Context) {
 }
 
 func GetAllStudentAttendanceDateByClassID(c *gin.Context) {
-	ClassID, Date, err := GetHomeRoomTeacherByTeacherID(c)
+	ClassID, Date, err := helper.GetHomeRoomTeacherByTeacherID(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
@@ -92,5 +50,64 @@ func GetAllStudentAttendanceDateByClassID(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"attendance": result,
+	})
+}
+
+func CreateStudentAttendance(c *gin.Context) {
+	ClassID, Date, attendances := helper.HandleCreateUpdateStudentAttendance(c, req.AllAttendanceRequest{})
+
+	result, err := models.GetAllStudentAttendanceDateByClassID(ClassID, Date)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	if len(result) > 0 {
+		if err := models.UpdateStudentAttendanceByClassIDAndDate(ClassID, Date, attendances); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Attendance updated successfully",
+		})
+		return
+	}
+
+	// create attendance
+	err = models.CreateStudentClassAttendance(ClassID, Date, attendances)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "Attendance created successfully",
+		"request": req.AllAttendanceRequest{},
+		"Date":    Date,
+		"ClassID": ClassID,
+	})
+}
+
+func UpdateStudentAttendance(c *gin.Context) {
+	ClassID, Date, attendances := helper.HandleCreateUpdateStudentAttendance(c, req.AllAttendanceRequest{})
+
+	// update attendance by class id and date and student id
+	if err := models.UpdateStudentAttendanceByClassIDAndDate(ClassID, Date, attendances); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Attendance updated successfully",
+		"request": req.AllAttendanceRequest{},
+		"Date":    Date,
 	})
 }

@@ -55,16 +55,17 @@ func GetAllAttendanceMonthSummaryByClassID(classID string, date time.Time) (inte
 	return attendanceStats, nil
 }
 
-func GetAllStudentAttendanceDateByClassID(classID string, date time.Time) (interface{}, error) {
+type AttendanceDateByClassID struct {
+	ID     int64     `json:"id"`
+	Name   string    `json:"name"`
+	Sex    string    `json:"sex"`
+	Reason string    `json:"reason"`
+	Date   time.Time `json:"date"`
+}
+
+func GetAllStudentAttendanceDateByClassID(classID string, date time.Time) ([]AttendanceDateByClassID, error) {
 	targetDate := date.Truncate(24 * time.Hour)
-	type AttendanceStats struct {
-		ID     int64     `json:"id"`
-		Name   string    `json:"name"`
-		Sex    string    `json:"sex"`
-		Reason string    `json:"reason"`
-		Date   time.Time `json:"date"`
-	}
-	var attendanceStats []AttendanceStats
+	var attendanceStats []AttendanceDateByClassID
 	err := connections.DB.Model(Attendance{}).
 		Select(
 			"s.student_id AS id, "+
@@ -85,9 +86,9 @@ func GetAllStudentAttendanceDateByClassID(classID string, date time.Time) (inter
 		Find(&attendanceStats).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			return AttendanceModel{}, fmt.Errorf("no students found")
+			return []AttendanceDateByClassID{}, fmt.Errorf("attendance not found")
 		}
-		return AttendanceModel{}, err
+		return []AttendanceDateByClassID{}, err
 	}
 
 	return attendanceStats, nil
@@ -192,19 +193,4 @@ func CreateStudentClassAttendance(classID string, date time.Time, studentData []
 	}
 
 	return tx.Commit().Error
-}
-
-// TODO: fix attendance already exist issue
-func CheckAttendanceExist(classID string, date time.Time) (bool, error) {
-	var count int64
-	err := connections.DB.Model(Attendance{}).
-		Where("class_name_id = ? AND attendance_date = ?", classID, date).
-		Count(&count).Error
-	if err != nil {
-		return false, err
-	} else if count == 0 {
-		return false, fmt.Errorf("attendance not found")
-	}
-
-	return count > 0, nil
 }

@@ -91,15 +91,21 @@ func CreateStudentAttendance(c *gin.Context) {
 		})
 	}
 
-	// TODO: fix attendance already exist issue
-	// check the attendance if already exist on the date
-	// isExist, err := models.CheckAttendanceExist(ClassID, Date)
-	// if err == nil && isExist {
-	// 	c.JSON(http.StatusBadRequest, gin.H{
-	// 		"error": "Attendance already exist",
-	// 	})
-	// 	return
-	// }
+	result, err := models.GetAllStudentAttendanceDateByClassID(ClassID, Date)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	if (len(result) > 0) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Attendance already exist",
+		})
+		return
+	}
+
 
 	// create attendance
 	err = models.CreateStudentClassAttendance(ClassID, Date, attendances)

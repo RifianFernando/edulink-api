@@ -65,16 +65,37 @@ func CreateTeacher(c *gin.Context) {
 	}
 
 	// create teacher
-	var teacher = models.Teacher{
-		UserID:       user.UserID,
-		TeachingHour: 0,
-	}
-
-	err = teacher.CreateTeacher()
-
+	teachingHour, err := strconv.ParseInt(request.TeachingHour, 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "while parse teaching hour: " + err.Error(),
+		})
+		return
+	}
+	var teacher = models.Teacher{
+		UserID:       user.UserID,
+		TeachingHour: int32(teachingHour),
+	}
+	err = teacher.CreateTeacher()
+	if err != nil || teacher.TeacherID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "while create teacher: " + err.Error(),
+		})
+		return
+	}
+
+	// create teacher subject
+	var teacherSubjects []models.TeacherSubject
+	for _, subjectID := range request.TeachingSubject {
+		teacherSubjects = append(teacherSubjects, models.TeacherSubject{
+			TeacherID: teacher.TeacherID,
+			SubjectID: subjectID,
+		})
+	}
+	err = models.CreateTeacherSubject(teacherSubjects)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "while creating teacher subjects: " + err.Error(),
 		})
 		return
 	}

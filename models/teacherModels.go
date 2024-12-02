@@ -18,8 +18,9 @@ type Teacher struct {
 
 type TeacherModel struct {
 	Teacher
-	ClassNames []ClassName `gorm:"foreignKey:TeacherID;references:TeacherID"`
-	User       User        `gorm:"foreignKey:UserID;references:UserID"` // Belongs-to with User
+	ClassNames     []ClassName      `gorm:"foreignKey:TeacherID;references:TeacherID"`
+	TeacherSubject []TeacherSubject `gorm:"foreignKey:TeacherID;references:TeacherID"`
+	User           User             `gorm:"foreignKey:UserID;references:UserID"` // Belongs-to with User
 	// Scores       []Score     `gorm:"foreignKey:TeacherID;references:TeacherID;constraint:OnUpdate:SET NULL,OnDelete:SET NULL"`
 }
 
@@ -41,7 +42,7 @@ func (teacher *TeacherModel) GetAllUserTeachersWithUser() (
 	teachers []TeacherModel,
 	msg string,
 ) {
-	result := connections.DB.Preload("User").Find(&teachers)
+	result := connections.DB.Preload("User").Preload("TeacherSubject.Subject").Find(&teachers)
 	if result.Error != nil {
 		return nil, result.Error.Error()
 	} else if result.RowsAffected == 0 {

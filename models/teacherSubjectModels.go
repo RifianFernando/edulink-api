@@ -9,9 +9,10 @@ import (
 )
 
 type TeacherSubject struct {
-	TeacherSubjectID int64 `gorm:"primaryKey" json:"id"`
-	TeacherID        int64 `json:"teacher_id" binding:"required"`
-	SubjectID        int64 `json:"subject_id" binding:"required"`
+	TeacherSubjectID int64     `gorm:"primaryKey" json:"id"`
+	TeacherID        int64     `json:"teacher_id" binding:"required"`
+	SubjectID        int64     `json:"subject_id" binding:"required"`
+	Subject          []Subject `gorm:"foreignKey:SubjectID;references:SubjectID"`
 	lib.BaseModel
 }
 

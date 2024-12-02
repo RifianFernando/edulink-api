@@ -291,6 +291,9 @@ func GetAllTeacher(c *gin.Context) {
 		return
 	}
 
+	// type DTO struct {
+
+
 	c.JSON(http.StatusOK, gin.H{
 		"teachers": result,
 	})

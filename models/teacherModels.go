@@ -18,8 +18,9 @@ type Teacher struct {
 
 type TeacherModel struct {
 	Teacher
-	ClassNames []ClassName `gorm:"foreignKey:TeacherID;references:TeacherID"`
-	User       User        `gorm:"foreignKey:UserID;references:UserID"` // Belongs-to with User
+	ClassNames     []ClassName      `gorm:"foreignKey:TeacherID;references:TeacherID"`
+	TeacherSubject []TeacherSubject `gorm:"foreignKey:TeacherID;references:TeacherID"`
+	User           User             `gorm:"foreignKey:UserID;references:UserID"` // Belongs-to with User
 	// Scores       []Score     `gorm:"foreignKey:TeacherID;references:TeacherID;constraint:OnUpdate:SET NULL,OnDelete:SET NULL"`
 }
 
@@ -41,7 +42,7 @@ func (teacher *TeacherModel) GetAllUserTeachersWithUser() (
 	teachers []TeacherModel,
 	msg string,
 ) {
-	result := connections.DB.Preload("User").Find(&teachers)
+	result := connections.DB.Preload("User").Preload("TeacherSubject.Subject").Find(&teachers)
 	if result.Error != nil {
 		return nil, result.Error.Error()
 	} else if result.RowsAffected == 0 {
@@ -63,12 +64,13 @@ type GetTeacherByIDWithoutPassword struct {
 	UserPhoneNum     string    `json:"num_phone" binding:"required,e164"`
 	UserEmail        string    `json:"email" binding:"required,email"`
 	TeachingHour     int32     `json:"teaching_hour"`
+	Subject          []Subject `json:"subject"`
 }
 
 // Get teacher by id
 func (teacher *TeacherModel) GetTeacherById(id string) (GetTeacherByIDWithoutPassword, error) {
 
-	result := connections.DB.Preload("User").First(&teacher, id)
+	result := connections.DB.Preload("User").Preload("TeacherSubject.Subject").First(&teacher, id)
 	if result.Error != nil {
 		if result.Error == gorm.ErrRecordNotFound {
 			return GetTeacherByIDWithoutPassword{}, fmt.Errorf("no teacher found")
@@ -89,6 +91,9 @@ func (teacher *TeacherModel) GetTeacherById(id string) (GetTeacherByIDWithoutPas
 	teacherDTO.UserPhoneNum = teacher.User.UserPhoneNum
 	teacherDTO.UserEmail = teacher.User.UserEmail
 	teacherDTO.TeachingHour = teacher.TeachingHour
+	for _, subject := range teacher.TeacherSubject {
+		teacherDTO.Subject = append(teacherDTO.Subject, subject.Subject...)
+	}
 
 	return teacherDTO, nil
 }
@@ -109,21 +114,30 @@ func (teacher *Teacher) GetTeacherByModel() error {
 
 // Update teacher and user
 func (teacher *TeacherModel) UpdateTeacherById(teacherData *TeacherModel) error {
-	// 1. Update teacher fields (excluding User and BaseModel)
-	result := connections.DB.Model(&teacher.Teacher).Updates(
+	tx := connections.DB.Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	result := tx.Model(&teacher.Teacher).Updates(
 		&Teacher{
 			TeachingHour: teacherData.TeachingHour,
 		},
 	)
 	if result.Error != nil {
+		tx.Rollback()
 		return result.Error
 	} else if result.RowsAffected == 0 {
 		return fmt.Errorf("teacher not found")
 	}
 
-	// 2. Update associated user
 	userData := teacherData.User
-	result = connections.DB.Model(&teacher.User).Updates(
+	result = tx.Model(&teacher.User).Updates(
 		&User{
 			UserName:         userData.UserName,
 			UserGender:       userData.UserGender,
@@ -136,10 +150,30 @@ func (teacher *TeacherModel) UpdateTeacherById(teacherData *TeacherModel) error 
 		},
 	)
 	if result.Error != nil {
+		tx.Rollback()
 		return result.Error
+	} else if result.RowsAffected == 0 {
+		return fmt.Errorf("user not found")
 	}
 
-	return nil
+	result = tx.Unscoped().Where("teacher_id = ?", teacher.TeacherID).Delete(&TeacherSubject{})
+	if result.Error != nil {
+		tx.Rollback()
+		return result.Error
+	} else if result.RowsAffected == 0 {
+		tx.Rollback()
+		return fmt.Errorf("teacher subject not found")
+	}
+
+	for _, teacherSubject := range teacherData.TeacherSubject {
+		result = tx.Create(&teacherSubject)
+		if result.Error != nil {
+			tx.Rollback()
+			return result.Error
+		}
+	}
+
+	return tx.Commit().Error
 }
 
 // Delete teacher by id

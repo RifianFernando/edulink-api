@@ -65,16 +65,37 @@ func CreateTeacher(c *gin.Context) {
 	}
 
 	// create teacher
-	var teacher = models.Teacher{
-		UserID:       user.UserID,
-		TeachingHour: 0,
-	}
-
-	err = teacher.CreateTeacher()
-
+	teachingHour, err := strconv.ParseInt(request.TeachingHour, 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "while parse teaching hour: " + err.Error(),
+		})
+		return
+	}
+	var teacher = models.Teacher{
+		UserID:       user.UserID,
+		TeachingHour: int32(teachingHour),
+	}
+	err = teacher.CreateTeacher()
+	if err != nil || teacher.TeacherID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "while create teacher: " + err.Error(),
+		})
+		return
+	}
+
+	// create teacher subject
+	var teacherSubjects []models.TeacherSubject
+	for _, subjectID := range request.TeachingSubject {
+		teacherSubjects = append(teacherSubjects, models.TeacherSubject{
+			TeacherID: teacher.TeacherID,
+			SubjectID: subjectID,
+		})
+	}
+	err = models.CreateTeacherSubject(teacherSubjects)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "while creating teacher subjects: " + err.Error(),
 		})
 		return
 	}
@@ -270,6 +291,7 @@ func GetAllTeacher(c *gin.Context) {
 		return
 	}
 
+
 	c.JSON(http.StatusOK, gin.H{
 		"teachers": result,
 	})
@@ -321,12 +343,18 @@ func UpdateTeacherById(c *gin.Context) {
 
 	// Get teacher id from URL and parse it to int64
 	id := c.Param("teacher_id")
-
 	var teacher models.TeacherModel
 	_, err = teacher.GetTeacherById(id)
 	if err != nil || teacher.TeacherID == 0 {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
+		})
+		return
+	}
+	teachingHour, err := strconv.ParseInt(request.TeachingHour, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "while parse teaching hour: " + err.Error(),
 		})
 		return
 	}
@@ -340,7 +368,14 @@ func UpdateTeacherById(c *gin.Context) {
 	teacher.User.UserAddress = request.UserAddress
 	teacher.User.UserPhoneNum = request.UserPhoneNum
 	teacher.User.UserEmail = request.UserEmail
-	teacher.TeachingHour = request.TeachingHour
+	teacher.TeachingHour = int32(teachingHour)
+	teacher.TeacherSubject = nil
+	for _, subjectID := range request.TeachingSubject {
+		teacher.TeacherSubject = append(teacher.TeacherSubject, models.TeacherSubject{
+			TeacherID: teacher.TeacherID,
+			SubjectID: subjectID,
+		})
+	}
 
 	err = teacher.UpdateTeacherById(&teacher)
 	if err != nil {

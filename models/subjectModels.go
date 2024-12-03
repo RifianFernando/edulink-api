@@ -1,6 +1,9 @@
 package models
 
 import (
+	"fmt"
+
+	"github.com/edulink-api/connections"
 	"github.com/edulink-api/database/migration/lib"
 )
 
@@ -14,10 +17,20 @@ type Subject struct {
 
 type SubjectModel struct {
 	Subject
-	Teacher Teacher `gorm:"foreignKey:TeacherID;references:TeacherID"`
-	Grade   Grade   `gorm:"foreignKey:GradeID;references:GradeID"`
+	Grade Grade `gorm:"foreignKey:GradeID;references:GradeID"`
 }
 
 func (Subject) TableName() string {
-	return lib.GenerateTableName(lib.Public, "subjects")
+	return lib.GenerateTableName(lib.Academic, "subjects")
+}
+
+func (subject *SubjectModel) GetAllSubjects() (subjects []SubjectModel, err error) {
+	result := connections.DB.Preload("Grade").Find(&subjects)
+	if result.Error != nil {
+		return []SubjectModel{}, result.Error
+	} else if result.RowsAffected == 0 {
+		return []SubjectModel{}, fmt.Errorf("no subjects found")
+	}
+
+	return subjects, nil
 }

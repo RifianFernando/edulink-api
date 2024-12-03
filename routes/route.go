@@ -73,8 +73,15 @@ func Route(router *gin.Engine) {
 	attendance := apiV1.Group("/attendance", middleware.AlreadyLoggedIn(), middleware.IsTeacherHomeRoom())
 	{
 		attendance.GET("/summary/:class_id/:date", controllers.GetAllAttendanceMonthSummaryByClassID)
+		attendance.GET("/summaries/:class_id/:year", controllers.GetAllAttendanceYearSummaryByClassID)
 		attendance.GET("/all-student/:class_id/:date", controllers.GetAllStudentAttendanceDateByClassID)
 		attendance.POST("/:class_id", controllers.CreateStudentAttendance)
 		attendance.PUT("/:class_id/:date", controllers.UpdateStudentAttendance)
+	}
+
+	// Subject
+	subject := apiV1.Group("/subject", middleware.AlreadyLoggedIn(), middleware.AdminStaffOnly())
+	{
+		subject.GET("", controllers.GetAllSubject)
 	}
 }

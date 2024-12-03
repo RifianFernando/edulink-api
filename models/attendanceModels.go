@@ -194,3 +194,39 @@ func CreateStudentClassAttendance(classID string, date time.Time, studentData []
 
 	return tx.Commit().Error
 }
+
+type AttendanceYearSummaryStudent struct {
+	StudentID    int64  `json:"student_id"`
+	StudentName  string `json:"student_name"`
+	PresentTotal int    `json:"present_total"`
+	SickTotal    int    `json:"sick_total"`
+	LeaveTotal   int    `json:"leave_total"`
+	AbsentTotal  int    `json:"absent_total"`
+}
+
+func GetAllAttendanceYearSummaryByClassID(
+	classID string,
+	year int,
+) (
+	attendances[]AttendanceYearSummaryStudent,
+	err error,
+) {
+	err = connections.DB.Model(Attendance{}).
+		Select("s.student_id AS student_id, "+
+			"s.student_name AS student_name, "+
+			"SUM(CASE WHEN attendance_status = 'Present' THEN 1 ELSE 0 END) AS present_total, "+
+			"SUM(CASE WHEN attendance_status = 'Sick' THEN 1 ELSE 0 END) AS sick_total, "+
+			"SUM(CASE WHEN attendance_status = 'Leave' THEN 1 ELSE 0 END) AS leave_total, "+
+			"SUM(CASE WHEN attendance_status = 'Absent' THEN 1 ELSE 0 END) AS absent_total").
+		Joins("JOIN academic.students s ON s.student_id = attendances.student_id").
+		Where("EXTRACT(YEAR FROM attendance_date) = ? AND attendances.class_name_id = ?", year, classID).
+		Group("s.student_id").
+		Order("s.student_name ASC").
+		Scan(&attendances).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return attendances, nil
+}

@@ -111,3 +111,31 @@ func UpdateStudentAttendance(c *gin.Context) {
 		"Date":    Date,
 	})
 }
+
+func GetAllAttendanceYearSummaryByClassID(c *gin.Context) {
+	ClassID, Date, err := helper.GetHomeRoomTeacherByTeacherID(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	Year := Date.Year()
+
+	result, err := models.GetAllAttendanceYearSummaryByClassID(ClassID, Year)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	} else if len(result) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "No attendance found",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"attendance": result,
+	})
+}

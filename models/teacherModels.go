@@ -177,8 +177,8 @@ func (teacher *TeacherModel) UpdateTeacherById(teacherData *TeacherModel) error 
 }
 
 // Delete teacher by id
-func (teacher *Teacher) DeleteTeacherById(id string) error {
-	result := connections.DB.Delete(&teacher, id)
+func (teacher *Teacher) DeleteTeacherById() error {
+	result := connections.DB.Delete(&teacher)
 	if result.Error != nil {
 		return result.Error
 	}

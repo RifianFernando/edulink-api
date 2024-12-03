@@ -405,7 +405,7 @@ func DeleteTeacherById(c *gin.Context) {
 		return
 	}
 
-	err = teacher.DeleteTeacherById(strconv.FormatInt(teacher.UserID, 10))
+	err = teacher.DeleteTeacherById()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),

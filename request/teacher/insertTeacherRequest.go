@@ -25,7 +25,7 @@ type InsertTeacherRequest struct {
 	UserPhoneNum     string  `json:"num_phone" binding:"required" validate:"required,e164"`
 	UserEmail        string  `json:"email" binding:"required" validate:"required,email"`
 	DateOfBirth      string  `json:"date_of_birth" binding:"required" validate:"required,datetime=2006-01-02"`
-	TeachingHour     string  `json:"teaching_hours" binding:"required" validate:"required"`
+	TeachingHour     string  `json:"teaching_hour" binding:"required" validate:"required"`
 	TeachingSubject  []int64 `json:"teaching_subject" binding:"required" validate:"required,min=1,dive,min=1"`
 }
 

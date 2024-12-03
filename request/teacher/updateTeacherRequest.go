@@ -13,15 +13,16 @@ import (
 * https://blog.logrocket.com/gin-binding-in-go-a-tutorial-with-examples/#validating-date-time
  */
 type UpdateTeacherRequest struct {
-	UserName         string `json:"name" binding:"required"`
-	UserGender       string `json:"gender" binding:"required,oneof=Male Female"`
-	UserPlaceOfBirth string `json:"place_of_birth" binding:"required"`
-	UserReligion     string `json:"religion" binding:"required" validate:"required,oneof='Islam' 'Kristen Katolik' 'Kristen Protestan 'Hindu' 'Buddha' 'Konghucu'"`
-	DateOfBirth      string `json:"date_of_birth" binding:"required"`
-	UserAddress      string `json:"address" binding:"required"`
-	UserPhoneNum     string `json:"num_phone" binding:"required,e164"`
-	UserEmail        string `json:"email" binding:"required,email"`
-	TeachingHour     int32  `json:"teaching_hour" binding:"required"`
+	UserName         string  `json:"name" binding:"required"`
+	UserGender       string  `json:"gender" binding:"required,oneof=Male Female"`
+	UserPlaceOfBirth string  `json:"place_of_birth" binding:"required"`
+	UserReligion     string  `json:"religion" binding:"required" validate:"required,oneof='Islam' 'Kristen Katolik' 'Kristen Protestan 'Hindu' 'Buddha' 'Konghucu'"`
+	DateOfBirth      string  `json:"date_of_birth" binding:"required"`
+	UserAddress      string  `json:"address" binding:"required"`
+	UserPhoneNum     string  `json:"num_phone" binding:"required,e164"`
+	UserEmail        string  `json:"email" binding:"required,email"`
+	TeachingHour     string  `json:"teaching_hour" binding:"required"`
+	TeachingSubject  []int64 `json:"subject" binding:"required" validate:"required,min=1,dive,min=1"`
 }
 
 // Validate method

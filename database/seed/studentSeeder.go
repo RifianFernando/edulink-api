@@ -3,7 +3,7 @@ package seed
 import (
 	"time"
 
-	"github.com/edulink-api/models"
+	"github.com/edulink-api/database/models"
 )
 
 // Helper function to create a student

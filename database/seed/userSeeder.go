@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/edulink-api/lib"
-	"github.com/edulink-api/models"
+	"github.com/edulink-api/database/models"
 )
 
 // ClassSeeder seeds the Class data into the database.

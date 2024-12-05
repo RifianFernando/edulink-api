@@ -1,6 +1,6 @@
 package seed
 
-import "github.com/edulink-api/models"
+import "github.com/edulink-api/database/models"
 
 func GradeSeeder() (grades []models.Grade) {
 	grades = []models.Grade{

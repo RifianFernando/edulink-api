@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/edulink-api/lib"
-	"github.com/edulink-api/models"
+	"github.com/edulink-api/database/models"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 )

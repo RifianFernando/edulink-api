@@ -1,7 +1,7 @@
 package request
 
 import (
-	"github.com/edulink-api/models"
+	"github.com/edulink-api/database/models"
 	"github.com/go-playground/validator/v10"
 )
 

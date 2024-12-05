@@ -3,7 +3,7 @@ package helper
 import (
 	"github.com/edulink-api/connections"
 	"github.com/edulink-api/lib"
-	"github.com/edulink-api/models"
+	"github.com/edulink-api/database/models"
 )
 
 func Authenticate(email string, password string) (models.User, string) {

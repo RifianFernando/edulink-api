@@ -50,8 +50,8 @@ func generateAppKey() {
 	appKey := lib.GenerateMultipleRandomStrings(1, 32)[0]
 	if _, err := lib.SetEnvValue("APP_KEY", appKey); err != nil {
 		log.Printf("Application key successfully generated and set: %s", appKey)
-        
-        return
+
+		return
 	}
 	log.Printf("Application key successfully generated and set: %s", appKey)
 }
@@ -74,6 +74,7 @@ var tables = []interface{}{
 	&migration.Report{},
 	&migration.Teacher{},
 	&migration.TeacherSubject{},
+	&migration.TeachingClassSubject{},
 	&migration.Schedule{},
 	&migration.LearningSchedule{},
 	&migration.EventSchedule{},

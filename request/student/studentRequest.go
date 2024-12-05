@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/edulink-api/models"
+	"github.com/edulink-api/database/models"
 	req "github.com/edulink-api/request"
 	"github.com/edulink-api/res"
 )

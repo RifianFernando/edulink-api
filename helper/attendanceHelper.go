@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/edulink-api/models"
+	"github.com/edulink-api/database/models"
 	request "github.com/edulink-api/request/attendance"
 	"github.com/edulink-api/res"
 	"github.com/gin-gonic/gin"

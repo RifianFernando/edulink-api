@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/edulink-api/helper"
-	"github.com/edulink-api/models"
+	"github.com/edulink-api/database/models"
 	req "github.com/edulink-api/request/attendance"
 	"github.com/gin-gonic/gin"
 )

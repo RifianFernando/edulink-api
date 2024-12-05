@@ -3,7 +3,7 @@ package seed
 import (
 	"time"
 
-	"github.com/edulink-api/models"
+	"github.com/edulink-api/database/models"
 )
 
 func AttendanceSeeder() (attendance []models.Attendance) {

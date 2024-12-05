@@ -3,7 +3,7 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/edulink-api/models"
+	"github.com/edulink-api/database/models"
 	"github.com/gin-gonic/gin"
 )
 

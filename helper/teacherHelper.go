@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/edulink-api/models"
+	"github.com/edulink-api/database/models"
 	"github.com/edulink-api/res"
 	"github.com/gin-gonic/gin"
 )

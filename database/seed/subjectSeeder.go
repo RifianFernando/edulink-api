@@ -1,7 +1,7 @@
 package seed
 
 import (
-	"github.com/edulink-api/models"
+	"github.com/edulink-api/database/models"
 )
 
 // ClassSeeder seeds the Class data into the database.

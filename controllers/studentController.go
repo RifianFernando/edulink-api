@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"github.com/edulink-api/helper"
-	"github.com/edulink-api/models"
+	"github.com/edulink-api/database/models"
 	request "github.com/edulink-api/request/student"
 	"github.com/edulink-api/res"
 	"github.com/gin-gonic/gin"

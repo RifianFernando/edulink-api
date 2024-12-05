@@ -58,9 +58,6 @@ COPY routes ./routes/
 # Copy the controllers directory
 COPY controllers ./controllers/
 
-# Copy the models directory
-COPY models ./models/
-
 # Copy the public directory
 COPY public ./public/
 

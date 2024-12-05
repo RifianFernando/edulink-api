@@ -93,6 +93,9 @@ func Seed() error {
 	if err := Validate(AttendanceSeeder()); err != nil {
 		errs = append(errs, fmt.Sprintf("AttendanceSeeder error: %v", err))
 	}
+	if err := Validate(AssignmentSeeder()); err != nil {
+		errs = append(errs, fmt.Sprintf("AssignmentSeeder error: %v", err))
+	}
 
 	// Return aggregated errors, if any.
 	if len(errs) > 0 {

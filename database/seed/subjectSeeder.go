@@ -8,24 +8,28 @@ import (
 func SubjectSeeder() (subjects []models.Subject) {
 	subjects = []models.Subject{
 		{
-			GradeID:                1,
-			SubjectName:            "Math",
-			SubjectDurationMinutes: 60 * 4,
+			GradeID:            1,
+			SubjectName:        "Math",
+			DurationPerSession: 60 * 4,
+			DurationPerWeek:    60 * 4 * 3,
 		},
 		{
-			GradeID:                1,
-			SubjectName:            "Science",
-			SubjectDurationMinutes: 60 * 4,
+			GradeID:            1,
+			SubjectName:        "Science",
+			DurationPerSession: 60 * 4,
+			DurationPerWeek:    60 * 4 * 2,
 		},
 		{
-			GradeID:                1,
-			SubjectName:            "Biology",
-			SubjectDurationMinutes: 60 * 4,
+			GradeID:            1,
+			SubjectName:        "Biology",
+			DurationPerSession: 60 * 4,
+			DurationPerWeek:    60 * 4 * 4,
 		},
 		{
-			GradeID:                1,
-			SubjectName:            "PKN",
-			SubjectDurationMinutes: 60 * 2,
+			GradeID:            1,
+			SubjectName:        "PKN",
+			DurationPerSession: 60 * 2,
+			DurationPerWeek:    60 * 4 * 5,
 		},
 	}
 

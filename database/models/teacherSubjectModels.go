@@ -9,10 +9,11 @@ import (
 )
 
 type TeacherSubject struct {
-	TeacherSubjectID int64     `gorm:"primaryKey" json:"id"`
-	TeacherID        int64     `json:"teacher_id" binding:"required"`
-	SubjectID        int64     `json:"subject_id" binding:"required"`
-	Subject          []Subject `gorm:"foreignKey:SubjectID;references:SubjectID"`
+	TeacherSubjectID     int64                  `gorm:"primaryKey" json:"id"`
+	TeacherID            int64                  `json:"teacher_id" binding:"required"`
+	SubjectID            int64                  `json:"subject_id" binding:"required"`
+	Subject              Subject                `gorm:"foreignKey:SubjectID;references:SubjectID"`
+	TeachingClassSubject []TeachingClassSubject `gorm:"foreignKey:TeacherSubjectID;references:TeacherSubjectID"`
 	lib.BaseModel
 }
 
@@ -32,4 +33,31 @@ func CreateTeacherSubject(teacherSubject []TeacherSubject) error {
 	}
 
 	return nil
+}
+
+type TeacherSubjectGrade struct {
+	TeacherSubjectID     int64                  `gorm:"primaryKey" json:"id"`
+	TeacherID            int64                  `json:"teacher_id" binding:"required"`
+	SubjectID            int64                  `json:"subject_id" binding:"required"`
+	Subject              SubjectModel           `gorm:"foreignKey:SubjectID;references:SubjectID"`
+	TeachingClassSubject []TeachingClassSubject `gorm:"foreignKey:TeacherSubjectID;references:TeacherSubjectID"`
+	lib.BaseModel
+}
+
+func (TeacherSubjectGrade) TableName() string {
+	return lib.GenerateTableName(lib.Academic, "teacher_subjects")
+}
+
+func (
+	teacherSubject *TeacherSubjectGrade,
+) GetTeachingSubjectByID() (teacherSubjects []TeacherSubjectGrade, err error) {
+	fmt.Println("teacherSubject", teacherSubject)
+	result := connections.DB.Preload("Subject.Grade").Preload("TeachingClassSubject").Find(&teacherSubjects, "teacher_id = ?", teacherSubject.TeacherID)
+	if result.Error != nil {
+		return []TeacherSubjectGrade{}, result.Error
+	} else if result.RowsAffected == 0 {
+		return []TeacherSubjectGrade{}, fmt.Errorf("no teacher subject found")
+	}
+
+	return teacherSubjects, nil
 }

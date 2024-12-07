@@ -92,7 +92,7 @@ func (teacher *TeacherModel) GetTeacherById(id string) (GetTeacherByIDWithoutPas
 	teacherDTO.UserEmail = teacher.User.UserEmail
 	teacherDTO.TeachingHour = teacher.TeachingHour
 	for _, subject := range teacher.TeacherSubject {
-		teacherDTO.Subject = append(teacherDTO.Subject, subject.Subject...)
+		teacherDTO.Subject = append(teacherDTO.Subject, subject.Subject)
 	}
 
 	return teacherDTO, nil

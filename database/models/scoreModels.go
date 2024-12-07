@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/edulink-api/connections"
 	"github.com/edulink-api/database/migration/lib"
 )
 
@@ -17,4 +18,15 @@ type Score struct {
 
 func (Score) TableName() string {
 	return lib.GenerateTableName(lib.Administration, "Scores")
+}
+
+func GetAllScoringBySubjectClassID() (score []Score, err error) {
+	result := connections.DB.Find(&score)
+	if result.Error != nil {
+		return []Score{}, result.Error
+	} else if result.RowsAffected == 0 {
+		return []Score{}, result.Error
+	}
+
+	return score, nil
 }

@@ -30,6 +30,11 @@ jobs:
                   DB_SSLMODE=${{ secrets.DB_SSLMODE }}
                   DB_TIMEZONE=Asia/Jakarta
                   TZ=Asia/Jakarta
+                  MAIL_HOST=${{ secrets.MAIL_HOST }}
+                  MAIL_PORT=${{ secrets.MAIL_PORT }}
+                  MAIL_SENDER_NAME=${{ secrets.MAIL_SENDER_NAME }}
+                  MAIL_EMAIL=${{ secrets.MAIL_EMAIL }}
+                  MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}
                   EOF
 
             - name: Login to Docker Hub for build

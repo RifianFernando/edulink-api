@@ -11,7 +11,7 @@ import (
 func UserSeeder() (users []models.User) {
 	users = []models.User{
 		{
-			UserName:         "guru1",
+			UserName:         "guru1 math",
 			UserGender:       "Male",
 			UserPlaceOfBirth: "Jakarta",
 			UserDateOfBirth:  time.Now(),

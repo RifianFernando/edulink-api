@@ -60,34 +60,24 @@ func Login(c *gin.Context) {
 		}
 	}
 
+	// set the output for the user session login info
+	type userDTO struct {
+		UserID int64  `json:"UserID"`
+		Name   string `json:"name"`
+		Email  string `json:"email"`
+		Role   string `json:"role"`
+	}
+	var UserDTO userDTO
+	UserDTO.UserID = user.UserID
+	UserDTO.Name = user.UserName
+	UserDTO.Email = user.UserEmail
+	UserDTO.Role = userType
+
 	// Set the refresh token in an HttpOnly cookie (valid for 1 day)
 	c.SetCookie("access_token", accessToken, 3600, "/", config.ParsedDomain, config.IsProdMode, true)
-	c.SetCookie("token", refreshToken, 3600*24*7, "/", config.ParsedDomain, config.IsProdMode, true) 
-	// refreshTokenCookie := http.Cookie{
-	// 	Name:     "token",
-	// 	Value:    refreshToken,
-	// 	MaxAge:   3600 * 24 * 7,
-	// 	Path:     "/",
-	// 	Domain:   config.ParsedDomain,
-	// 	Secure:   config.IsProdMode,
-	// 	HttpOnly: true,
-	// 	SameSite: config.SameSite,
-	// }
-	// http.SetCookie(c.Writer, &refreshTokenCookie)
-
-	// accessTokenCookie := http.Cookie{
-	// 	Name:     "access_token",
-	// 	Value:    accessToken,
-	// 	MaxAge:   3600 * 24 * 7,
-	// 	Path:     "/",
-	// 	Domain:   config.ParsedDomain,
-	// 	Secure:   config.IsProdMode,
-	// 	HttpOnly: true,
-	// 	SameSite: config.SameSite,
-	// }
-	// http.SetCookie(c.Writer, &accessTokenCookie)
-	// Return success message and send the access token in the response body (optional)
+	c.SetCookie("token", refreshToken, 3600*24*7, "/", config.ParsedDomain, config.IsProdMode, true)
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Login successful",
+		"user":    UserDTO,
 	})
 }

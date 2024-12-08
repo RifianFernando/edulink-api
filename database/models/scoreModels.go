@@ -17,7 +17,7 @@ type Score struct {
 }
 
 func (Score) TableName() string {
-	return lib.GenerateTableName(lib.Administration, "Scores")
+	return lib.GenerateTableName(lib.Academic, "scores")
 }
 
 func GetAllScoringBySubjectClassID() (score []Score, err error) {

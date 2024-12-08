@@ -102,7 +102,7 @@ func GetAllSubjectClassName(c *gin.Context) {
 		return
 	}
 	for _, subject := range result {
-		var gradeClassName = strconv.FormatInt(int64(subject.Grade), 10) + "-" + subject.Name
+		var gradeClassName = strconv.FormatInt(int64(subject.Grade), 10)+subject.Name
 		subjectClassNameDTO = append(subjectClassNameDTO, DTOAllSubjectsClassName{
 			SubjectID:      subject.SubjectID,
 			GradeClassName: gradeClassName,

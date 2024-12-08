@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetAllScoringBySubjectClassID(c *gin.Context) {
+func GetAllScoringBySubjectClassName(c *gin.Context) {
 	// Get all subjects
 	type DTOAllScoring struct {
 		ScoringID int64  `json:"scoring_id"`

@@ -8,11 +8,11 @@ import "github.com/edulink-api/database/migration/lib"
 * https://gorm.io/docs/models.html#Fields-Tags
  */
 type AcademicYear struct {
-	AcademicYearID      int64               `gorm:"primaryKey;autoIncrement"`
-	AcademicYear        string              `gorm:"not null;type:CHAR(4)"`
-	Reports             []Report            `gorm:"foreignKey:AcademicYearID;references:AcademicYearID"`
-	Scores              []Score             `gorm:"foreignKey:AcademicYearID;references:AcademicYearID"`
-	lib.BaseModel                           /* this type include CreatedAt, UpdatedAt, DeletedAt, I can't use the gorm.models because can't customize the id name */
+	AcademicYearID int64    `gorm:"primaryKey;autoIncrement"`
+	AcademicYear   string   `gorm:"not null;type:CHAR(9)"`
+	Reports        []Report `gorm:"foreignKey:AcademicYearID;references:AcademicYearID"`
+	Scores         []Score  `gorm:"foreignKey:AcademicYearID;references:AcademicYearID;constraint:OnUpdate:SET NULL,OnDelete:SET NULL"`
+	lib.BaseModel           /* this type include CreatedAt, UpdatedAt, DeletedAt, I can't use the gorm.models because can't customize the id name */
 }
 
 /*

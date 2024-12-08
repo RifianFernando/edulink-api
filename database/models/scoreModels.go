@@ -1,6 +1,8 @@
 package models
 
 import (
+	"fmt"
+
 	"github.com/edulink-api/connections"
 	"github.com/edulink-api/database/migration/lib"
 )
@@ -16,17 +18,49 @@ type Score struct {
 	lib.BaseModel
 }
 
+type ScoreModel struct {
+	Score
+	Student Student `gorm:"foreignKey:StudentID;references:StudentID"`
+	Subject Subject `gorm:"foreignKey:SubjectID;references:SubjectID"`
+}
+
 func (Score) TableName() string {
 	return lib.GenerateTableName(lib.Academic, "scores")
 }
 
-func GetAllScoringBySubjectClassID() (score []Score, err error) {
-	result := connections.DB.Find(&score)
+type ScoringBySubjectClassName struct {
+	StudentID      int64  `json:"student_id"`
+	StudentName    string `json:"StudentName"`
+	AssignmentID   int64  `json:"assignment_id"`
+	TypeAssignment string `json:"type_assignment"`
+	SubjectName    string `json:"subject_name"`
+	Score          int    `json:"score"`
+}
+
+func GetAllScoringBySubjectClassID(subjectID, classNameID string) ([]ScoringBySubjectClassName, error) {
+	query := `
+		SELECT 
+			st.student_id,
+			st.student_name,
+			sc.assignment_id,
+			a.type_assignment,
+			su.subject_name,
+			sc.score
+		FROM academic.scores sc
+		JOIN academic.students st ON sc.student_id = st.student_id
+		JOIN academic.subjects su ON sc.subject_id = su.subject_id
+		JOIN academic.assignments a ON sc.assignment_id = a.assignment_id
+		WHERE st.class_name_id = ? AND sc.subject_id = ?
+	`
+
+	var results []ScoringBySubjectClassName
+	result := connections.DB.Raw(query, classNameID, subjectID).Scan(&results)
 	if result.Error != nil {
-		return []Score{}, result.Error
-	} else if result.RowsAffected == 0 {
-		return []Score{}, result.Error
+		return nil, result.Error
+	}
+	if result.RowsAffected == 0 {
+		return nil, fmt.Errorf("no data found")
 	}
 
-	return score, nil
+	return results, nil
 }

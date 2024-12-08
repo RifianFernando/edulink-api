@@ -54,6 +54,7 @@ func GetAllSubjectClassName(c *gin.Context) {
 	// Get all subjects
 	type DTOAllSubjectsClassName struct {
 		SubjectID      int64  `json:"subject_id"`
+		ClassNameID    int64  `json:"class_name_id"`
 		GradeClassName string `json:"grade_class_name"`
 		SubjectName    string `json:"subject_name"`
 	}
@@ -85,6 +86,7 @@ func GetAllSubjectClassName(c *gin.Context) {
 				var gradeClassName = strconv.FormatInt(int64(subject.Subject.Grade.Grade), 10) + "-" + classResult.Name
 				subjectClassNameDTO = append(subjectClassNameDTO, DTOAllSubjectsClassName{
 					SubjectID:      subject.SubjectID,
+					ClassNameID:    subjectDetail.ClassNameID,
 					GradeClassName: gradeClassName,
 					SubjectName:    subject.Subject.SubjectName,
 				})
@@ -102,9 +104,10 @@ func GetAllSubjectClassName(c *gin.Context) {
 		return
 	}
 	for _, subject := range result {
-		var gradeClassName = strconv.FormatInt(int64(subject.Grade), 10)+subject.Name
+		var gradeClassName = strconv.FormatInt(int64(subject.Grade), 10) + subject.Name
 		subjectClassNameDTO = append(subjectClassNameDTO, DTOAllSubjectsClassName{
 			SubjectID:      subject.SubjectID,
+			ClassNameID:    subject.ClassNameID,
 			GradeClassName: gradeClassName,
 			SubjectName:    subject.SubjectName,
 		})

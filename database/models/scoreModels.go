@@ -1,8 +1,6 @@
 package models
 
 import (
-	"fmt"
-
 	"github.com/edulink-api/connections"
 	"github.com/edulink-api/database/migration/lib"
 )
@@ -57,9 +55,6 @@ func GetAllScoringBySubjectClassID(subjectID, classNameID string) ([]ScoringBySu
 	result := connections.DB.Raw(query, classNameID, subjectID).Scan(&results)
 	if result.Error != nil {
 		return nil, result.Error
-	}
-	if result.RowsAffected == 0 {
-		return nil, fmt.Errorf("no data found")
 	}
 
 	return results, nil

@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/edulink-api/database/models"
-	"github.com/edulink-api/res"
 	"github.com/gin-gonic/gin"
 )
 
@@ -28,7 +27,6 @@ func GetHomeRoomTeacherByTeacherID(c *gin.Context) (string, time.Time, error) {
 		teacher.UserID = userID.(int64)
 		err := teacher.GetTeacherByModel()
 		if err != nil {
-			res.AbortUnauthorized(c)
 			return "", time.Time{}, err
 		}
 
@@ -37,7 +35,6 @@ func GetHomeRoomTeacherByTeacherID(c *gin.Context) (string, time.Time, error) {
 		className.TeacherID = teacher.TeacherID
 		classes, err := className.GetHomeRoomTeacherByTeacherID()
 		if err != nil {
-			res.AbortUnauthorized(c)
 			return "", time.Time{}, err
 		}
 
@@ -51,7 +48,6 @@ func GetHomeRoomTeacherByTeacherID(c *gin.Context) (string, time.Time, error) {
 		}
 
 		if !isAssigned {
-			res.AbortUnauthorized(c)
 			return "", time.Time{}, fmt.Errorf("forbidden")
 		}
 	}

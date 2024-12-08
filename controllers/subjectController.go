@@ -67,6 +67,7 @@ func GetAllSubjectClassName(c *gin.Context) {
 		err := teacher.GetTeacherByModel()
 		if err != nil || teacher.TeacherID == 0 {
 			res.AbortUnauthorized(c)
+			return
 		}
 
 		var teacherSubject models.TeacherSubjectGrade
@@ -82,6 +83,7 @@ func GetAllSubjectClassName(c *gin.Context) {
 				classResult, err := className.GetClassNameById(classNameID)
 				if err != nil {
 					res.AbortUnauthorized(c)
+					return
 				}
 				var gradeClassName = strconv.FormatInt(int64(subject.Subject.Grade.Grade), 10) + "-" + classResult.Name
 				subjectClassNameDTO = append(subjectClassNameDTO, DTOAllSubjectsClassName{

@@ -2,8 +2,10 @@ package controllers
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/edulink-api/database/models"
+	"github.com/edulink-api/res"
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,7 +20,22 @@ func GetAllScoringBySubjectClassName(c *gin.Context) {
 	}
 
 	// Get the scoring data from the model
-	result, err := models.GetAllScoringBySubjectClassID(subjectID, classNameID)
+	userID, exist := c.Get("user_id")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "User ID not found"})
+		return
+	}
+
+	// get teacher id
+	var teacher models.Teacher
+	teacher.UserID = userID.(int64)
+	err := teacher.GetTeacherByModel()
+	if err != nil || teacher.TeacherID == 0 {
+		res.AbortUnauthorized(c)
+		return
+	}
+	teacherID := strconv.FormatInt(teacher.TeacherID, 10)
+	result, err := models.GetAllScoringBySubjectClassID(subjectID, classNameID, teacherID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

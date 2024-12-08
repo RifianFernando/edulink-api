@@ -3,8 +3,8 @@ package middleware
 import (
 	"fmt"
 
-	"github.com/edulink-api/helper"
 	"github.com/edulink-api/database/models"
+	"github.com/edulink-api/helper"
 	"github.com/edulink-api/res"
 	"github.com/gin-gonic/gin"
 )
@@ -68,4 +68,41 @@ func isTeacherHomeRoom(userID int64, userType string, userTypeCtx interface{}) b
 	}
 
 	return true
+}
+
+func OnlyTeacher() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		accessToken, err := helper.GetCookieValue(c, "access_token")
+		if err != nil {
+			res.AbortUnauthorized(c)
+			return
+		}
+
+		userTypeCtx, err := getUserTypeFromContext(c)
+		if err != nil {
+			fmt.Println("Error getting user type from context: ", err)
+			res.AbortUnauthorized(c)
+			return
+		}
+		if userTypeCtx != "teacher" {
+			res.AbortUnauthorized(c)
+			return
+		}
+
+		claims, msg := helper.ValidateToken(accessToken, "access_token")
+		if msg != "" || claims == nil {
+			res.AbortUnauthorized(c)
+			return
+		}
+
+		if isAdminOrStaff(claims.UserID) {
+			res.AbortUnauthorized(c)
+			return
+		} else {
+			c.Next()
+			return
+		}
+
+		res.AbortUnauthorized(c)
+	}
 }

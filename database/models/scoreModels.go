@@ -35,7 +35,7 @@ type ScoringBySubjectClassName struct {
 	Score          int    `json:"score"`
 }
 
-func GetAllScoringBySubjectClassID(subjectID, classNameID string) ([]ScoringBySubjectClassName, error) {
+func GetAllScoringBySubjectClassID(subjectID, classNameID, teacherID string) ([]ScoringBySubjectClassName, error) {
 	query := `
 		SELECT 
 			st.student_id,
@@ -48,11 +48,11 @@ func GetAllScoringBySubjectClassID(subjectID, classNameID string) ([]ScoringBySu
 		JOIN academic.students st ON sc.student_id = st.student_id
 		JOIN academic.subjects su ON sc.subject_id = su.subject_id
 		JOIN academic.assignments a ON sc.assignment_id = a.assignment_id
-		WHERE st.class_name_id = ? AND sc.subject_id = ?
+		WHERE st.class_name_id = ? AND sc.subject_id = ? AND sc.teacher_id = ?
 	`
 
 	var results []ScoringBySubjectClassName
-	result := connections.DB.Raw(query, classNameID, subjectID).Scan(&results)
+	result := connections.DB.Raw(query, classNameID, subjectID, teacherID).Scan(&results)
 	if result.Error != nil {
 		return nil, result.Error
 	}

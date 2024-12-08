@@ -79,5 +79,5 @@ func GetAllScoringBySubjectClassName(c *gin.Context) {
 	}
 
 	// Send the grouped result as a response
-	c.JSON(http.StatusOK, gin.H{"data": resultDTO})
+	c.JSON(http.StatusOK, gin.H{"score": resultDTO})
 }

@@ -51,7 +51,6 @@ func (TeacherSubjectGrade) TableName() string {
 func (
 	teacherSubject *TeacherSubjectGrade,
 ) GetTeachingSubjectByID() (teacherSubjects []TeacherSubjectGrade, err error) {
-	fmt.Println("teacherSubject", teacherSubject)
 	result := connections.DB.Preload("Subject.Grade").Preload("TeachingClassSubject").Find(&teacherSubjects, "teacher_id = ?", teacherSubject.TeacherID)
 	if result.Error != nil {
 		return []TeacherSubjectGrade{}, result.Error

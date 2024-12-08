@@ -98,11 +98,8 @@ func OnlyTeacher() gin.HandlerFunc {
 		if isAdminOrStaff(claims.UserID) {
 			res.AbortUnauthorized(c)
 			return
-		} else {
-			c.Next()
-			return
 		}
 
-		res.AbortUnauthorized(c)
+		c.Next()
 	}
 }

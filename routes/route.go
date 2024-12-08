@@ -87,7 +87,7 @@ func Route(router *gin.Engine) {
 	}
 
 	// Scoring
-	scoring := apiV1.Group("/scoring", middleware.AlreadyLoggedIn())
+	scoring := apiV1.Group("/scoring", middleware.AlreadyLoggedIn(), middleware.OnlyTeacher())
 	{
 		scoring.GET("/:subject_id/:class_name_id", controllers.GetAllScoringBySubjectClassName)
 		// scoring.GET("/summaries/:class_id/:year", controllers.GetAllScoringYearSummaryByClassID)

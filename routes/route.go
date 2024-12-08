@@ -95,4 +95,10 @@ func Route(router *gin.Engine) {
 		// scoring.POST("/:class_id", controllers.CreateStudentScoring)
 		// scoring.PUT("/:class_id/:date", controllers.UpdateStudentScoring)
 	}
+
+	// assignment
+	assignment := apiV1.Group("/assignment", middleware.AlreadyLoggedIn(), middleware.OnlyTeacher())
+	{
+		assignment.POST("", controllers.CreateAssignmentType)
+	}
 }

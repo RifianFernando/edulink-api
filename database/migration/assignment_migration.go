@@ -21,7 +21,7 @@ import "github.com/edulink-api/database/migration/lib"
  */
 type Assignment struct {
 	AssignmentID   int64   `gorm:"primaryKey;autoIncrement"`
-	TypeAssignment string  `gorm:"not null;type:VARCHAR(50)"`
+	TypeAssignment string  `gorm:"not null;unique;type:VARCHAR(50)"`
 	Score          []Score `gorm:"foreignKey:AssignmentID;references:AssignmentID"`
 	lib.BaseModel          /* this type include CreatedAt, UpdatedAt, DeletedAt, I can't use the gorm.models because can't customize the id name */
 }

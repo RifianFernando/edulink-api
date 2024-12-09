@@ -79,8 +79,8 @@ func (student *Student) GetAllStudentByClassNameID() (
 	msg string,
 ) {
 	result := connections.DB.
-				Where("class_name_id = ?", student.ClassNameID).
-				Find(&students)
+		Where("class_name_id = ?", student.ClassNameID).
+		Find(&students)
 	if result.Error != nil {
 		return nil, result.Error.Error()
 	} else if result.RowsAffected == 0 {
@@ -180,4 +180,13 @@ func UpdateManyStudentClassID(studentData []UpdateManyStudentClass) error {
 	}
 
 	return tx.Commit().Error
+}
+
+func (student *Student) GetAllStudentsByClassID(classID string) (students []Student, err error) {
+	result := connections.DB.Where("class_name_id = ?", classID).Find(&students)
+	if result.Error != nil {
+		return students, result.Error
+	}
+
+	return students, nil
 }

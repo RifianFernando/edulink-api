@@ -84,7 +84,7 @@ func Route(router *gin.Engine) {
 	{
 		subject.GET("", middleware.AdminOnly(), controllers.GetAllSubject)
 		subject.GET("/class", controllers.GetAllSubjectClassName)
-		subject.GET("/:subject_id/:class_id", controllers.GetSubjectAndClassNameByID)
+		subject.GET("/:subject_id/:class_id", controllers.GetSubjectClassNameStudentsByID)
 	}
 
 	// Scoring

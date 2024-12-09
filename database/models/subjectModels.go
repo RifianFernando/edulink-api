@@ -5,6 +5,7 @@ import (
 
 	"github.com/edulink-api/connections"
 	"github.com/edulink-api/database/migration/lib"
+	"gorm.io/gorm"
 )
 
 type Subject struct {
@@ -60,4 +61,19 @@ func GetAllSubjectsClassName() (subjectsClasses []DTOAllClassSubjects, err error
 	}
 
 	return subjectsClasses, nil
+}
+
+func (subject *SubjectModel) GetSubjectByID(subjectID string) (SubjectModel, error) {
+	result := connections.DB.Preload("Grade").Where("subject_id = ?", subjectID).First(&subject)
+
+	if result.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			return *subject, fmt.Errorf("subject not found")
+		}
+		return *subject, result.Error
+	} else if result.RowsAffected == 0 {
+		return *subject, fmt.Errorf("no subject found")
+	}
+
+	return *subject, nil
 }

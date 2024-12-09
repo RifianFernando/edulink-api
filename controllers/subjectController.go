@@ -117,3 +117,46 @@ func GetAllSubjectClassName(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"subjects": subjectClassNameDTO})
 }
+
+func GetSubjectAndClassNameByID(c *gin.Context) {
+	// Get the subject ID
+	subjectID := c.Param("subject_id")
+	if subjectID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Subject ID is required"})
+		return
+	}
+
+	// Get the subject
+	var subject models.SubjectModel
+	subjectResult, err := subject.GetSubjectByID(subjectID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Get the class name
+	classNameID := c.Param("class_id")
+	if classNameID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Class name ID is required"})
+		return
+	}
+	var className models.ClassName
+	classNameResult, err := className.GetClassNameById(classNameID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Map the subject and class name to DTO
+	type DTOSubjectClassName struct {
+		GradeClassName string `json:"grade_class_name"`
+		SubjectName    string `json:"subject_name"`
+	}
+
+	subjectClassNameDTO := DTOSubjectClassName{
+		GradeClassName: strconv.FormatInt(int64(subjectResult.Grade.Grade), 10) + "-" + classNameResult.Name,
+		SubjectName:    subjectResult.SubjectName,
+	}
+
+	c.JSON(http.StatusOK, gin.H{"subject": subjectClassNameDTO})
+}

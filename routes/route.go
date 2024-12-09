@@ -100,5 +100,7 @@ func Route(router *gin.Engine) {
 	assignment := apiV1.Group("/assignment", middleware.AlreadyLoggedIn(), middleware.OnlyTeacher())
 	{
 		assignment.POST("", controllers.CreateAssignmentType)
+		// no need to get assignment type because user will be create it, and if asg is exist, it will return the existing one from the db
+		// assignment.GET("", controllers.GetAllAssignmentType)
 	}
 }

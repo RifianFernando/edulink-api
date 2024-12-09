@@ -34,9 +34,9 @@ func CreateAssignmentType(c *gin.Context) {
 	assignment.TypeAssignment = request.TypeAssignment
 
 	// check if the assignment type already exists
-	result, err := assignment.GetAssignment()
+	result, err := assignment.GetAssignmentByType()
 	if err == nil && result.TypeAssignment == request.TypeAssignment {
-		c.JSON(http.StatusCreated, gin.H{"assignment": result})
+		c.JSON(http.StatusOK, gin.H{"assignment": result})
 		return
 	}
 
@@ -47,5 +47,16 @@ func CreateAssignmentType(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"assignment": result})
+	c.JSON(http.StatusOK, gin.H{"assignment": result})
+}
+
+func GetAllAssignmentType(c *gin.Context) {
+	var assignment models.Assignment
+	result, err := assignment.GetAllAssignmentType()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"assignment": result})
 }

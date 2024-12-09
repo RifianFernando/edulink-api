@@ -69,9 +69,10 @@ func customErrorForDuplicate(property string, atribute string, index int) string
 }
 
 func checkForDuplicates(student request.InsertStudentRequest, index int, nameMap, nisnMap, numPhoneMap, emailMap map[string]bool) error {
-	if nameMap[student.StudentName] {
-		return errors.New(customErrorForDuplicate("StudentName", student.StudentName, index))
-	}
+	// name can be duplicate
+	// if nameMap[student.StudentName] {
+	// 	return errors.New(customErrorForDuplicate("StudentName", student.StudentName, index))
+	// }
 	if nisnMap[student.StudentNISN] {
 		return errors.New(customErrorForDuplicate("StudentNISN", student.StudentNISN, index))
 	}

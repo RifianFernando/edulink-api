@@ -155,6 +155,10 @@ func CreateStudentsScoringBySubjectClassName(c *gin.Context) {
 		subjectID,
 		teacherID,
 	)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
 	var isExist = false
 	for _, teacher := range result {

@@ -162,21 +162,26 @@ func GetSummariesScoringStudentBySubjectClassName(c *gin.Context) {
 	for _, student := range resultMap {
 		// group the score by subject_name
 		groupedResult := make(map[string]int)
+		countGroupedResult := make(map[string]int)
+		var totalAssignment = 0
 		for _, score := range student.Scores {
+			totalAssignment++
 			// if the subject_name doesn't exist in the map, initialize it
 			if _, exists := groupedResult[score.SubjectName]; !exists {
 				groupedResult[score.SubjectName] = 0
+				countGroupedResult[score.SubjectName] = 0
 			}
 			groupedResult[score.SubjectName] += score.Score
+			countGroupedResult[score.SubjectName]++
 		}
 
 		// calculate the average score
-		var totalAssignment = len(student.Scores)
 		var scores []helper.Score
 		for subjectName, score := range groupedResult {
+			// var totalAssignment = len(student.Scores)
 			scores = append(scores, helper.Score{
 				SubjectName: subjectName,
-				Score:       score / totalAssignment,
+				Score:       score / countGroupedResult[subjectName],
 			})
 		}
 

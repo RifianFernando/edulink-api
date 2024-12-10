@@ -59,3 +59,29 @@ func GetAllScoringBySubjectClassID(subjectID, classNameID, teacherID string) ([]
 
 	return results, nil
 }
+
+func CreateStudentsScoringBySubjectClassName(data []Score) error {
+	tx := connections.DB.Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err := tx.Error; err != nil {
+		return err
+	}
+
+	for _, item := range data {
+		result := tx.Create(&item)
+		if result.Error != nil {
+			tx.Rollback()
+			return result.Error
+		}
+	}
+
+	return tx.Commit().Error
+}

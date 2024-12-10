@@ -54,3 +54,41 @@ func GetHomeRoomTeacherByTeacherID(c *gin.Context) (string, time.Time, error) {
 
 	return ClassID, Date, nil
 }
+
+
+func IsTeachingClassSubjectExist(userID any, subjectID string, classID string, classNameID string) (bool, error) {
+
+	// get teacher id
+	var teacher models.Teacher
+	teacher.UserID = userID.(int64)
+	err := teacher.GetTeacherByModel()
+	if err != nil || teacher.TeacherID == 0 {
+		return false, fmt.Errorf("teacher not found")
+	}
+	teacherID := strconv.FormatInt(teacher.TeacherID, 10)
+	classNameIDParsed, err := strconv.ParseInt(classNameID, 10, 64)	
+	if err != nil {
+		return false, fmt.Errorf("invalid class name id")
+	}
+	result, err := models.GetTeachingSubjectBySubjectID(
+		subjectID,
+		teacherID,
+	)
+
+	var isExist = false
+	for _, teacher := range result {
+		if len(teacher.TeachingClassSubject) > 0 {
+			for _, classSubject := range teacher.TeachingClassSubject {
+				if classSubject.ClassNameID == classNameIDParsed {
+					isExist = true
+					break
+				}
+			}
+		}
+	}
+	if !isExist {
+		return false, fmt.Errorf("forbidden")
+	}
+
+	return true, nil
+}

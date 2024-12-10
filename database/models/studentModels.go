@@ -1,7 +1,6 @@
 package models
 
 import (
-	"log"
 	"time"
 
 	"github.com/edulink-api/connections"
@@ -139,7 +138,6 @@ func (student *Student) DeleteStudentById(id string) error {
 }
 
 func CreateAllStudents(students []Student) error {
-	log.Println("CreateAllStudents")
 	result := connections.DB.Create(&students)
 	if result.Error != nil {
 		return result.Error

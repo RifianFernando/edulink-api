@@ -60,3 +60,20 @@ func (
 
 	return teacherSubjects, nil
 }
+
+func GetTeachingSubjectBySubjectID(
+	subjectID string,
+	teacherID string,
+) (
+	teacherSubjects []TeacherSubjectGrade,
+	err error,
+) {
+	result := connections.DB.Preload("TeachingClassSubject").Find(&teacherSubjects, "teacher_id = ? AND subject_id = ?", teacherID, subjectID)
+	if result.Error != nil {
+		return []TeacherSubjectGrade{}, result.Error
+	} else if result.RowsAffected == 0 {
+		return []TeacherSubjectGrade{}, fmt.Errorf("no teacher subject found")
+	}
+
+	return teacherSubjects, nil
+}

@@ -14,14 +14,14 @@ func ScoreSeeder() (grades []models.Score) {
 			Score:          90,
 		},
 		// Siswa 1 7A PTS Math - teacher naem: 1 -> guru1 (math)
-		{
-			StudentID:      1,
-			AssignmentID:   2,
-			SubjectID:      1,
-			TeacherID:      1,
-			AcademicYearID: 1,
-			Score:          100,
-		},
+		// {
+		// 	StudentID:      1,
+		// 	AssignmentID:   2,
+		// 	SubjectID:      1,
+		// 	TeacherID:      1,
+		// 	AcademicYearID: 1,
+		// 	Score:          100,
+		// },
 		// Siswa 2 7A PAS Math - teacher name: 1 -> guru1 (math)
 		{
 			StudentID:      2,

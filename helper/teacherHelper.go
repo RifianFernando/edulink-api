@@ -70,11 +70,11 @@ func IsTeachingClassSubjectExist(userID any, subjectID string, classID string, c
 	if err != nil {
 		return false, fmt.Errorf("invalid class name id")
 	}
-	result, err := models.GetTeachingSubjectBySubjectID(
+	var result []models.TeacherSubjectGrade
+	result, err = models.GetTeachingSubjectBySubjectID(
 		subjectID,
 		teacherID,
 	)
-
 	if err != nil {
 		return false, err
 	}

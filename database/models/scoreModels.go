@@ -85,3 +85,29 @@ func CreateStudentsScoringBySubjectClassName(data []Score) error {
 
 	return tx.Commit().Error
 }
+
+func GetSummariesScoringStudentBySubjectClassName(classID, academicYearID string) ([]ScoringBySubjectClassName, error) {
+	query := `
+		SELECT 
+			st.student_id,
+			st.student_name,
+			sc.assignment_id,
+			a.type_assignment,
+			su.subject_name,
+			sc.score
+		FROM academic.scores sc
+		JOIN academic.students st ON sc.student_id = st.student_id
+		JOIN academic.subjects su ON sc.subject_id = su.subject_id
+		JOIN academic.assignments a ON sc.assignment_id = a.assignment_id
+		join academic.class_names cn on st.class_name_id = cn.class_name_id 
+		WHERE st.class_name_id = ? AND sc.academic_year_id = ?
+	`
+
+	var results []ScoringBySubjectClassName
+	result := connections.DB.Raw(query, classID, academicYearID).Scan(&results)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return results, nil
+}

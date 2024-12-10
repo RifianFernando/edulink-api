@@ -56,19 +56,19 @@ func GetHomeRoomTeacherByTeacherID(c *gin.Context) (string, time.Time, error) {
 }
 
 // TODO: use this function in controllers/scoringController.go
-func IsTeachingClassSubjectExist(userID any, subjectID string, classID string, classNameID string) (bool, error) {
+func IsTeachingClassSubjectExist(userID any, subjectID string, classNameID string) (models.Teacher, error) {
 
 	// get teacher id
 	var teacher models.Teacher
 	teacher.UserID = userID.(int64)
 	err := teacher.GetTeacherByModel()
 	if err != nil || teacher.TeacherID == 0 {
-		return false, fmt.Errorf("teacher not found")
+		return teacher, fmt.Errorf("teacher not found")
 	}
 	teacherID := strconv.FormatInt(teacher.TeacherID, 10)
 	classNameIDParsed, err := strconv.ParseInt(classNameID, 10, 64)	
 	if err != nil {
-		return false, fmt.Errorf("invalid class name id")
+		return teacher, fmt.Errorf("invalid class name id")
 	}
 	var result []models.TeacherSubjectGrade
 	result, err = models.GetTeachingSubjectBySubjectID(
@@ -76,7 +76,7 @@ func IsTeachingClassSubjectExist(userID any, subjectID string, classID string, c
 		teacherID,
 	)
 	if err != nil {
-		return false, err
+		return teacher, err
 	}
 
 	var isExist = false
@@ -91,8 +91,8 @@ func IsTeachingClassSubjectExist(userID any, subjectID string, classID string, c
 		}
 	}
 	if !isExist {
-		return false, fmt.Errorf("forbidden")
+		return teacher, fmt.Errorf("teacher is not teaching this class")
 	}
 
-	return true, nil
+	return teacher, nil
 }

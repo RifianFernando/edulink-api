@@ -3,9 +3,9 @@ package controllers
 import (
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/edulink-api/database/models"
+	"github.com/edulink-api/helper"
 	request "github.com/edulink-api/request/score"
 	"github.com/edulink-api/res"
 	"github.com/gin-gonic/gin"
@@ -28,6 +28,7 @@ func GetAllScoringBySubjectClassName(c *gin.Context) {
 		return
 	}
 
+	// TODO: use this function in helper/teacherHelper to check is the teacher teaching the class and subject
 	// get teacher id
 	var teacher models.Teacher
 	teacher.UserID = userID.(int64)
@@ -43,59 +44,7 @@ func GetAllScoringBySubjectClassName(c *gin.Context) {
 		return
 	}
 
-	// Define the score struct
-	type Score struct {
-		AssignmentID   int64  `json:"AssignmentID"`
-		AssignmentType string `json:"AssignmentType"`
-		SubjectName    string `json:"SubjectName"`
-		Score          int    `json:"Score"`
-	}
-
-	// Define the DTO struct to group scores by student
-	type DTOAllScoringBySubjectClassName struct {
-		StudentID   int64   `json:"StudentID"`
-		StudentName string  `json:"StudentName"`
-		Scores      []Score `json:"Scores"`
-	}
-
-	// Map to group scores by StudentID
-	groupedResult := make(map[int64]DTOAllScoringBySubjectClassName)
-
-	// Iterate through the result and group the data
-	for _, item := range result {
-		studentID := item.StudentID
-		studentName := item.StudentName
-
-		// Create a new score object for each item
-		score := Score{
-			AssignmentID:   item.AssignmentID,
-			AssignmentType: item.TypeAssignment,
-			SubjectName:    item.SubjectName,
-			Score:          item.Score,
-		}
-
-		// If the student doesn't exist in the map, initialize it
-		if _, exists := groupedResult[studentID]; !exists {
-			groupedResult[studentID] = DTOAllScoringBySubjectClassName{
-				StudentID:   studentID,
-				StudentName: studentName,
-				Scores:      []Score{},
-			}
-		}
-
-		// Append the score to the student's scores list
-		groupedResult[studentID] = DTOAllScoringBySubjectClassName{
-			StudentID:   studentID,
-			StudentName: studentName,
-			Scores:      append(groupedResult[studentID].Scores, score),
-		}
-	}
-
-	// Convert the map to a slice
-	var resultDTO []DTOAllScoringBySubjectClassName
-	for _, student := range groupedResult {
-		resultDTO = append(resultDTO, student)
-	}
+	resultDTO := helper.RemapScoringStudentBySubjectClassName(result)
 
 	// Send the grouped result as a response
 	c.JSON(http.StatusOK, gin.H{"score": resultDTO})
@@ -137,42 +86,9 @@ func CreateStudentsScoringBySubjectClassName(c *gin.Context) {
 		return
 	}
 
-	// get teacher id
-	var teacher models.Teacher
-	teacher.UserID = userID.(int64)
-	err := teacher.GetTeacherByModel()
+	teacher, err := helper.IsTeachingClassSubjectExist(userID, subjectID, classNameID)
 	if err != nil || teacher.TeacherID == 0 {
-		res.AbortUnauthorized(c)
-		return
-	}
-	teacherID := strconv.FormatInt(teacher.TeacherID, 10)
-	classNameIDParsed, err := strconv.ParseInt(classNameID, 10, 64)
-	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	result, err := models.GetTeachingSubjectBySubjectID(
-		subjectID,
-		teacherID,
-	)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	var isExist = false
-	for _, teacher := range result {
-		if len(teacher.TeachingClassSubject) > 0 {
-			for _, classSubject := range teacher.TeachingClassSubject {
-				if classSubject.ClassNameID == classNameIDParsed {
-					isExist = true
-					break
-				}
-			}
-		}
-	}
-	if !isExist {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Teacher is not teaching this class"})
 		return
 	}
 
@@ -181,30 +97,13 @@ func CreateStudentsScoringBySubjectClassName(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	// get year now
-	var academicSemesterYear string
-	yearNow := time.Now().Year()
-
-	// check if the semester 1 or 2 from the month
-	if time.Now().Month() >= 7 {
-		// concatenate the academic year
-		academicSemesterYear = strconv.Itoa(yearNow) + "/" + strconv.Itoa(yearNow+1)
-	} else {
-		academicSemesterYear = strconv.Itoa(yearNow-1) + "/" + strconv.Itoa(yearNow)
+	// get academic year
+	academicYear, err := helper.GetOrCreateAcademicYear()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
-	// search for the assignment academic year if not exist create it
-	var academicYear models.AcademicYear
-	academicYear.AcademicYear = academicSemesterYear
-
-	err = academicYear.GetAcademicYearByModel()
-	if err != nil || academicYear.AcademicYearID == 0 {
-		err = academicYear.CreateAcademicYear()
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-	}
 	// create scoring
 	var listScoring []models.Score
 	for _, item := range request.InsertStudentRequest {
@@ -230,4 +129,65 @@ func CreateStudentsScoringBySubjectClassName(c *gin.Context) {
 		"message": "Scoring data created successfully",
 		"scoring": listScoring,
 	})
+}
+
+func GetSummariesScoringStudentBySubjectClassName(c *gin.Context) {
+	// Get parameters from the request
+	classID := c.Param("class_id")
+
+	if classID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "class_id and year are required"})
+		return
+	}
+
+	// get or create academic year
+	year, err := helper.GetOrCreateAcademicYear()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Get the scoring data from the model
+	parsedAcademicYearID := strconv.FormatInt(year.AcademicYearID, 10)
+	result, err := models.GetSummariesScoringStudentBySubjectClassName(classID, parsedAcademicYearID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	resultMap := helper.RemapScoringStudentBySubjectClassName(result)
+
+	// group result map to get the average score of subject_name
+	var resultDTO []helper.DTOAllScoringBySubjectClassName
+	for _, student := range resultMap {
+		// group the score by subject_name
+		groupedResult := make(map[string]int)
+		for _, score := range student.Scores {
+			// if the subject_name doesn't exist in the map, initialize it
+			if _, exists := groupedResult[score.SubjectName]; !exists {
+				groupedResult[score.SubjectName] = 0
+			}
+			groupedResult[score.SubjectName] += score.Score
+		}
+
+		// calculate the average score
+		var totalAssignment = len(student.Scores)
+		var scores []helper.Score
+		for subjectName, score := range groupedResult {
+			scores = append(scores, helper.Score{
+				SubjectName: subjectName,
+				Score:       score / totalAssignment,
+			})
+		}
+
+		// append the result to the DTO
+		resultDTO = append(resultDTO, helper.DTOAllScoringBySubjectClassName{
+			StudentID:   student.StudentID,
+			StudentName: student.StudentName,
+			Scores:      scores,
+		})
+	}
+	// Send the result as a response
+	c.JSON(http.StatusOK, gin.H{"score": resultDTO})
+	// c.JSON(http.StatusOK, gin.H{"score": resultMap})
 }

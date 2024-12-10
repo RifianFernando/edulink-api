@@ -88,13 +88,21 @@ func Route(router *gin.Engine) {
 	}
 
 	// Scoring
-	scoring := apiV1.Group("/scoring", middleware.AlreadyLoggedIn(), middleware.OnlyTeacher())
+	scoring := apiV1.Group("/scoring", middleware.AlreadyLoggedIn())
 	{
-		scoring.GET("/:subject_id/:class_name_id", controllers.GetAllScoringBySubjectClassName)
-		scoring.POST("/:subject_id/:class_name_id", controllers.CreateStudentsScoringBySubjectClassName)
-		// scoring.GET("/summaries/:class_id/:year", controllers.GetAllScoringYearSummaryByClassID)
+		scoring.GET(
+			"/summaries/:class_id",
+			middleware.AlreadyLoggedIn(),
+			controllers.GetSummariesScoringStudentBySubjectClassName,
+		)
 		// scoring.GET("/all-student/:class_id/:date", controllers.GetAllStudentScoringDateByClassID)
 		// scoring.PUT("/:class_id/:date", controllers.UpdateStudentScoring)
+	}
+	scoringOnlyTeacher := scoring.Group("/", middleware.OnlyTeacher())
+	{
+		
+		scoringOnlyTeacher.GET("/:subject_id/:class_name_id",controllers.GetAllScoringBySubjectClassName)
+		scoringOnlyTeacher.POST("/:subject_id/:class_name_id", controllers.CreateStudentsScoringBySubjectClassName)
 	}
 
 	// assignment

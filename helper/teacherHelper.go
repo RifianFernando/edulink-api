@@ -75,6 +75,10 @@ func IsTeachingClassSubjectExist(userID any, subjectID string, classID string, c
 		teacherID,
 	)
 
+	if err != nil {
+		return false, err
+	}
+
 	var isExist = false
 	for _, teacher := range result {
 		if len(teacher.TeachingClassSubject) > 0 {

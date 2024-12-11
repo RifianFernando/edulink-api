@@ -70,6 +70,7 @@ func isTeacherHomeRoom(userID int64, userType string, userTypeCtx interface{}) b
 	return true
 }
 
+// need to commented this because if the roles is admin and teacher the user will be considered as admin but the user is also a teacher and should get the access of the code
 func OnlyTeacher() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		accessToken, err := helper.GetCookieValue(c, "access_token")
@@ -84,13 +85,25 @@ func OnlyTeacher() gin.HandlerFunc {
 			res.AbortUnauthorized(c)
 			return
 		}
-		if userTypeCtx != "teacher" {
+
+		claims, msg := helper.ValidateToken(accessToken, "access_token")
+		if msg != "" || claims == nil {
 			res.AbortUnauthorized(c)
 			return
 		}
 
-		claims, msg := helper.ValidateToken(accessToken, "access_token")
-		if msg != "" || claims == nil {
+		if userTypeCtx != "teacher" {
+			userType := helper.GetUserTypeByUID(
+				models.User{
+					UserID: claims.UserID,
+				},
+			)
+			for _, role := range userType {
+				if role == "teacher" {
+					c.Next()
+					return
+				}
+			}
 			res.AbortUnauthorized(c)
 			return
 		}

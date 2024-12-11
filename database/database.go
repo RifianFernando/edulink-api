@@ -70,7 +70,7 @@ var tables = []interface{}{
 	&migration.ContentObjective{},
 	&migration.DomainAchievement{},
 	&migration.SyllabusDetail{},
-	// &migration.Score{},
+	&migration.Score{},
 	&migration.Report{},
 	&migration.Teacher{},
 	&migration.TeacherSubject{},

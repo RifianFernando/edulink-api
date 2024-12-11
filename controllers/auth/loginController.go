@@ -30,7 +30,7 @@ func Login(c *gin.Context) {
 
 	// Authenticate the user
 	user, userType := helper.Authenticate(req.UserEmail, req.UserPassword)
-	if userType == "" {
+	if len(userType) == 0 {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": "Invalid credentials",
 		})
@@ -38,7 +38,7 @@ func Login(c *gin.Context) {
 	}
 
 	// Generate access token and refresh token
-	accessToken, refreshToken, err := helper.GenerateToken(user, userType)
+	accessToken, refreshToken, err := helper.GenerateToken(user, helper.GetUserTypeByPrivilege(user))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error generating token"})
 		return
@@ -62,10 +62,10 @@ func Login(c *gin.Context) {
 
 	// set the output for the user session login info
 	type userDTO struct {
-		UserID int64  `json:"UserID"`
-		Name   string `json:"name"`
-		Email  string `json:"email"`
-		Role   string `json:"role"`
+		UserID int64    `json:"UserID"`
+		Name   string   `json:"name"`
+		Email  string   `json:"email"`
+		Role   []string `json:"role"`
 	}
 	var UserDTO userDTO
 	UserDTO.UserID = user.UserID

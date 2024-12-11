@@ -110,7 +110,7 @@ func UpdateSession(refreshToken string, userID int64, ipAddress string, userAgen
 
 	// Generate new access token and refresh token
 	user := models.User{UserID: userID, UserName: claims.UserName}
-	newToken, newRefreshToken, err = GenerateToken(user, GetUserTypeByUID(user))
+	newToken, newRefreshToken, err = GenerateToken(user, GetUserTypeByPrivilege(user))
 	if err != nil {
 		return "", "", err
 	}

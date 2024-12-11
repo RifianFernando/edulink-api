@@ -111,4 +111,10 @@ func Route(router *gin.Engine) {
 		// no need to get assignment type because user will be create it, and if asg is exist, it will return the existing one from the db
 		// assignment.GET("", controllers.GetAllAssignmentType)
 	}
+
+	// generator schedule
+	generatorSchedule := apiV1.Group("/generator-schedule", middleware.AlreadyLoggedIn(), middleware.AdminStaffOnly())
+	{
+		generatorSchedule.POST("", controllers.GenerateAndCreateScheduleTeachingClassSubject)
+	}
 }

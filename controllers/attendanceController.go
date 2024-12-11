@@ -3,18 +3,17 @@ package controllers
 import (
 	"net/http"
 
+	"github.com/edulink-api/database/models"
 	"github.com/edulink-api/helper"
-	"github.com/edulink-api/models"
 	req "github.com/edulink-api/request/attendance"
+	"github.com/edulink-api/res"
 	"github.com/gin-gonic/gin"
 )
 
 func GetAllAttendanceMonthSummaryByClassID(c *gin.Context) {
 	ClassID, Date, err := helper.GetHomeRoomTeacherByTeacherID(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		res.AbortUnauthorized(c)
 		return
 	}
 

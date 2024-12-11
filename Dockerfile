@@ -58,8 +58,8 @@ COPY routes ./routes/
 # Copy the controllers directory
 COPY controllers ./controllers/
 
-# Copy the models directory
-COPY models ./models/
+# Copy the public directory
+COPY public ./public/
 
 # Build the Go application & make it executable by changing the permissions
 RUN go build -o main ./main.go && chmod +x main

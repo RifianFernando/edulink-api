@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/edulink-api/models"
+	"github.com/edulink-api/database/models"
 	"github.com/edulink-api/request/student"
 	"github.com/gin-gonic/gin"
 )
@@ -69,9 +69,10 @@ func customErrorForDuplicate(property string, atribute string, index int) string
 }
 
 func checkForDuplicates(student request.InsertStudentRequest, index int, nameMap, nisnMap, numPhoneMap, emailMap map[string]bool) error {
-	if nameMap[student.StudentName] {
-		return errors.New(customErrorForDuplicate("StudentName", student.StudentName, index))
-	}
+	// name can be duplicate
+	// if nameMap[student.StudentName] {
+	// 	return errors.New(customErrorForDuplicate("StudentName", student.StudentName, index))
+	// }
 	if nisnMap[student.StudentNISN] {
 		return errors.New(customErrorForDuplicate("StudentNISN", student.StudentNISN, index))
 	}

@@ -4,14 +4,14 @@ import (
 	"time"
 
 	"github.com/edulink-api/lib"
-	"github.com/edulink-api/models"
+	"github.com/edulink-api/database/models"
 )
 
 // ClassSeeder seeds the Class data into the database.
 func UserSeeder() (users []models.User) {
 	users = []models.User{
 		{
-			UserName:         "guru1",
+			UserName:         "guru1 math",
 			UserGender:       "Male",
 			UserPlaceOfBirth: "Jakarta",
 			UserDateOfBirth:  time.Now(),
@@ -65,6 +65,9 @@ func UserSeeder() (users []models.User) {
 			UserEmail:        "staff1@gmail.com",
 			UserPassword:     lib.HashPassword("123456"),
 		},
+		// {
+		// 	UserName:         "Staff2",
+		// 	UserGender: 
 	}
 
 	return users

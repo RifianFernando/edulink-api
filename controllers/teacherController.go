@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"github.com/edulink-api/lib"
-	"github.com/edulink-api/models"
+	"github.com/edulink-api/database/models"
 	request "github.com/edulink-api/request/teacher"
 	"github.com/edulink-api/res"
 	"github.com/gin-gonic/gin"
@@ -405,7 +405,7 @@ func DeleteTeacherById(c *gin.Context) {
 		return
 	}
 
-	err = teacher.DeleteTeacherById(strconv.FormatInt(teacher.UserID, 10))
+	err = teacher.DeleteTeacherById()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),

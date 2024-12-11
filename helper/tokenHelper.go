@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/edulink-api/lib"
-	"github.com/edulink-api/models"
+	"github.com/edulink-api/database/models"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 )
@@ -110,7 +110,7 @@ func UpdateSession(refreshToken string, userID int64, ipAddress string, userAgen
 
 	// Generate new access token and refresh token
 	user := models.User{UserID: userID, UserName: claims.UserName}
-	newToken, newRefreshToken, err = GenerateToken(user, GetUserTypeByUID(user))
+	newToken, newRefreshToken, err = GenerateToken(user, GetUserTypeByPrivilege(user))
 	if err != nil {
 		return "", "", err
 	}

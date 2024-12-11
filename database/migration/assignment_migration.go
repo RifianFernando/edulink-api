@@ -2,17 +2,17 @@ package migration
 
 import "github.com/edulink-api/database/migration/lib"
 
-type AssignmentType string
+// type AssignmentType string
 
-const (
-	Exam AssignmentType = "Exam"
-	Task AssignmentType = "Task"
-)
+// const (
+// 	Exam AssignmentType = "Exam"
+// 	Task AssignmentType = "Task"
+// )
 
-func (g *AssignmentType) Scan(value interface{}) error {
-	*g = AssignmentType(value.([]byte))
-	return nil
-}
+// func (g *AssignmentType) Scan(value interface{}) error {
+// 	*g = AssignmentType(value.([]byte))
+// 	return nil
+// }
 
 /*
 * see the documentation here
@@ -20,10 +20,10 @@ func (g *AssignmentType) Scan(value interface{}) error {
 * https://gorm.io/docs/models.html#Fields-Tags
  */
 type Assignment struct {
-	AssignmentID   int64          `gorm:"primaryKey;autoIncrement"`
-	TypeAssignment AssignmentType `gorm:"not null"`
-	Score          []Score        `gorm:"foreignKey:AssignmentID;references:AssignmentID"`
-	lib.BaseModel                 /* this type include CreatedAt, UpdatedAt, DeletedAt, I can't use the gorm.models because can't customize the id name */
+	AssignmentID   int64   `gorm:"primaryKey;autoIncrement"`
+	TypeAssignment string  `gorm:"not null;unique;type:VARCHAR(50)"`
+	Score          []Score `gorm:"foreignKey:AssignmentID;references:AssignmentID"`
+	lib.BaseModel          /* this type include CreatedAt, UpdatedAt, DeletedAt, I can't use the gorm.models because can't customize the id name */
 }
 
 /*

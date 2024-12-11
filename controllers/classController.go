@@ -4,9 +4,13 @@ import (
 	"net/http"
 
 	"github.com/edulink-api/helper"
-	"github.com/edulink-api/models"
+	"github.com/edulink-api/database/models"
 	"github.com/edulink-api/request"
 	"github.com/gin-gonic/gin"
+)
+
+var (
+	classNotFound = "Class not found"
 )
 
 func CreateClass(c *gin.Context) {
@@ -99,7 +103,7 @@ func GetClassNameById(c *gin.Context) {
 	result, err := class.GetClassNameById(id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Class not found",
+			"error": classNotFound,
 		})
 		return
 	} else if result.ClassNameID == 0 {
@@ -138,7 +142,7 @@ func UpdateClassById(c *gin.Context) {
 	class, err := class.GetClassNameById(c.Param("class_id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Class not found",
+			"error": classNotFound,
 		})
 		return
 	}
@@ -167,7 +171,7 @@ func DeleteClassById(c *gin.Context) {
 	err := class.DeleteClassNameById(id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Class not found",
+			"error": classNotFound,
 		})
 		return
 	}

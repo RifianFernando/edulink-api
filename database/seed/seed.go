@@ -35,7 +35,7 @@ func Validate(models interface{}) error {
 
 		// Perform validation.
 		if err := validate.Struct(item); err != nil {
-			errs = append(errs, fmt.Sprintf("Validation failed for item %d: %v", i + 1, err))
+			errs = append(errs, fmt.Sprintf("Validation failed for item %d: %v", i+1, err))
 			continue // Skip saving this item if validation fails.
 		}
 
@@ -87,8 +87,20 @@ func Seed() error {
 	if err := Validate(TeacherSubjectSeeder()); err != nil {
 		errs = append(errs, fmt.Sprintf("TeacherSubjectSeeder error: %v", err))
 	}
+	if err := Validate(TeacherClassSubjectSeeder()); err != nil {
+		errs = append(errs, fmt.Sprintf("TeacherClassSubjectSeeder error: %v", err))
+	}
 	if err := Validate(AttendanceSeeder()); err != nil {
 		errs = append(errs, fmt.Sprintf("AttendanceSeeder error: %v", err))
+	}
+	if err := Validate(AssignmentSeeder()); err != nil {
+		errs = append(errs, fmt.Sprintf("AssignmentSeeder error: %v", err))
+	}
+	if err := Validate(AcademicYearSeeder()); err != nil {
+		errs = append(errs, fmt.Sprintf("AcademicYearSeeder error: %v", err))
+	}
+	if err := Validate(ScoreSeeder()); err != nil {
+		errs = append(errs, fmt.Sprintf("ScoreSeeder error: %v", err))
 	}
 
 	// Return aggregated errors, if any.

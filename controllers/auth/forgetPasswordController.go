@@ -40,19 +40,15 @@ func ForgetPassword(c *gin.Context) {
 		return
 	}
 
-	// TODO: GET the real domain without changing the code
 	resetTokenLink = os.Getenv("ALLOW_ORIGIN") + "/auth/reset-password?token=" + resetTokenLink + "&email=" + user.UserEmail
-
-	// Send the reset token to the user's email
-	// err = helper.SendResetTokenEmail(user.UserEmail, resetToken)
-	// if err != nil {
-	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "Error sending email"})
-	// 	return
-	// }
+	err = helper.SendResetTokenEmail(user.UserEmail, user.UserName, resetTokenLink)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"message":          "Reset token sent to your email",
-		"reset_token_link": resetTokenLink,
 	})
 }
 

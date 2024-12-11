@@ -5,8 +5,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/edulink-api/models"
-	"github.com/edulink-api/res"
+	"github.com/edulink-api/database/models"
 	"github.com/gin-gonic/gin"
 )
 
@@ -28,7 +27,6 @@ func GetHomeRoomTeacherByTeacherID(c *gin.Context) (string, time.Time, error) {
 		teacher.UserID = userID.(int64)
 		err := teacher.GetTeacherByModel()
 		if err != nil {
-			res.AbortUnauthorized(c)
 			return "", time.Time{}, err
 		}
 
@@ -37,7 +35,6 @@ func GetHomeRoomTeacherByTeacherID(c *gin.Context) (string, time.Time, error) {
 		className.TeacherID = teacher.TeacherID
 		classes, err := className.GetHomeRoomTeacherByTeacherID()
 		if err != nil {
-			res.AbortUnauthorized(c)
 			return "", time.Time{}, err
 		}
 
@@ -51,10 +48,50 @@ func GetHomeRoomTeacherByTeacherID(c *gin.Context) (string, time.Time, error) {
 		}
 
 		if !isAssigned {
-			res.AbortUnauthorized(c)
 			return "", time.Time{}, fmt.Errorf("forbidden")
 		}
 	}
 
 	return ClassID, Date, nil
+}
+
+func IsTeachingClassSubjectExist(userID any, subjectID string, classNameID string) (models.Teacher, error) {
+
+	// get teacher id
+	var teacher models.Teacher
+	teacher.UserID = userID.(int64)
+	err := teacher.GetTeacherByModel()
+	if err != nil || teacher.TeacherID == 0 {
+		return teacher, fmt.Errorf("teacher not found")
+	}
+	teacherID := strconv.FormatInt(teacher.TeacherID, 10)
+	classNameIDParsed, err := strconv.ParseInt(classNameID, 10, 64)	
+	if err != nil {
+		return teacher, fmt.Errorf("invalid class name id")
+	}
+	var result []models.TeacherSubjectGrade
+	result, err = models.GetTeachingSubjectBySubjectID(
+		subjectID,
+		teacherID,
+	)
+	if err != nil {
+		return teacher, err
+	}
+
+	var isExist = false
+	for _, teacher := range result {
+		if len(teacher.TeachingClassSubject) > 0 {
+			for _, classSubject := range teacher.TeachingClassSubject {
+				if classSubject.ClassNameID == classNameIDParsed {
+					isExist = true
+					break
+				}
+			}
+		}
+	}
+	if !isExist {
+		return teacher, fmt.Errorf("teacher is not teaching this class")
+	}
+
+	return teacher, nil
 }

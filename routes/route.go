@@ -80,8 +80,41 @@ func Route(router *gin.Engine) {
 	}
 
 	// Subject
-	subject := apiV1.Group("/subject", middleware.AlreadyLoggedIn(), middleware.AdminStaffOnly())
+	subject := apiV1.Group("/subject", middleware.AlreadyLoggedIn())
 	{
-		subject.GET("", controllers.GetAllSubject)
+		subject.GET("", middleware.AdminOnly(), controllers.GetAllSubject)
+		subject.GET("/class", controllers.GetAllSubjectClassName)
+		subject.GET("/:subject_id/:class_id", controllers.GetSubjectClassNameStudentsByID)
+	}
+
+	// Scoring
+	scoring := apiV1.Group("/scoring", middleware.AlreadyLoggedIn())
+	{
+		scoring.GET(
+			"/summaries/:class_id",
+			middleware.AlreadyLoggedIn(),
+			controllers.GetSummariesScoringStudentBySubjectClassName,
+		)
+	}
+	scoringOnlyTeacher := scoring.Group("/", middleware.OnlyTeacher())
+	{
+		const CRUDScoring = "/:subject_id/:class_name_id"
+		scoringOnlyTeacher.POST(CRUDScoring, controllers.CreateStudentsScoringBySubjectClassName)
+		scoringOnlyTeacher.GET(CRUDScoring,controllers.GetAllScoringBySubjectClassName)
+		scoring.PUT(CRUDScoring, controllers.UpdateScoringBySubjectClassName)
+	}
+
+	// assignment
+	assignment := apiV1.Group("/assignment", middleware.AlreadyLoggedIn(), middleware.OnlyTeacher())
+	{
+		assignment.POST("", controllers.CreateAssignmentType)
+		// no need to get assignment type because user will be create it, and if asg is exist, it will return the existing one from the db
+		// assignment.GET("", controllers.GetAllAssignmentType)
+	}
+
+	// generator schedule
+	generatorSchedule := apiV1.Group("/generator-schedule", middleware.AlreadyLoggedIn(), middleware.AdminStaffOnly())
+	{
+		generatorSchedule.POST("", controllers.GenerateAndCreateScheduleTeachingClassSubject)
 	}
 }

@@ -4,8 +4,8 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/edulink-api/database/models"
 	"github.com/edulink-api/helper"
-	"github.com/edulink-api/models"
 	"github.com/edulink-api/res"
 	"github.com/gin-gonic/gin"
 )
@@ -76,8 +76,10 @@ func isAdminOrStaff(userId int64) bool {
 		},
 	)
 
-	if userType == "admin" || userType == "staff" {
-		return true
+	for _, role := range userType {
+		if role == "admin" || role == "staff" {
+			return true
+		}
 	}
 
 	return false

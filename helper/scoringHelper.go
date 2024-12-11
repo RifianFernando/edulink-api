@@ -91,6 +91,9 @@ func GetListScoringCreateAndUpdate(
 	}
 
 	parsedSubjectID, err := strconv.ParseInt(subjectID, 10, 64)
+	if err != nil {
+		return nil, err
+	}
 
 	// create scoring
 	var listScoring []models.Score

@@ -99,7 +99,7 @@ func OnlyTeacher() gin.HandlerFunc {
 				},
 			)
 			for _, role := range userType {
-				if role == "teacher" {
+				if role == "homeroom_teacher" {
 					c.Next()
 					return
 				}

@@ -7,7 +7,6 @@ import "github.com/edulink-api/database/migration/lib"
 * https://gorm.io/docs/data_types.html
 * https://gorm.io/docs/models.html#Fields-Tags
  */
-//  TODO: fix this struct
 type HourSchedule struct {
 	HourScheduleID int64      `gorm:"primaryKey;autoIncrement"`
 	StartHour      int        `gorm:"unique;not null"`

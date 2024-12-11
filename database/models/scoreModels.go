@@ -1,6 +1,9 @@
 package models
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/edulink-api/connections"
 	"github.com/edulink-api/database/migration/lib"
 )
@@ -79,10 +82,12 @@ func CreateStudentsScoringBySubjectClassName(data []Score) error {
 		result := tx.Create(&item)
 		if result.Error != nil {
 			tx.Rollback()
+			if strings.Contains(result.Error.Error(), "duplicate key value violates unique constraint") {
+				return fmt.Errorf("student score already exists")
+			}
 			return result.Error
 		}
 	}
-
 	return tx.Commit().Error
 }
 
@@ -110,4 +115,34 @@ func GetSummariesScoringStudentBySubjectClassName(classID, academicYearID string
 	}
 
 	return results, nil
+}
+
+func UpdateScoringBySubjectClassName(data []Score) error {
+	tx := connections.DB.Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err := tx.Error; err != nil {
+		return err
+	}
+
+	for _, item := range data {
+		result := tx.Model(&Score{}).Where(
+			"student_id = ? AND assignment_id = ? AND teacher_id = ? AND subject_id = ? AND academic_year_id = ?", item.StudentID, item.AssignmentID, item.TeacherID, item.SubjectID, item.AcademicYearID,
+		).Updates(&Score{
+			Score: item.Score,
+		})
+		if result.Error != nil {
+			tx.Rollback()
+			return result.Error
+		}
+	}
+
+	return tx.Commit().Error
 }

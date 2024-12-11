@@ -67,55 +67,22 @@ func CreateStudentsScoringBySubjectClassName(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": allErrors,
 		})
-		return
+		return 
 	}
 
 	// Get parameters from the request
 	subjectID := c.Param("subject_id")
 	classNameID := c.Param("class_name_id")
-
-	if subjectID == "" || classNameID == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "subject_id and class_name_id are required"})
-		return
-	}
-
-	// Get the scoring data from the model
 	userID, exist := c.Get("user_id")
 	if !exist {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "User ID not found"})
 		return
 	}
 
-	teacher, err := helper.IsTeachingClassSubjectExist(userID, subjectID, classNameID)
-	if err != nil || teacher.TeacherID == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	parsedSubjectID, err := strconv.ParseInt(subjectID, 10, 64)
+	listScoring, err := helper.GetListScoringCreateAndUpdate(subjectID, classNameID, userID, request)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
-	}
-	// get academic year
-	academicYear, err := helper.GetOrCreateAcademicYear()
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	// create scoring
-	var listScoring []models.Score
-	for _, item := range request.InsertStudentRequest {
-		scoring := models.Score{
-			StudentID:      item.StudentID,
-			AssignmentID:   request.AssignmentID,
-			TeacherID:      teacher.TeacherID,
-			SubjectID:      parsedSubjectID,
-			AcademicYearID: academicYear.AcademicYearID,
-			Score:          item.Score,
-		}
-		listScoring = append(listScoring, scoring)
 	}
 
 	err = models.CreateStudentsScoringBySubjectClassName(listScoring)
@@ -194,5 +161,52 @@ func GetSummariesScoringStudentBySubjectClassName(c *gin.Context) {
 	}
 	// Send the result as a response
 	c.JSON(http.StatusOK, gin.H{"score": resultDTO})
-	// c.JSON(http.StatusOK, gin.H{"score": resultMap})
+}
+
+func UpdateScoringBySubjectClassName(c *gin.Context) {
+	var request request.InsertAllStudentScoreRequest
+	var allErrors []map[string]string
+
+	if err := res.ResponseMessage(c.ShouldBindJSON(&request)); len(err) > 0 {
+		allErrors = append(allErrors, err...)
+	}
+
+	// Validate the request
+	if err := request.ValidateAllStudentScore(); len(err) > 0 {
+		allErrors = append(allErrors, err...)
+	}
+
+	if len(allErrors) > 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": allErrors,
+		})
+		return 
+	}
+
+	// Get parameters from the request
+	subjectID := c.Param("subject_id")
+	classNameID := c.Param("class_name_id")
+	userID, exist := c.Get("user_id")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "User ID not found"})
+		return
+	}
+
+	listScoring, err := helper.GetListScoringCreateAndUpdate(subjectID, classNameID, userID, request)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = models.UpdateScoringBySubjectClassName(listScoring)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Send a success response
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "Scoring data updated successfully",
+		"scoring": listScoring,
+	})
 }

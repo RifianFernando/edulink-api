@@ -1,6 +1,12 @@
 package helper
 
-import "github.com/edulink-api/database/models"
+import (
+	"fmt"
+	"strconv"
+
+	"github.com/edulink-api/database/models"
+	request "github.com/edulink-api/request/score"
+)
 
 // Define the score struct
 type Score struct {
@@ -61,4 +67,44 @@ func RemapScoringStudentBySubjectClassName(
 	}
 
 	return resultDTO
+}
+
+func GetListScoringCreateAndUpdate(
+	subjectID string,
+	classNameID string,
+	userID any,
+	request request.InsertAllStudentScoreRequest,
+) ([]models.Score, error) {
+	if subjectID == "" || classNameID == "" {
+		return nil, fmt.Errorf("subject_id and class_name_id are required")
+	}
+
+	teacher, err := IsTeachingClassSubjectExist(userID, subjectID, classNameID)
+	if err != nil || teacher.TeacherID == 0 {
+		return nil, fmt.Errorf("teacher not found")
+	}
+
+	// get academic year
+	academicYear, err := GetOrCreateAcademicYear()
+	if err != nil || academicYear.AcademicYearID == 0 {
+		return nil, err
+	}
+
+	parsedSubjectID, err := strconv.ParseInt(subjectID, 10, 64)
+
+	// create scoring
+	var listScoring []models.Score
+	for _, item := range request.InsertStudentRequest {
+		scoring := models.Score{
+			StudentID:      item.StudentID,
+			AssignmentID:   request.AssignmentID,
+			TeacherID:      teacher.TeacherID,
+			SubjectID:      parsedSubjectID,
+			AcademicYearID: academicYear.AcademicYearID,
+			Score:          item.Score,
+		}
+		listScoring = append(listScoring, scoring)
+	}
+
+	return listScoring, nil
 }

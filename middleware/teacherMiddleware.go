@@ -46,7 +46,7 @@ func IsTeacherHomeRoom() gin.HandlerFunc {
 }
 
 func isTeacherHomeRoom(userID int64, userType string, userTypeCtx interface{}) bool {
-	if userType != "teacher" || userTypeCtx != "teacher" {
+	if (userTypeCtx != "homeroom_teacher" || userType != "homeroom_teacher") {
 		return false
 	}
 

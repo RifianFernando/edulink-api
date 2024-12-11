@@ -55,7 +55,6 @@ func GetHomeRoomTeacherByTeacherID(c *gin.Context) (string, time.Time, error) {
 	return ClassID, Date, nil
 }
 
-// TODO: use this function in controllers/scoringController.go
 func IsTeachingClassSubjectExist(userID any, subjectID string, classNameID string) (models.Teacher, error) {
 
 	// get teacher id

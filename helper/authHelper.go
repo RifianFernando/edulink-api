@@ -67,6 +67,13 @@ func GetUserTypeByUID(user models.User) []string {
 	className.TeacherID = teachers.TeacherID
 	classes, err := className.GetHomeRoomTeacherByTeacherID()
 	if err == nil && len(classes) > 0 {
+		// if the user is a homeroom teacher, add the role to the roles and remove the teacher role
+		for _, className := range roles {
+			if className == "teacher" {
+				roles = roles[:len(roles)-1]
+				break
+			}
+		}
 		roles = append(roles, "homeroom_teacher")
 	}
 

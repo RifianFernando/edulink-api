@@ -65,6 +65,9 @@ func UserSeeder() (users []models.User) {
 			UserEmail:        "staff1@gmail.com",
 			UserPassword:     lib.HashPassword("123456"),
 		},
+		// {
+		// 	UserName:         "Staff2",
+		// 	UserGender: 
 	}
 
 	return users

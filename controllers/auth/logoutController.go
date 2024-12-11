@@ -18,22 +18,16 @@ func Logout(c *gin.Context) {
 		return
 	}
 
-	authHeader := c.GetHeader("Authorization")
-	if authHeader == "" {
+	// Retrieve the accees token from the cookie
+	accessToken, err := helper.GetCookieValue(c, "access_token")
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "logged in first!",
-		})
-		return
-	}
-	accessToken := helper.GetAuthTokenFromHeader(authHeader)
-	if accessToken == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "No access token provided",
+			"error": err.Error(),
 		})
 		return
 	}
 
-	// Delete the refresh token from the server (if applicable)
+	// Delete the refresh token from the server
 	isDeleted, msg := helper.DeleteToken(accessToken, refreshToken)
 
 	if !isDeleted {

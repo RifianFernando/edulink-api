@@ -8,9 +8,10 @@ import "github.com/edulink-api/database/migration/lib"
 * https://gorm.io/docs/models.html#Fields-Tags
  */
 type TeachingClassSubject struct {
-	TeacherSubjectID int64 `gorm:"not null;uniqueIndex:unique_teaching_class_subject"`
-	ClassNameID      int64 `gorm:"not null;uniqueIndex:unique_teaching_class_subject"`
-	lib.BaseModel          /* this type include CreatedAt, UpdatedAt, DeletedAt, I can't use the gorm.models because can't customize the id name */
+	TeachingClassSubjectID int64 `gorm:"primaryKey;autoIncrement"` /* this is the same as `gorm:"primary_key;auto_increment"` */
+	TeacherSubjectID       int64 `gorm:"not null;uniqueIndex:unique_teaching_class_subject"`
+	ClassNameID            int64 `gorm:"not null;uniqueIndex:unique_teaching_class_subject"`
+	lib.BaseModel                /* this type include CreatedAt, UpdatedAt, DeletedAt, I can't use the gorm.models because can't customize the id name */
 }
 
 /*

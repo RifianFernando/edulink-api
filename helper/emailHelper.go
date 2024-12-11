@@ -6,12 +6,12 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/edulink-api/public"
 	"gopkg.in/gomail.v2"
 )
 
 func SendResetTokenEmail(email string, userName string, resetTokenLink string) error {
-	templatePath := "public/reset-password.html"
-	tmpl, err := template.ParseFiles(templatePath)
+	tmpl, err := template.New("resetPassword").Parse(public.HtmlTemplate)
 	if err != nil {
 		return err
 	}

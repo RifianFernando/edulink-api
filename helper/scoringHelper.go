@@ -6,6 +6,8 @@ import (
 
 	"github.com/edulink-api/database/models"
 	request "github.com/edulink-api/request/score"
+	"github.com/edulink-api/res"
+	"github.com/gin-gonic/gin"
 )
 
 // Define the score struct
@@ -110,4 +112,40 @@ func GetListScoringCreateAndUpdate(
 	}
 
 	return listScoring, nil
+}
+
+func GetListScoring(c *gin.Context) (
+	listScoring []models.Score,
+	allErrors []map[string]string,
+	err error,
+) {
+	var request request.InsertAllStudentScoreRequest
+
+	if err := res.ResponseMessage(c.ShouldBindJSON(&request)); len(err) > 0 {
+		allErrors = append(allErrors, err...)
+	}
+
+	// Validate the request
+	if err := request.ValidateAllStudentScore(); len(err) > 0 {
+		allErrors = append(allErrors, err...)
+	}
+
+	if len(allErrors) > 0 {
+		return []models.Score{}, allErrors, nil 
+	}
+
+	// Get parameters from the request
+	subjectID := c.Param("subject_id")
+	classNameID := c.Param("class_name_id")
+	userID, exist := c.Get("user_id")
+	if !exist {
+		return []models.Score{}, nil, fmt.Errorf("user id not found") 
+	}
+
+	listScoring, err = GetListScoringCreateAndUpdate(subjectID, classNameID, userID, request)
+	if err != nil {
+		return []models.Score{}, nil, err
+	}
+
+	return listScoring, nil, nil
 }

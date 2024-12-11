@@ -6,7 +6,6 @@ import (
 
 	"github.com/edulink-api/database/models"
 	"github.com/edulink-api/helper"
-	request "github.com/edulink-api/request/score"
 	"github.com/edulink-api/res"
 	"github.com/gin-gonic/gin"
 )
@@ -52,37 +51,14 @@ func GetAllScoringBySubjectClassName(c *gin.Context) {
 }
 
 func CreateStudentsScoringBySubjectClassName(c *gin.Context) {
-	var request request.InsertAllStudentScoreRequest
-	var allErrors []map[string]string
-
-	if err := res.ResponseMessage(c.ShouldBindJSON(&request)); len(err) > 0 {
-		allErrors = append(allErrors, err...)
-	}
-
-	// Validate the request
-	if err := request.ValidateAllStudentScore(); len(err) > 0 {
-		allErrors = append(allErrors, err...)
-	}
-
-	if len(allErrors) > 0 {
+	listScoring, allErrors, err := helper.GetListScoring(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	} else if len(allErrors) > 0 {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": allErrors,
 		})
-		return 
-	}
-
-	// Get parameters from the request
-	subjectID := c.Param("subject_id")
-	classNameID := c.Param("class_name_id")
-	userID, exist := c.Get("user_id")
-	if !exist {
-		c.JSON(http.StatusBadRequest, gin.H{"error": userIDNotFound})
-		return
-	}
-
-	listScoring, err := helper.GetListScoringCreateAndUpdate(subjectID, classNameID, userID, request)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -165,37 +141,14 @@ func GetSummariesScoringStudentBySubjectClassName(c *gin.Context) {
 }
 
 func UpdateScoringBySubjectClassName(c *gin.Context) {
-	var request request.InsertAllStudentScoreRequest
-	var allErrors []map[string]string
-
-	if err := res.ResponseMessage(c.ShouldBindJSON(&request)); len(err) > 0 {
-		allErrors = append(allErrors, err...)
-	}
-
-	// Validate the request
-	if err := request.ValidateAllStudentScore(); len(err) > 0 {
-		allErrors = append(allErrors, err...)
-	}
-
-	if len(allErrors) > 0 {
+	listScoring, allErrors, err := helper.GetListScoring(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	} else if len(allErrors) > 0 {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": allErrors,
 		})
-		return 
-	}
-
-	// Get parameters from the request
-	subjectID := c.Param("subject_id")
-	classNameID := c.Param("class_name_id")
-	userID, exist := c.Get("user_id")
-	if !exist {
-		c.JSON(http.StatusBadRequest, gin.H{"error": userIDNotFound})
-		return
-	}
-
-	listScoring, err := helper.GetListScoringCreateAndUpdate(subjectID, classNameID, userID, request)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 

@@ -98,8 +98,10 @@ func OnlyTeacher() gin.HandlerFunc {
 					UserID: claims.UserID,
 				},
 			)
+			fmt.Println("User type: ", userType)
 			for _, role := range userType {
-				if role == "homeroom_teacher" {
+				fmt.Println("Role: ", role)
+				if role == "teacher" || role == "homeroom_teacher" {
 					c.Next()
 					return
 				}

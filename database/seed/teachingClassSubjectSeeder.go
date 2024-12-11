@@ -34,6 +34,19 @@ func TeacherClassSubjectSeeder() (
 			TeacherSubjectID: 5,
 			ClassNameID:      5,
 		},
+		// Guru testadmin mengajar kelas 8 A, B, C mata pelajaran Science
+		{
+			TeacherSubjectID: 8,
+			ClassNameID:      5,
+		},
+		{
+			TeacherSubjectID: 8,
+			ClassNameID:      6,
+		},
+		{
+			TeacherSubjectID: 8,
+			ClassNameID:      7,
+		},
 	}
 
 	return teachingClassSubject

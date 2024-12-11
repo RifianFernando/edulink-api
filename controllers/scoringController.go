@@ -11,6 +11,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var (
+	userIDNotFound = "User ID not found"
+)
+
 func GetAllScoringBySubjectClassName(c *gin.Context) {
 	// Get parameters from the request
 	subjectID := c.Param("subject_id")
@@ -24,19 +28,16 @@ func GetAllScoringBySubjectClassName(c *gin.Context) {
 	// Get the scoring data from the model
 	userID, exist := c.Get("user_id")
 	if !exist {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "User ID not found"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": userIDNotFound})
 		return
 	}
 
-	// TODO: use this function in helper/teacherHelper to check is the teacher teaching the class and subject
-	// get teacher id
-	var teacher models.Teacher
-	teacher.UserID = userID.(int64)
-	err := teacher.GetTeacherByModel()
+	teacher, err := helper.IsTeachingClassSubjectExist(userID, subjectID, classNameID)
 	if err != nil || teacher.TeacherID == 0 {
 		res.AbortUnauthorized(c)
 		return
 	}
+
 	teacherID := strconv.FormatInt(teacher.TeacherID, 10)
 	result, err := models.GetAllScoringBySubjectClassID(subjectID, classNameID, teacherID)
 	if err != nil {
@@ -75,7 +76,7 @@ func CreateStudentsScoringBySubjectClassName(c *gin.Context) {
 	classNameID := c.Param("class_name_id")
 	userID, exist := c.Get("user_id")
 	if !exist {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "User ID not found"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": userIDNotFound})
 		return
 	}
 
@@ -188,7 +189,7 @@ func UpdateScoringBySubjectClassName(c *gin.Context) {
 	classNameID := c.Param("class_name_id")
 	userID, exist := c.Get("user_id")
 	if !exist {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "User ID not found"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": userIDNotFound})
 		return
 	}
 

@@ -188,6 +188,8 @@ func (teacher *Teacher) DeleteTeacherById() error {
 
 // var className []ClassNameModel
 type Output struct {
+	SubjectID   int    `json:"subject_id"`
+	ClassNameID int    `json:"class_name_id"`
 	Grade       string `json:"grade"`
 	Name        string `json:"name"`
 	SubjectName string `json:"subject_name"`
@@ -198,9 +200,11 @@ var output []Output
 func GetTeacherTeachingClassList(teacherID string) ([]Output, error) {
 	query := `
 	select 
+		s.subject_id,
+		cn.class_name_id,
 		g.grade ,
 		cn."name" ,
-		s.subject_name 
+		s.subject_name
 	from academic.teachers t 
 	join academic.teacher_subjects ts on t.teacher_id  = ts.teacher_id 
 	join academic.teaching_class_subjects tcs on ts.teacher_subject_id = tcs.teacher_subject_id 

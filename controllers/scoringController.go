@@ -180,6 +180,24 @@ func GetAllClassTeachingSubjectTeacher(c *gin.Context) {
 		return
 	}
 
+	type dtoClassList struct {
+		SubjectID      int    `json:"subject_id"`
+		ClassNameID    int    `json:"class_name_id"`
+		GradeClassName string `json:"grade_class_name"`
+		SubjectName    string `json:"subject_name"`
+	}
+
+	var classListDTO []dtoClassList
+
+	for _, class := range classList {
+		classListDTO = append(classListDTO, dtoClassList{
+			SubjectID:      class.SubjectID,
+			ClassNameID:    class.ClassNameID,
+			GradeClassName: class.Grade + class.Name,
+			SubjectName:    class.SubjectName,
+		})
+	}
+
 	// Send the result as a response
 	c.JSON(http.StatusOK, gin.H{"class-list": classList})
 }

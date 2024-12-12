@@ -11,19 +11,5 @@
             "source": "/(.*)",
             "destination": "/main.go"
         }
-    ],
-    "functions": {
-        "/controllers/studentController.go": {
-            "runtime": "@vercel/go",
-            "maxDuration": 50
-        },
-        "/database/models/studentModels.go": {
-            "runtime": "@vercel/go",
-            "maxDuration": 50
-        },
-        "/routes/route.go": {
-            "runtime": "@vercel/go",
-            "maxDuration": 50
-        }
-    }
+    ]
 }

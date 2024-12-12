@@ -79,7 +79,7 @@ func GetAllClass(c *gin.Context) {
 	var result []models.ClassNameModel
 	var err string
 	var ClassName models.ClassNameModel
-	if userType == "teacher" {
+	if userType == "teacher" || userType == "homeroom_teacher" {
 		uid := claims.UserID
 		ClassName.Teacher.UserID = uid
 	}

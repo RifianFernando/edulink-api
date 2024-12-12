@@ -60,7 +60,7 @@ func GetAllSubjectClassName(c *gin.Context) {
 	}
 	var subjectClassNameDTO []DTOAllSubjectsClassName
 
-	if userRole == "teacher" {
+	if userRole == "teacher" || userRole == "homeroom_teacher" {
 		// get teacher id
 		var teacher models.Teacher
 		teacher.UserID = userID.(int64)

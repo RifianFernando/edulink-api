@@ -164,3 +164,22 @@ func UpdateScoringBySubjectClassName(c *gin.Context) {
 		"scoring": listScoring,
 	})
 }
+
+func GetAllClassTeachingSubjectTeacher(c *gin.Context) {
+	// Get parameters from the request
+	userID, exist := c.Get("user_id")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"error": userIDNotFound})
+		return
+	}
+
+	userIDParsed := strconv.FormatInt(userID.(int64), 10)
+	classList, err := models.GetTeacherTeachingClassList(userIDParsed)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Send the result as a response
+	c.JSON(http.StatusOK, gin.H{"class-list": classList})
+}

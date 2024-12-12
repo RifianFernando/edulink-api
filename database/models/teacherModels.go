@@ -185,3 +185,35 @@ func (teacher *Teacher) DeleteTeacherById() error {
 
 	return nil
 }
+
+// var className []ClassNameModel
+type Output struct {
+	Grade       string `json:"grade"`
+	Name        string `json:"name"`
+	SubjectName string `json:"subject_name"`
+}
+
+var output []Output
+
+func GetTeacherTeachingClassList(teacherID string) ([]Output, error) {
+	query := `
+	select 
+		g.grade ,
+		cn."name" ,
+		s.subject_name 
+	from academic.teachers t 
+	join academic.teacher_subjects ts on t.teacher_id  = ts.teacher_id 
+	join academic.teaching_class_subjects tcs on ts.teacher_subject_id = tcs.teacher_subject_id 
+	join academic.class_names cn on tcs.class_name_id = cn.class_name_id 
+	join academic.grades g on cn.grade_id = g.grade_id 
+	join academic.subjects s on ts.subject_id = s.subject_id 
+	where t.teacher_id = ?`
+
+	result := connections.DB.Raw(query, teacherID).Scan(&output)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return output, nil
+}

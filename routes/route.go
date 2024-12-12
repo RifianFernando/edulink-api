@@ -95,6 +95,10 @@ func Route(router *gin.Engine) {
 			middleware.AlreadyLoggedIn(),
 			controllers.GetSummariesScoringStudentBySubjectClassName,
 		)
+		scoring.GET(
+			"/get-all-class-teaching-subject-teacher",
+			controllers.GetAllClassTeachingSubjectTeacher,
+		)
 	}
 	scoringOnlyTeacher := scoring.Group("/", middleware.OnlyTeacher())
 	{

@@ -199,5 +199,5 @@ func GetAllClassTeachingSubjectTeacher(c *gin.Context) {
 	}
 
 	// Send the result as a response
-	c.JSON(http.StatusOK, gin.H{"class-list": classList})
+	c.JSON(http.StatusOK, gin.H{"class_list": classListDTO})
 }

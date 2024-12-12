@@ -13,7 +13,7 @@
         }
     ],
     "functions": {
-        "main.go": {
+        "/(.*)": {
             "runtime": "@vercel/go",
             "maxDuration": 50
         }

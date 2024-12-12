@@ -59,9 +59,11 @@ func (class *ClassNameModel) GetAllClassName() (
 				classList = append(classList, v)
 			}
 		}
+		// return classess by teacher id
 		return classList, ""
 	}
 
+	// return all classess
 	return className, ""
 }
 

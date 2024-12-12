@@ -20,7 +20,7 @@ func GetHomeRoomTeacherByTeacherID(c *gin.Context) (string, time.Time, error) {
 		Date = time.Now()
 	}
 
-	if !user.ValidateUserRoleCtx(c, user.Admin) && user.ValidateUserRoleCtx(c, user.Staff) {
+	if !user.ValidateUserRoleCtx(c, user.Admin) && !user.ValidateUserRoleCtx(c, user.Staff) {
 		// check homeroom teacher class that he is assigned to
 		var teacher models.Teacher
 		teacher.UserID = userID.(int64)

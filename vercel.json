@@ -11,5 +11,10 @@
             "source": "/(.*)",
             "destination": "/main.go"
         }
-    ]
+    ],
+    "functions": {
+        "/(.*)": {
+            "maxDuration": 50
+        }
+    }
 }

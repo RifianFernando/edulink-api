@@ -38,7 +38,7 @@ func Login(c *gin.Context) {
 	}
 
 	// Generate access token and refresh token
-	accessToken, refreshToken, err := helper.GenerateToken(user, helper.GetUserTypeByPrivilege(user))
+	accessToken, refreshToken, err := helper.GenerateToken(user, userType)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error generating token"})
 		return

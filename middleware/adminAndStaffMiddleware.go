@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/edulink-api/database/models"
+	"github.com/edulink-api/database/user"
 	"github.com/edulink-api/helper"
 	"github.com/edulink-api/res"
 	"github.com/gin-gonic/gin"
@@ -19,9 +20,9 @@ func AdminStaffOnly() gin.HandlerFunc {
 			return
 		}
 
-		userTypeCtx, err := getUserTypeFromContext(c)
-		if err != nil || userTypeCtx == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		userTypeCtx := user.GetUserTypeFromCtx(c)
+		if userTypeCtx == nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "User type not found"})
 			c.Abort()
 			return
 		}
@@ -57,8 +58,23 @@ func AdminStaffOnly() gin.HandlerFunc {
 	}
 }
 
-func isAuthorizedUser(userType, userTypeCtx string) bool {
-	return (userType == "admin" || userTypeCtx == "admin") || (userType == "staff" || userTypeCtx == "staff")
+func isAuthorizedUser(userType []string, userTypeCtx []string) (isStaffAndAdmin bool) {
+	for _, role := range userType {
+		if role == user.Admin || role == user.Staff {
+			isStaffAndAdmin = true
+			break
+		}
+	}
+
+	for _, role := range userTypeCtx {
+		if role == user.Admin || role == user.Staff {
+			isStaffAndAdmin = true
+			break
+		}
+		isStaffAndAdmin = false
+	}
+	
+	return isStaffAndAdmin
 }
 
 func getUserIdFromContext(c *gin.Context, expectedUserId int64) (int64, error) {
@@ -77,7 +93,7 @@ func isAdminOrStaff(userId int64) bool {
 	)
 
 	for _, role := range userType {
-		if role == "admin" || role == "staff" {
+		if role == user.Admin || role == user.Staff {
 			return true
 		}
 	}

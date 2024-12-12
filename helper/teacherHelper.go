@@ -6,12 +6,11 @@ import (
 	"time"
 
 	"github.com/edulink-api/database/models"
+	"github.com/edulink-api/database/user"
 	"github.com/gin-gonic/gin"
 )
 
 func GetHomeRoomTeacherByTeacherID(c *gin.Context) (string, time.Time, error) {
-	// get user role
-	userRole, _ := c.Get("user_type")
 	userID, _ := c.Get("user_id")
 
 	Date, err := time.Parse("2006-01-02", c.Param("date"))
@@ -21,7 +20,7 @@ func GetHomeRoomTeacherByTeacherID(c *gin.Context) (string, time.Time, error) {
 		Date = time.Now()
 	}
 
-	if userRole != "admin" && userRole != "staff" {
+	if !user.ValidateUserRoleCtx(c, user.Admin) && user.ValidateUserRoleCtx(c, user.Staff) {
 		// check homeroom teacher class that he is assigned to
 		var teacher models.Teacher
 		teacher.UserID = userID.(int64)
@@ -65,7 +64,7 @@ func IsTeachingClassSubjectExist(userID any, subjectID string, classNameID strin
 		return teacher, fmt.Errorf("teacher not found")
 	}
 	teacherID := strconv.FormatInt(teacher.TeacherID, 10)
-	classNameIDParsed, err := strconv.ParseInt(classNameID, 10, 64)	
+	classNameIDParsed, err := strconv.ParseInt(classNameID, 10, 64)
 	if err != nil {
 		return teacher, fmt.Errorf("invalid class name id")
 	}

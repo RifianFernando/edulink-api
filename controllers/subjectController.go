@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/edulink-api/database/models"
+	"github.com/edulink-api/database/user"
 	"github.com/edulink-api/res"
 	"github.com/gin-gonic/gin"
 )
@@ -39,12 +40,6 @@ func GetAllSubject(c *gin.Context) {
 }
 
 func GetAllSubjectClassName(c *gin.Context) {
-	// get user role and id
-	userRole, exist := c.Get("user_type")
-	if !exist {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "User role found"})
-		return
-	}
 	userID, exist := c.Get("user_id")
 	if !exist {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "User ID not found"})
@@ -60,7 +55,7 @@ func GetAllSubjectClassName(c *gin.Context) {
 	}
 	var subjectClassNameDTO []DTOAllSubjectsClassName
 
-	if userRole == "teacher" || userRole == "homeroom_teacher" {
+	if user.ValidateUserRoleCtx(c, user.Teacher) || user.ValidateUserRoleCtx(c, user.HomeRoomTeacher) {
 		// get teacher id
 		var teacher models.Teacher
 		teacher.UserID = userID.(int64)

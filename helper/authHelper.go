@@ -3,6 +3,7 @@ package helper
 import (
 	"github.com/edulink-api/connections"
 	"github.com/edulink-api/database/models"
+	User "github.com/edulink-api/database/user"
 	"github.com/edulink-api/lib"
 )
 
@@ -41,7 +42,7 @@ func GetUserTypeByUID(user models.User) []string {
 	var roles []string
 
 	if admins.AdminID != 0 {
-		roles = append(roles, "admin")
+		roles = append(roles, User.Admin)
 	}
 
 	var staff models.Staff
@@ -50,31 +51,23 @@ func GetUserTypeByUID(user models.User) []string {
 	}).First(&staff)
 
 	if staff.StaffId != 0 {
-		roles = append(roles, "staff")
+		roles = append(roles, User.Staff)
 	}
 
 	var teachers models.Teacher
 	connections.DB.Where(models.Teacher{
 		UserID: user.UserID,
 	}).Find(&teachers)
-
 	if teachers.TeacherID != 0 {
-		roles = append(roles, "teacher")
-	}
-
-	// check if the user is a homeroom teacher
-	var className models.ClassName
-	className.TeacherID = teachers.TeacherID
-	classes, err := className.GetHomeRoomTeacherByTeacherID()
-	if err == nil && len(classes) > 0 {
-		// if the user is a homeroom teacher, add the role to the roles and remove the teacher role
-		for _, className := range roles {
-			if className == "teacher" {
-				roles = roles[:len(roles)-1]
-				break
-			}
+		// check if the user is a homeroom teacher
+		var className models.ClassName
+		className.TeacherID = teachers.TeacherID
+		classes, err := className.GetHomeRoomTeacherByTeacherID()
+		if err == nil && len(classes) > 0 {
+			roles = append(roles, User.HomeRoomTeacher)
+		} else {
+			roles = append(roles, User.Teacher)
 		}
-		roles = append(roles, "homeroom_teacher")
 	}
 
 	return roles
@@ -97,26 +90,4 @@ func UpdateUserPassword(user models.User) error {
 	}
 
 	return err
-}
-
-func GetUserTypeByPrivilege(user models.User) string {
-
-	var userType string
-	for _, userType = range GetUserTypeByUID(user) {
-		if userType == "admin" {
-			userType = "admin"
-			break
-		} else if userType == "staff" {
-			userType = "staff"
-			break
-		} else if userType == "homeroom_teacher" {
-			userType = "homeroom_teacher"
-			break
-		} else if userType == "teacher" {
-			userType = "teacher"
-			break
-		}
-	}
-
-	return userType
 }

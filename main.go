@@ -31,5 +31,8 @@ func main() {
 	r := routes.SetupRouter()
 
 	// Run the server
-	r.Run() // listen and serve on
+	err := r.Run() // listen and serve on
+	if err != nil {
+		lib.HandleError(err, "Failed to start server")
+	}
 }

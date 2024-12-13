@@ -3,7 +3,7 @@ name: Deploy CI/CD Pipeline
 on:
     push:
         branches:
-            - dev/web-feature
+            - deploy/aws-ec2
             - master
 
 jobs:

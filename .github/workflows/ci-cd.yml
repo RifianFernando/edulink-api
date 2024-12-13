@@ -46,7 +46,6 @@ jobs:
             - name: Push Docker Image to Docker Hub
               run: docker push rfjst4real/edulink-api:latest
     deploy:
-        if: false
         needs: build
         runs-on: self-hosted
         steps:

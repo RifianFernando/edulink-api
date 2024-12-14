@@ -138,11 +138,27 @@ func (student *Student) DeleteStudentById(id string) error {
 }
 
 func CreateAllStudents(students []Student) error {
+	tx := connections.DB.Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err := tx.Error; err != nil {
+		return err
+	}
+
 	result := connections.DB.Create(&students)
 	if result.Error != nil {
+		tx.Rollback()
 		return result.Error
 	}
-	return nil
+
+	return tx.Commit().Error
 }
 
 type UpdateManyStudentClass struct {

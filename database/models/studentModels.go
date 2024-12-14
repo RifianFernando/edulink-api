@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -190,57 +191,18 @@ type UpdateManyStudentClass struct {
 	ClassNameID int64 `json:"class_name_id" binding:"required" validate:"required,numeric,gte=1"`
 }
 
-// func UpdateManyStudentClassID(studentData []UpdateManyStudentClass) error {
-// 	tx := connections.DB.Begin()
-// 	if tx.Error != nil {
-// 		return tx.Error
-// 	}
-// 	defer func() {
-// 		if r := recover(); r != nil {
-// 			tx.Rollback()
-// 		}
-// 	}()
-
-// 	if err := tx.Error; err != nil {
-// 		return err
-// 	}
-
-// 	for _, data := range studentData {
-// 		result := tx.Model(&Student{
-// 			StudentID: data.StudentID,
-// 		}).Updates(Student{
-// 			ClassNameID: data.ClassNameID,
-// 		})
-// 		if result.Error != nil {
-// 			tx.Rollback()
-// 			return result.Error
-// 		}
-// 	}
-
-// 	return tx.Commit().Error
-// }
-
 func UpdateManyStudentClassID(studentData []UpdateManyStudentClass) error {
 	// Build the SQL query dynamically
-	query := "UPDATE students SET class_name_id = CASE student_id"
-	ids := make([]interface{}, 0, len(studentData))
+	query := "UPDATE academic.students SET class_name_id = CASE"
 
-	// Construct the CASE statements and collect IDs
+	var listStudentIDIn []int64
 	for _, data := range studentData {
-		query += " WHEN ? THEN ?"
-		ids = append(ids, data.StudentID, data.ClassNameID)
+		studentIDParsed := strconv.FormatInt(data.StudentID, 10)
+		query += fmt.Sprintf(" WHEN student_id = %s THEN %d", studentIDParsed, data.ClassNameID)
+		listStudentIDIn = append(listStudentIDIn, data.StudentID)
 	}
-	query += " END WHERE student_id IN ("
 
-	// Add placeholders for the WHERE clause
-	for i, data := range studentData {
-		if i > 0 {
-			query += ", "
-		}
-		query += "?"
-		ids = append(ids, data.StudentID)
-	}
-	query += ")"
+	query += " END WHERE student_id IN ?"
 
 	// Execute the query
 	tx := connections.DB.Begin()
@@ -248,7 +210,7 @@ func UpdateManyStudentClassID(studentData []UpdateManyStudentClass) error {
 		return tx.Error
 	}
 
-	if err := tx.Exec(query, ids...).Error; err != nil {
+	if err := tx.Exec(query, listStudentIDIn).Error; err != nil {
 		tx.Rollback()
 		return err
 	}

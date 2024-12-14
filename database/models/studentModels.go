@@ -190,31 +190,67 @@ type UpdateManyStudentClass struct {
 	ClassNameID int64 `json:"class_name_id" binding:"required" validate:"required,numeric,gte=1"`
 }
 
+// func UpdateManyStudentClassID(studentData []UpdateManyStudentClass) error {
+// 	tx := connections.DB.Begin()
+// 	if tx.Error != nil {
+// 		return tx.Error
+// 	}
+// 	defer func() {
+// 		if r := recover(); r != nil {
+// 			tx.Rollback()
+// 		}
+// 	}()
+
+// 	if err := tx.Error; err != nil {
+// 		return err
+// 	}
+
+// 	for _, data := range studentData {
+// 		result := tx.Model(&Student{
+// 			StudentID: data.StudentID,
+// 		}).Updates(Student{
+// 			ClassNameID: data.ClassNameID,
+// 		})
+// 		if result.Error != nil {
+// 			tx.Rollback()
+// 			return result.Error
+// 		}
+// 	}
+
+// 	return tx.Commit().Error
+// }
+
 func UpdateManyStudentClassID(studentData []UpdateManyStudentClass) error {
+	// Build the SQL query dynamically
+	query := "UPDATE students SET class_name_id = CASE student_id"
+	ids := make([]interface{}, 0, len(studentData))
+
+	// Construct the CASE statements and collect IDs
+	for _, data := range studentData {
+		query += " WHEN ? THEN ?"
+		ids = append(ids, data.StudentID, data.ClassNameID)
+	}
+	query += " END WHERE student_id IN ("
+
+	// Add placeholders for the WHERE clause
+	for i, data := range studentData {
+		if i > 0 {
+			query += ", "
+		}
+		query += "?"
+		ids = append(ids, data.StudentID)
+	}
+	query += ")"
+
+	// Execute the query
 	tx := connections.DB.Begin()
 	if tx.Error != nil {
 		return tx.Error
 	}
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-		}
-	}()
 
-	if err := tx.Error; err != nil {
+	if err := tx.Exec(query, ids...).Error; err != nil {
+		tx.Rollback()
 		return err
-	}
-
-	for _, data := range studentData {
-		result := tx.Model(&Student{
-			StudentID: data.StudentID,
-		}).Updates(Student{
-			ClassNameID: data.ClassNameID,
-		})
-		if result.Error != nil {
-			tx.Rollback()
-			return result.Error
-		}
 	}
 
 	return tx.Commit().Error

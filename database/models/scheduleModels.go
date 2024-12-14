@@ -13,7 +13,6 @@ type Schedule struct {
 	ScheduleID       int64 `gorm:"primaryKey;autoIncrement"`
 	DayScheduleID    int64 `json:"day_schedule_id" binding:"required" validate:"required"`
 	HourScheduleID   int64 `json:"hour_schedule_id" binding:"required" validate:"required"`
-	AcademicYearID   int64 `json:"academic_year_id" binding:"required" validate:"required"`
 	LearningSchedule []LearningSchedule
 	lib.BaseModel
 }

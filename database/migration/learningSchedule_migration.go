@@ -8,8 +8,8 @@ import "github.com/edulink-api/database/migration/lib"
 * https://gorm.io/docs/models.html#Fields-Tags
  */
 type LearningSchedule struct {
-	ScheduleID             int64 `gorm:"not null"`
-	TeachingClassSubjectID int64 `gorm:"not null"`
+	ScheduleID             int64 `gorm:"not null;uniqueIndex:unique_learning_schedule"`
+	TeachingClassSubjectID int64 `gorm:"not null;uniqueIndex:unique_learning_schedule"`
 	lib.BaseModel                /* this type include CreatedAt, UpdatedAt, DeletedAt, I can't use the gorm.models because can't customize the id name */
 }
 

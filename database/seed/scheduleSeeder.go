@@ -9,14 +9,13 @@ func ScheduleSeeder() (Schedule []models.Schedule) {
 	var DayScheduleID int64 = 0
 	var HourScheduleID int64 = 1
 	for i := 0; i < 70; i++ {
-		if i % 10 == 0 {
+		if i%10 == 0 {
 			DayScheduleID++
 			HourScheduleID = 1
 		}
 		Schedule = append(Schedule, models.Schedule{
-			DayScheduleID: DayScheduleID,
+			DayScheduleID:  DayScheduleID,
 			HourScheduleID: HourScheduleID,
-			AcademicYearID: 1,
 		})
 		HourScheduleID++
 	}

@@ -11,6 +11,7 @@ type TeachingClassSubject struct {
 	TeachingClassSubjectID int64 `gorm:"primaryKey;autoIncrement"` /* this is the same as `gorm:"primary_key;auto_increment"` */
 	TeacherSubjectID       int64 `gorm:"not null;uniqueIndex:unique_teaching_class_subject"`
 	ClassNameID            int64 `gorm:"not null;uniqueIndex:unique_teaching_class_subject"`
+	AcademicYearID         int64 `gorm:"not null"`
 	lib.BaseModel                /* this type include CreatedAt, UpdatedAt, DeletedAt, I can't use the gorm.models because can't customize the id name */
 }
 

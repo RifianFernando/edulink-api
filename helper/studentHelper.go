@@ -29,14 +29,16 @@ func PrepareStudents(requestedStudents []request.InsertStudentRequest, c *gin.Co
 			return nil, err
 		}
 
-		if err := checkStudentExistence(student, index); err != nil {
-			return nil, err
-		}
+		// make the server load is heavy should not check the existence of the student one by one but create a query to check all the existence at once
+		// if err := checkStudentExistence(student, index); err != nil {
+		// 	return nil, err
+		// }
 
-		classIDStr := strconv.FormatInt(student.ClassNameID, 10)
-		if err := checkClassExistence(classIDStr, index); err != nil {
-			return nil, err
-		}
+		// this make server load heavy too
+		// classIDStr := strconv.FormatInt(student.ClassNameID, 10)
+		// if err := checkClassExistence(classIDStr, index); err != nil {
+		// 	return nil, err
+		// }
 
 		// Add the validated student to the slice
 		students = append(students, models.Student{
@@ -65,7 +67,7 @@ func PrepareStudents(requestedStudents []request.InsertStudentRequest, c *gin.Co
 }
 
 func customErrorForDuplicate(property string, atribute string, index int) string {
-	return "Duplicate " + property + ": " + atribute + " on index: " + strconv.Itoa(index)
+	return "Duplicate " + property + ": " + atribute + " on index: " + strconv.Itoa(index + 1)
 }
 
 func checkForDuplicates(student request.InsertStudentRequest, index int, nameMap, nisnMap, numPhoneMap, emailMap map[string]bool) error {
@@ -121,8 +123,9 @@ func checkStudentExistence(student request.InsertStudentRequest, index int) erro
 	for _, criteria := range searchCriteria {
 		var studentSearch = models.Student{}
 		switch criteria.field {
-		case "name":
-			studentSearch.StudentName = criteria.value
+		// student name can be duplicate
+		// case "name":
+		// 	studentSearch.StudentName = criteria.value
 		case "NISN":
 			studentSearch.StudentNISN = criteria.value
 		case "number phone":

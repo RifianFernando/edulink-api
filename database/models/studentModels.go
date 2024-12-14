@@ -1,10 +1,13 @@
 package models
 
 import (
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/edulink-api/connections"
 	"github.com/edulink-api/database/migration/lib"
+	"github.com/jackc/pgx/v5/pgconn"
 	"gorm.io/gorm"
 )
 
@@ -137,12 +140,49 @@ func (student *Student) DeleteStudentById(id string) error {
 	return nil
 }
 
+// CreateAllStudents inserts multiple students and handles unique constraint violations.
 func CreateAllStudents(students []Student) error {
-	result := connections.DB.Create(&students)
-	if result.Error != nil {
-		return result.Error
+	// Start the transaction
+	tx := connections.DB.Begin()
+	if tx.Error != nil {
+		return tx.Error
 	}
-	return nil
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	// Create students within the transaction
+	for _, student := range students {
+		result := tx.Create(&student)
+		if result.Error != nil {
+			var err error
+			// Check if the error contains a constraint violation message
+			if pgErr, ok := result.Error.(*pgconn.PgError); ok {
+				if pgErr.Code == "23505" {
+					if strings.Contains(pgErr.ConstraintName, "nisn") {
+						err = fmt.Errorf("student with NISN %s already exists", student.StudentNISN)
+					} else if strings.Contains(pgErr.ConstraintName, "phone") {
+						err = fmt.Errorf("student with phone number %s already exists", student.StudentPhoneNumber)
+					} else if strings.Contains(pgErr.ConstraintName, "email") {
+						err = fmt.Errorf("student with email %s already exists", student.StudentEmail)
+					} else {
+						err = result.Error
+					}
+				}
+			} else {
+				err = result.Error
+			}
+
+			// Rollback on any error
+			tx.Rollback()
+			return err
+		}
+	}
+
+	// If everything is successful, commit the transaction
+	return tx.Commit().Error
 }
 
 type UpdateManyStudentClass struct {

@@ -29,14 +29,16 @@ func PrepareStudents(requestedStudents []request.InsertStudentRequest, c *gin.Co
 			return nil, err
 		}
 
-		if err := checkStudentExistence(student, index); err != nil {
-			return nil, err
-		}
+		// make the server load is heavy should not check the existence of the student one by one but create a query to check all the existence at once
+		// if err := checkStudentExistence(student, index); err != nil {
+		// 	return nil, err
+		// }
 
-		classIDStr := strconv.FormatInt(student.ClassNameID, 10)
-		if err := checkClassExistence(classIDStr, index); err != nil {
-			return nil, err
-		}
+		// this make server load heavy too
+		// classIDStr := strconv.FormatInt(student.ClassNameID, 10)
+		// if err := checkClassExistence(classIDStr, index); err != nil {
+		// 	return nil, err
+		// }
 
 		// Add the validated student to the slice
 		students = append(students, models.Student{
@@ -65,7 +67,7 @@ func PrepareStudents(requestedStudents []request.InsertStudentRequest, c *gin.Co
 }
 
 func customErrorForDuplicate(property string, atribute string, index int) string {
-	return "Duplicate " + property + ": " + atribute + " on index: " + strconv.Itoa(index)
+	return "Duplicate " + property + ": " + atribute + " on index: " + strconv.Itoa(index + 1)
 }
 
 func checkForDuplicates(student request.InsertStudentRequest, index int, nameMap, nisnMap, numPhoneMap, emailMap map[string]bool) error {
@@ -107,51 +109,52 @@ func parseStudentDates(student request.InsertStudentRequest, index int) (parsedD
 	return parsedDates, nil
 }
 
-func checkStudentExistence(student request.InsertStudentRequest, index int) error {
-	searchCriteria := []struct {
-		value string
-		field string
-	}{
-		{student.StudentName, "name"},
-		{student.StudentNISN, "NISN"},
-		{student.StudentPhoneNumber, "number phone"},
-		{student.StudentEmail, "email"},
-	}
+// func checkStudentExistence(student request.InsertStudentRequest, index int) error {
+// 	searchCriteria := []struct {
+// 		value string
+// 		field string
+// 	}{
+// 		{student.StudentName, "name"},
+// 		{student.StudentNISN, "NISN"},
+// 		{student.StudentPhoneNumber, "number phone"},
+// 		{student.StudentEmail, "email"},
+// 	}
 
-	for _, criteria := range searchCriteria {
-		var studentSearch = models.Student{}
-		switch criteria.field {
-		case "name":
-			studentSearch.StudentName = criteria.value
-		case "NISN":
-			studentSearch.StudentNISN = criteria.value
-		case "number phone":
-			studentSearch.StudentPhoneNumber = criteria.value
-		case "email":
-			studentSearch.StudentEmail = criteria.value
-		}
+// 	for _, criteria := range searchCriteria {
+// 		var studentSearch = models.Student{}
+// 		switch criteria.field {
+// 		// student name can be duplicate
+// 		// case "name":
+// 		// 	studentSearch.StudentName = criteria.value
+// 		case "NISN":
+// 			studentSearch.StudentNISN = criteria.value
+// 		case "number phone":
+// 			studentSearch.StudentPhoneNumber = criteria.value
+// 		case "email":
+// 			studentSearch.StudentEmail = criteria.value
+// 		}
 
-		result, err := studentSearch.GetStudent()
-		if err != nil {
-			return err
-		}
+// 		result, err := studentSearch.GetStudent()
+// 		if err != nil {
+// 			return err
+// 		}
 
-		if result.StudentID != 0 || result.ClassNameID != 0 {
-			return errors.New("Student " + criteria.field + ": " + criteria.value + " already exist on index: " + strconv.Itoa(index))
-		}
-	}
+// 		if result.StudentID != 0 || result.ClassNameID != 0 {
+// 			return errors.New("Student " + criteria.field + ": " + criteria.value + " already exist on index: " + strconv.Itoa(index))
+// 		}
+// 	}
 
-	return nil
-}
+// 	return nil
+// }
 
-func checkClassExistence(classID string, index int) error {
-	var class models.ClassName
-	resultClass, err := class.GetClassNameById(classID)
-	if err != nil {
-		return err
-	}
-	if resultClass.ClassNameID == 0 {
-		return errors.New("Class with id: " + classID + " doesn't exist on index: " + strconv.Itoa(index))
-	}
-	return nil
-}
+// func checkClassExistence(classID string, index int) error {
+// 	var class models.ClassName
+// 	resultClass, err := class.GetClassNameById(classID)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	if resultClass.ClassNameID == 0 {
+// 		return errors.New("Class with id: " + classID + " doesn't exist on index: " + strconv.Itoa(index))
+// 	}
+// 	return nil
+// }

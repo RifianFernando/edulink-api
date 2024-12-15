@@ -60,4 +60,4 @@ jobs:
               run: docker rm -f edulink-api-container
 
             - name: Run docker container
-              run: docker run -d -p 8000:8000 --name edulink-api-container rfjst4real/edulink-api:latest
+              run: docker run -d -p 443:443 --name edulink-api-container rfjst4real/edulink-api:latest

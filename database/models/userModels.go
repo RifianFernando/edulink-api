@@ -1,6 +1,8 @@
 package models
 
 import (
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/edulink-api/connections"
@@ -39,6 +41,9 @@ func (user *User) GetUser() (User, error) {
 func (user *User) CreateUser() error {
 	result := connections.DB.Create(&user)
 	if result.Error != nil {
+		if strings.Contains(result.Error.Error(), "duplicate key") {
+			return fmt.Errorf("user already exist")
+		}
 		return result.Error
 	}
 	return nil

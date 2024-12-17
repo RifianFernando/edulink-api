@@ -6,6 +6,7 @@ import (
 	"github.com/edulink-api/database/models"
 	"github.com/edulink-api/database/user"
 	"github.com/edulink-api/helper"
+	"github.com/edulink-api/res"
 	"github.com/gin-gonic/gin"
 )
 
@@ -46,8 +47,7 @@ func AdminOnly() gin.HandlerFunc {
 			UserID: userId.(int64),
 		}
 		if err := admin.GetAdminByUserID(); err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Admin not found"})
-			c.Abort()
+			res.AbortUnauthorized(c)
 			return
 		}
 

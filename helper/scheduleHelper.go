@@ -26,22 +26,23 @@ func GenerateAndCreateScheduleTeachingClassSubject(req req.InsertScheduleRequest
 	queryUpdateTeacherTeachingHour := "UPDATE academic.teachers SET teaching_hour = CASE"
 
 	// create teacher subject with upsert method sql query
-	queryUpsertTeacherSubject := "INSERT INTO academic.teacher_subjects (teacher_id, subject_id) VALUES "
+	// queryUpsertTeacherSubject := "INSERT INTO academic.teacher_subjects (teacher_id, subject_id) VALUES "
 	for _, teacher := range req.ScheduleRequest {
 		teacherIDParsed := strconv.FormatInt(teacher.TeacherID, 10)
 		queryUpdateTeacherTeachingHour += fmt.Sprintf(" WHEN teacher_id = %s THEN %d", teacherIDParsed, teacher.TeachingHour)
 		listTeacherIDIn = append(listTeacherIDIn, teacher.TeacherID)
 
-		for idx, SubjectID := range teacher.SubjectID {
-			queryUpsertTeacherSubject += fmt.Sprintf("(%d, %d)", teacher.TeacherID, SubjectID)
-			if idx != len(teacher.SubjectID)-1 {
-				queryUpsertTeacherSubject += ", "
-			}
-		}
+		// for idx, SubjectID := range teacher.SubjectID {
+		// 	queryUpsertTeacherSubject += fmt.Sprintf("(%d, %d)", teacher.TeacherID, SubjectID)
+		// 	if idx != len(teacher.SubjectID)-1 {
+		// 		queryUpsertTeacherSubject += ", "
+		// 	}
+		// }
 	}
 	// execute update teacher teaching hour and upsert teacher subject
 	queryUpdateTeacherTeachingHour += " END WHERE teacher_id IN ?"
-	queryUpsertTeacherSubject += " ON CONFLICT (teacher_id, subject_id) DO NOTHING"
+	// TODO: after refactoring table teacher_subjects, this query should be used
+	// queryUpsertTeacherSubject += " ON CONFLICT (teacher_id, subject_id) DO NOTHING"
 
 	if err := tx.Exec(queryUpdateTeacherTeachingHour, listTeacherIDIn).Error; err != nil {
 		tx.Rollback()

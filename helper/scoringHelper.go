@@ -97,6 +97,11 @@ func GetListScoringCreateAndUpdate(
 		return nil, err
 	}
 
+	parsedClassNameID, err := strconv.ParseInt(classNameID, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+
 	// create scoring
 	var listScoring []models.Score
 	for _, item := range request.InsertStudentRequest {
@@ -104,6 +109,7 @@ func GetListScoringCreateAndUpdate(
 			StudentID:      item.StudentID,
 			AssignmentID:   request.AssignmentID,
 			TeacherID:      teacher.TeacherID,
+			ClassNameID:    parsedClassNameID,
 			SubjectID:      parsedSubjectID,
 			AcademicYearID: academicYear.AcademicYearID,
 			Score:          item.Score,
@@ -131,7 +137,7 @@ func GetListScoring(c *gin.Context) (
 	}
 
 	if len(allErrors) > 0 {
-		return []models.Score{}, allErrors, nil 
+		return []models.Score{}, allErrors, nil
 	}
 
 	// Get parameters from the request
@@ -139,7 +145,7 @@ func GetListScoring(c *gin.Context) (
 	classNameID := c.Param("class_name_id")
 	userID, exist := c.Get("user_id")
 	if !exist {
-		return []models.Score{}, nil, fmt.Errorf("user id not found") 
+		return []models.Score{}, nil, fmt.Errorf("user id not found")
 	}
 
 	listScoring, err = GetListScoringCreateAndUpdate(subjectID, classNameID, userID, request)

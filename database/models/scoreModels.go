@@ -13,6 +13,7 @@ type Score struct {
 	StudentID      int64 `json:"student_id" binding:"required"`
 	AssignmentID   int64 `json:"assignment_id" binding:"required"`
 	TeacherID      int64 `json:"teacher_id" binding:"required"`
+	ClassNameID    int64 `json:"class_name_id" binding:"required"`
 	SubjectID      int64 `json:"subject_id" binding:"required"`
 	AcademicYearID int64 `json:"academic_year_id" binding:"required"`
 	Score          int   `json:"score" binding:"required"`

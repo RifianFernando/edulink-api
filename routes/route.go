@@ -93,7 +93,7 @@ func Route(router *gin.Engine) {
 	subject := apiV1.Group("/subject", middleware.AlreadyLoggedIn())
 	{
 		subject.GET("", middleware.AdminOnly(), controllers.GetAllSubject)
-		subject.GET("/class", controllers.GetAllSubjectClassName)
+		// subject.GET("/class", controllers.GetAllSubjectClassName)
 		subject.GET("/:subject_id/:class_id", controllers.GetSubjectClassNameStudentsByID)
 	}
 

@@ -7,6 +7,7 @@ import (
 	"github.com/edulink-api/connections"
 	"github.com/edulink-api/database/migration/lib"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type Teacher struct {
@@ -156,17 +157,20 @@ func (teacher *TeacherModel) UpdateTeacherById(teacherData *TeacherModel) error 
 		return fmt.Errorf("user not found")
 	}
 
-	result = tx.Unscoped().Where("teacher_id = ?", teacher.TeacherID).Delete(&TeacherSubject{})
+	// TODO: disable teacher subject update while teaching_class_subjects is assigned to teacher
+	// delete teacher subject
+	result = tx.Where("teacher_id = ?", teacherData.TeacherID).Delete(&TeacherSubject{})
 	if result.Error != nil {
 		tx.Rollback()
 		return result.Error
-	} else if result.RowsAffected == 0 {
-		tx.Rollback()
-		return fmt.Errorf("teacher subject not found")
 	}
 
+	// upsert teacher subject if found deleted at will null or restored
 	for _, teacherSubject := range teacherData.TeacherSubject {
-		result = tx.Create(&teacherSubject)
+		result = tx.Clauses(clause.OnConflict{
+			Columns:   []clause.Column{{Name: "teacher_id"}, {Name: "subject_id"}},
+			DoUpdates: clause.AssignmentColumns([]string{"deleted_at"}),
+		}).Create(&teacherSubject)
 		if result.Error != nil {
 			tx.Rollback()
 			return result.Error

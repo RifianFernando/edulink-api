@@ -5,8 +5,6 @@ import (
 	"strconv"
 
 	"github.com/edulink-api/database/models"
-	"github.com/edulink-api/database/user"
-	"github.com/edulink-api/res"
 	"github.com/gin-gonic/gin"
 )
 
@@ -14,12 +12,11 @@ func GetAllSubject(c *gin.Context) {
 	// Get all subjects
 	type DTOAllSubjects struct {
 		SubjectID          int64  `json:"subject_id"`
-		Grade              int    `json:"grade"`
 		SubjectName        string `json:"subject_name"`
 		DurationPerSession int    `json:"subject_duration_session"`
 		DurationPerWeek    int    `json:"subject_duration_per_week"`
 	}
-	var subject models.SubjectModel
+	var subject models.Subject
 	subjects, err := subject.GetAllSubjects()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -31,7 +28,6 @@ func GetAllSubject(c *gin.Context) {
 	for _, subject := range subjects {
 		subjectsDTO = append(subjectsDTO, DTOAllSubjects{
 			SubjectID:          subject.SubjectID,
-			Grade:              subject.Grade.Grade,
 			SubjectName:        subject.SubjectName,
 			DurationPerSession: subject.DurationPerSession,
 			DurationPerWeek:    subject.DurationPerWeek,
@@ -39,80 +35,6 @@ func GetAllSubject(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"subjects": subjectsDTO})
-}
-
-func GetAllSubjectClassName(c *gin.Context) {
-	userID, exist := c.Get("user_id")
-	if !exist {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "User ID not found"})
-		return
-	}
-
-	// Get all subjects
-	type DTOAllSubjectsClassName struct {
-		SubjectID      int64  `json:"subject_id"`
-		ClassNameID    int64  `json:"class_name_id"`
-		GradeClassName string `json:"grade_class_name"`
-		SubjectName    string `json:"subject_name"`
-	}
-	var subjectClassNameDTO []DTOAllSubjectsClassName
-
-	if user.ValidateUserRoleCtx(c, user.Teacher) || user.ValidateUserRoleCtx(c, user.HomeRoomTeacher) {
-		// get teacher id
-		var teacher models.Teacher
-		teacher.UserID = userID.(int64)
-		err := teacher.GetTeacherByModel()
-		if err != nil || teacher.TeacherID == 0 {
-			res.AbortUnauthorized(c)
-			return
-		}
-
-		var teacherSubject models.TeacherSubjectGrade
-		teacherSubject.TeacherID = teacher.TeacherID
-		result, err := teacherSubject.GetTeachingSubjectByID()
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		}
-		for _, subject := range result {
-			for _, subjectDetail := range subject.TeachingClassSubject {
-				var className models.ClassName
-				classNameID := strconv.FormatInt(subjectDetail.ClassNameID, 10)
-				classResult, err := className.GetClassNameById(classNameID)
-				if err != nil {
-					res.AbortUnauthorized(c)
-					return
-				}
-				var gradeClassName = strconv.FormatInt(int64(subject.Subject.Grade.Grade), 10) + "-" + classResult.Name
-				subjectClassNameDTO = append(subjectClassNameDTO, DTOAllSubjectsClassName{
-					SubjectID:      subject.SubjectID,
-					ClassNameID:    subjectDetail.ClassNameID,
-					GradeClassName: gradeClassName,
-					SubjectName:    subject.Subject.SubjectName,
-				})
-			}
-		}
-
-		c.JSON(http.StatusOK, gin.H{"subjects": subjectClassNameDTO})
-		return
-	}
-
-	// Map the subjects to DTO
-	result, err := models.GetAllSubjectsClassName()
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	for _, subject := range result {
-		var gradeClassName = strconv.FormatInt(int64(subject.Grade), 10) + subject.Name
-		subjectClassNameDTO = append(subjectClassNameDTO, DTOAllSubjectsClassName{
-			SubjectID:      subject.SubjectID,
-			ClassNameID:    subject.ClassNameID,
-			GradeClassName: gradeClassName,
-			SubjectName:    subject.SubjectName,
-		})
-	}
-
-	c.JSON(http.StatusOK, gin.H{"subjects": subjectClassNameDTO})
 }
 
 func GetSubjectClassNameStudentsByID(c *gin.Context) {
@@ -124,7 +46,7 @@ func GetSubjectClassNameStudentsByID(c *gin.Context) {
 	}
 
 	// Get the subject
-	var subject models.SubjectModel
+	var subject models.Subject
 	subjectResult, err := subject.GetSubjectByID(subjectID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -137,9 +59,9 @@ func GetSubjectClassNameStudentsByID(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Class name ID is required"})
 		return
 	}
-	var className models.ClassName
-	classNameResult, err := className.GetClassNameById(classNameID)
-	if err != nil {
+	var className models.ClassNameModel
+	err = className.GetClassNameModelByID(classNameID)
+	if err != nil || className.ClassNameID == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -160,7 +82,7 @@ func GetSubjectClassNameStudentsByID(c *gin.Context) {
 	}
 
 	subjectClassNameDTO := DTOSubjectClassName{
-		GradeClassName: strconv.FormatInt(int64(subjectResult.Grade.Grade), 10) + "-" + classNameResult.Name,
+		GradeClassName: strconv.FormatInt(int64(className.Grade.Grade), 10) + "-" + className.Name,
 		SubjectName:    subjectResult.SubjectName,
 		Students:       resultStudents,
 	}

@@ -33,7 +33,7 @@ func SubjectSeeder() (subjects []models.Subject) {
 		},
 		// 5
 		{
-			SubjectName:        "Science",
+			SubjectName:        "Sosiology",
 			DurationPerSession: 60 * 4,
 			DurationPerWeek:    60 * 4 * 2,
 		},

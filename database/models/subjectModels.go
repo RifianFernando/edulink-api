@@ -10,7 +10,6 @@ import (
 
 type Subject struct {
 	SubjectID          int64  `gorm:"primaryKey"`
-	GradeID            int64  `json:"id_grade" binding:"required"`
 	SubjectName        string `json:"name" binding:"required"`
 	DurationPerSession int    `json:"duration_session" binding:"required" validate:"gte=0"`
 	DurationPerWeek    int    `json:"duration_week" binding:"required" validate:"gte=0"`

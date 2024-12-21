@@ -104,7 +104,7 @@ func GetListScoringCreateAndUpdate(
 
 	// create scoring
 	var listScoring []models.Score
-	for _, item := range request.InsertStudentRequest {
+	for _, item := range request.InsertStudentScoreRequest {
 		scoring := models.Score{
 			StudentID:      item.StudentID,
 			AssignmentID:   request.AssignmentID,

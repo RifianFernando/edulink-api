@@ -61,7 +61,7 @@ func GetSubjectClassNameStudentsByID(c *gin.Context) {
 	}
 	var className models.ClassNameModel
 	err = className.GetClassNameModelByID(classNameID)
-	if err != nil || className.ClassNameID == 0 {
+	if err != nil || className.ClassNameID == 0 || className.Grade.Grade == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}

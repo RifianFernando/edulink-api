@@ -116,6 +116,10 @@ func Route(router *gin.Engine) {
 		scoringOnlyTeacher.POST(CRUDScoring, controllers.CreateStudentsScoringBySubjectClassName)
 		scoringOnlyTeacher.GET(CRUDScoring, controllers.GetAllScoringBySubjectClassName)
 		scoring.PUT(CRUDScoring, controllers.UpdateScoringBySubjectClassName)
+
+		// scoring get specific student scoring by subject class name id
+		scoringOnlyTeacher.GET("/student/:student_id/:subject_id/:class_name_id", controllers.GetStudentScoresByStudentSubjectClassID)
+		scoringOnlyTeacher.PUT("/student/:student_id/:subject_id/:class_name_id", controllers.UpdateStudentScoresByStudentSubjectClassID)
 	}
 
 	// assignment

@@ -32,7 +32,7 @@ func (subject *Subject) GetAllSubjects() (subjects []Subject, err error) {
 }
 
 func (subject *Subject) GetSubjectByID(subjectID string) (Subject, error) {
-	result := connections.DB.Preload("Grade").Where("subject_id = ?", subjectID).First(&subject)
+	result := connections.DB.Where("subject_id = ?", subjectID).First(&subject)
 
 	if result.Error != nil {
 		if result.Error == gorm.ErrRecordNotFound {

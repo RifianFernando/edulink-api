@@ -2,6 +2,7 @@ package helper
 
 import (
 	"bytes"
+	"fmt"
 	"html/template"
 	"os"
 	"strconv"
@@ -38,7 +39,7 @@ func SendResetTokenEmail(email string, userName string, resetTokenLink string) e
 
 	EmailPort, err := strconv.ParseInt(os.Getenv("MAIL_PORT"), 10, 64)
 	if err != nil {
-		return err
+		return fmt.Errorf("error parsing email port: %v", err)
 	}
 
 	dialer := gomail.NewDialer(

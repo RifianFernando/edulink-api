@@ -22,8 +22,9 @@ type Score struct {
 
 type ScoreModel struct {
 	Score
-	Student Student `gorm:"foreignKey:StudentID;references:StudentID"`
-	Subject Subject `gorm:"foreignKey:SubjectID;references:SubjectID"`
+	Student    Student    `gorm:"foreignKey:StudentID;references:StudentID"`
+	Subject    Subject    `gorm:"foreignKey:SubjectID;references:SubjectID"`
+	Assignment Assignment `gorm:"foreignKey:AssignmentID;references:AssignmentID"`
 }
 
 func (Score) TableName() string {
@@ -146,4 +147,20 @@ func UpdateScoringBySubjectClassName(data []Score) error {
 	}
 
 	return tx.Commit().Error
+}
+
+func (score *ScoreModel) GetStudentScoresAndTypeByStudentSubjectClassID() (scores []ScoreModel, err error) {
+	result := connections.DB.Where("student_id = ? AND subject_id = ? AND class_name_id = ?", score.StudentID, score.SubjectID, score.ClassNameID).
+		Preload("Student").
+		Preload("Subject").
+		Preload("Assignment").
+		Find(&scores)
+
+	if result.Error != nil {
+		return []ScoreModel{}, result.Error
+	} else if result.RowsAffected == 0 {
+		return []ScoreModel{}, fmt.Errorf("no scores found")
+	}
+
+	return scores, nil
 }

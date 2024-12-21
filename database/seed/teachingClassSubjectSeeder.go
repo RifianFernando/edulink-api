@@ -39,19 +39,19 @@ func TeacherClassSubjectSeeder() (
 			ClassNameID:      5,
 			AcademicYearID:   1,
 		},
-		// Guru testadmin mengajar kelas 8 A mata pelajaran Science
+		// Guru testadmin mengajar kelas 8 A mata pelajaran sosiology
 		{
 			TeacherSubjectID: 8,
 			ClassNameID:      5,
 			AcademicYearID:   1,
 		},
-		// Guru testadmin mengajar kelas 8 B mata pelajaran Science
+		// Guru testadmin mengajar kelas 8 B mata pelajaran sosiology
 		{
 			TeacherSubjectID: 8,
 			ClassNameID:      6,
 			AcademicYearID:   1,
 		},
-		// Guru testadmin mengajar kelas 8 C mata pelajaran Science
+		// Guru testadmin mengajar kelas 8 C mata pelajaran sosiology
 		{
 			TeacherSubjectID: 8,
 			ClassNameID:      7,

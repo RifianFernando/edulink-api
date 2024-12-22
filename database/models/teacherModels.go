@@ -157,7 +157,6 @@ func (teacher *TeacherModel) UpdateTeacherById(teacherData *TeacherModel) error 
 		return fmt.Errorf("user not found")
 	}
 
-	// TODO: disable teacher subject update while teaching_class_subjects is assigned to teacher
 	// delete teacher subject
 	result = tx.Where("teacher_id = ?", teacherData.TeacherID).Delete(&TeacherSubject{})
 	if result.Error != nil {

@@ -150,7 +150,7 @@ func UpdateScoringBySubjectClassName(data []Score) error {
 }
 
 func (score *ScoreModel) GetStudentScoresAndTypeByStudentSubjectClassID() (scores []ScoreModel, err error) {
-	result := connections.DB.Where("student_id = ? AND subject_id = ? AND class_name_id = ?", score.StudentID, score.SubjectID, score.ClassNameID).
+	result := connections.DB.Where("student_id = ? AND subject_id = ? AND class_name_id = ? AND teacher_id = ?", score.StudentID, score.SubjectID, score.ClassNameID, score.TeacherID).
 		Preload("Student").
 		Preload("Subject").
 		Preload("Assignment").
@@ -163,4 +163,35 @@ func (score *ScoreModel) GetStudentScoresAndTypeByStudentSubjectClassID() (score
 	}
 
 	return scores, nil
+}
+
+func UpdateStudentScoreAndTypeByStudentSubjectClassID(score []Score) error {
+	// Begin transaction
+	tx := connections.DB.Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err := tx.Error; err != nil {
+		return err
+	}
+
+	for _, item := range score {
+		result := tx.Model(&Score{}).Where(
+			"student_id = ? AND subject_id = ? AND class_name_id = ? AND teacher_id = ? AND assignment_id = ?", item.StudentID, item.SubjectID, item.ClassNameID, item.TeacherID, item.AssignmentID,
+		).Updates(&Score{
+			Score: item.Score,
+		})
+		if result.Error != nil {
+			tx.Rollback()
+			return result.Error
+		}
+	}
+
+	return tx.Commit().Error
 }

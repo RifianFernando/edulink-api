@@ -301,8 +301,15 @@ func UpdateStudentScoresByStudentSubjectClassID(c *gin.Context) {
 	}
 
 	// Get parameters from the request
+
 	subjectID := c.Param("subject_id")
 	classNameID := c.Param("class_name_id")
+	studentID := c.Param("student_id")
+
+	if subjectID == "" || classNameID == "" || studentID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "subject_id, class_name_id, and student_id are required"})
+		return
+	}
 
 	teacher, err := helper.IsTeachingClassSubjectExist(userID, subjectID, classNameID)
 	if err != nil || teacher.TeacherID == 0 {
@@ -310,7 +317,27 @@ func UpdateStudentScoresByStudentSubjectClassID(c *gin.Context) {
 		return
 	}
 
-	// TODO: update the student scores by ID
+	var studentScores []models.Score
+	studentIDParsed, _ := strconv.ParseInt(studentID, 10, 64)
+	subjectIDParsed, _ := strconv.ParseInt(subjectID, 10, 64)
+	classNameIDParsed, _ := strconv.ParseInt(classNameID, 10, 64)
+	for _, score := range request.Scores {
+		studentScores = append(studentScores, models.Score{
+			StudentID:    studentIDParsed,
+			SubjectID:    subjectIDParsed,
+			ClassNameID:  classNameIDParsed,
+			TeacherID:    teacher.TeacherID,
+			AssignmentID: score.AssignmentID,
+			Score:        score.Score,
+		})
+	}
+	err = models.UpdateStudentScoreAndTypeByStudentSubjectClassID(studentScores)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+
 
 	c.JSON(http.StatusOK, gin.H{"message": "success update student scores"})
 }

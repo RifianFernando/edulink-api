@@ -6,6 +6,7 @@ import (
 
 	"github.com/edulink-api/database/models"
 	"github.com/edulink-api/helper"
+	request "github.com/edulink-api/request/score"
 	"github.com/edulink-api/res"
 	"github.com/gin-gonic/gin"
 )
@@ -200,4 +201,143 @@ func GetAllClassTeachingSubjectTeacher(c *gin.Context) {
 
 	// Send the result as a response
 	c.JSON(http.StatusOK, gin.H{"class_list": classListDTO})
+}
+
+func GetStudentScoresByStudentSubjectClassID(c *gin.Context) {
+	// Get parameters from the request
+	studentID := c.Param("student_id")
+	subjectID := c.Param("subject_id")
+	classNameID := c.Param("class_name_id")
+
+	if subjectID == "" || classNameID == "" || studentID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "subject_id, class_name_id, and student_id are required"})
+		return
+	}
+
+	// Get the scoring data from the model
+	userID, exist := c.Get("user_id")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"error": userIDNotFound})
+		return
+	}
+
+	teacher, err := helper.IsTeachingClassSubjectExist(userID, subjectID, classNameID)
+	if err != nil || teacher.TeacherID == 0 {
+		res.AbortUnauthorized(c)
+		return
+	}
+
+	// Get the scoring data from the model
+	var studentScores models.ScoreModel
+	studentScores.StudentID, _ = strconv.ParseInt(studentID, 10, 64)
+	studentScores.SubjectID, _ = strconv.ParseInt(subjectID, 10, 64)
+	studentScores.ClassNameID, _ = strconv.ParseInt(classNameID, 10, 64)
+	studentScores.TeacherID = teacher.TeacherID
+	result, err := studentScores.GetStudentScoresAndTypeByStudentSubjectClassID()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// dto
+	type dtoStudentScores struct {
+		StudentName string `json:"student_name"`
+		SubjectName string `json:"subject_name"`
+		Scores      []struct {
+			AssignmentID   int64  `json:"assignment_id"`
+			AssignmentType string `json:"assignment_type"`
+			Score          int    `json:"score"`
+		} `json:"scores"`
+	}
+
+	// group the result by student_name and subject_name
+	resultDTO := dtoStudentScores{
+		StudentName: result[0].Student.StudentName,
+		SubjectName: result[0].Subject.SubjectName,
+	}
+
+	for _, score := range result {
+		resultDTO.Scores = append(resultDTO.Scores, struct {
+			AssignmentID   int64  `json:"assignment_id"`
+			AssignmentType string `json:"assignment_type"`
+			Score          int    `json:"score"`
+		}{
+			AssignmentID:   score.Assignment.AssignmentID,
+			AssignmentType: score.Assignment.TypeAssignment,
+			Score:          score.Score.Score,
+		})
+	}
+
+	// Send the result as a response
+	c.JSON(http.StatusOK, gin.H{"score": resultDTO})
+}
+
+func UpdateStudentScoresByStudentSubjectClassID(c *gin.Context) {
+	var request request.UpdateStudentScoreRequest
+	var allErrors []map[string]string
+
+	// Bind the request JSON to the CreateStudentRequest struct
+	if err := res.ResponseMessage(c.ShouldBindJSON(&request)); len(err) > 0 {
+		allErrors = append(allErrors, err...)
+	}
+
+	// Validate the request
+	if err := request.Validate(); len(err) > 0 {
+		allErrors = append(allErrors, err...)
+	}
+
+	if len(allErrors) > 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": allErrors,
+		})
+		return
+	}
+
+	// Get the scoring data from the model
+	userID, exist := c.Get("user_id")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"error": userIDNotFound})
+		return
+	}
+
+	// Get parameters from the request
+
+	subjectID := c.Param("subject_id")
+	classNameID := c.Param("class_name_id")
+	studentID := c.Param("student_id")
+
+	if subjectID == "" || classNameID == "" || studentID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "subject_id, class_name_id, and student_id are required"})
+		return
+	}
+
+	teacher, err := helper.IsTeachingClassSubjectExist(userID, subjectID, classNameID)
+	if err != nil || teacher.TeacherID == 0 {
+		res.AbortUnauthorized(c)
+		return
+	}
+
+	var studentScores []models.Score
+	studentIDParsed, _ := strconv.ParseInt(studentID, 10, 64)
+	subjectIDParsed, _ := strconv.ParseInt(subjectID, 10, 64)
+	classNameIDParsed, _ := strconv.ParseInt(classNameID, 10, 64)
+	for _, score := range request.Scores {
+		studentScores = append(studentScores, models.Score{
+			StudentID:    studentIDParsed,
+			SubjectID:    subjectIDParsed,
+			ClassNameID:  classNameIDParsed,
+			TeacherID:    teacher.TeacherID,
+			AssignmentID: score.AssignmentID,
+			Score:        score.Score,
+		})
+	}
+	err = models.UpdateStudentScoreAndTypeByStudentSubjectClassID(studentScores)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+
+
+	c.JSON(http.StatusOK, gin.H{"message": "success update student scores"})
 }

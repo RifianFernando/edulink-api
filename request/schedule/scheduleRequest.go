@@ -13,10 +13,12 @@ import (
 * https://blog.logrocket.com/gin-binding-in-go-a-tutorial-with-examples/#validating-date-time
  */
 type ScheduleRequest struct {
-	TeacherID    int64   `json:"teacher_id" binding:"required" validate:"required"`
-	TeachingHour int32   `json:"teaching_hour" binding:"required" validate:"required"`
-	ClassNameID  []int64 `json:"class_name_id" binding:"required" validate:"required,min=1,dive"`
-	SubjectID    []int64 `json:"subject_id" binding:"required" validate:"required,min=1,dive"`
+	TeacherID    int64 `json:"teacher_id" binding:"required" validate:"required"`
+	TeachingHour int32 `json:"teaching_hour" binding:"required" validate:"required"`
+	DataTeaching []struct {
+		SubjectID   int64   `json:"subject_id" binding:"required" validate:"required,min=1"`
+		ClassNameID []int64 `json:"class_name_id" binding:"required" validate:"required,min=1,dive"`
+	}
 }
 
 // Validate method

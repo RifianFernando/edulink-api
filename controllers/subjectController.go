@@ -16,7 +16,9 @@ func GetAllSubject(c *gin.Context) {
 		SubjectID          int64  `json:"subject_id"`
 		Grade              int    `json:"grade"`
 		SubjectName        string `json:"subject_name"`
-		DurationPerSession int    `json:"subject_duration_minutes"`
+		DurationPerSession int    `json:"subject_duration_Session"`
+		DurationPerWeek	   int    `json:"subject_duration_Week"`
+
 	}
 	var subject models.SubjectModel
 	subjects, err := subject.GetAllSubjects()
@@ -33,6 +35,7 @@ func GetAllSubject(c *gin.Context) {
 			Grade:              subject.Grade.Grade,
 			SubjectName:        subject.SubjectName,
 			DurationPerSession: subject.DurationPerSession,
+			DurationPerWeek:    subject.DurationPerWeek,
 		})
 	}
 

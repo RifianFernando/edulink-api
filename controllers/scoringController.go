@@ -201,3 +201,40 @@ func GetAllClassTeachingSubjectTeacher(c *gin.Context) {
 	// Send the result as a response
 	c.JSON(http.StatusOK, gin.H{"class_list": classListDTO})
 }
+
+
+func GetAllScoringBySutudent(c *gin.Context) {
+	// Get parameters from the request
+	subjectID := c.Param("subject_id")
+	classNameID := c.Param("class_name_id")
+
+	if subjectID == "" || classNameID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "subject_id and class_name_id are required"})
+		return
+	}
+
+	// Get the scoring data from the model
+	userID, exist := c.Get("user_id")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"error": userIDNotFound})
+		return
+	}
+
+	teacher, err := helper.IsTeachingClassSubjectExist(userID, subjectID, classNameID)
+	if err != nil || teacher.TeacherID == 0 {
+		res.AbortUnauthorized(c)
+		return
+	}
+
+	teacherID := strconv.FormatInt(teacher.TeacherID, 10)
+	result, err := models.GetAllScoringBySubjectClassID(subjectID, classNameID, teacherID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	resultDTO := helper.RemapScoringStudentBySubjectClassName(result)
+
+	// Send the grouped result as a response
+	c.JSON(http.StatusOK, gin.H{"score": resultDTO})
+}

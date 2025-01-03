@@ -15,12 +15,18 @@ type Staff struct {
 	lib.BaseModel
 }
 
+type StaffModel struct {
+	Staff
+	User           User             `gorm:"foreignKey:UserID;references:UserID"` // Belongs-to with User
+	// Scores       []Score     `gorm:"foreignKey:TeacherID;references:TeacherID;constraint:OnUpdate:SET NULL,OnDelete:SET NULL"`
+}
+
 func (Staff) TableName() string {
 	return lib.GenerateTableName(lib.Administration, "staffs")
 }
 
 // Get staff by model
-func (staff *Staff) GetStaffByModel() error {
+func (staff *StaffModel) GetStaffByModel() error {
 	if err := connections.DB.Where(&staff).First(&staff).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return fmt.Errorf("Staff not found")
@@ -29,4 +35,27 @@ func (staff *Staff) GetStaffByModel() error {
 	}
 
 	return nil
+}
+
+
+func (staff *Staff) CreateStaff() error {
+	result := connections.DB.Create(&staff)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}
+
+func (staff *StaffModel) GetAllUserStaffWithUser() (
+	staffs []Staff,
+	msg string,
+) {
+	result := connections.DB.Preload("User").Find(&staffs)
+	if result.Error != nil {
+		return nil, result.Error.Error()
+	} else if result.RowsAffected == 0 {
+		return nil, "No user teacher found"
+	}
+
+	return staffs, ""
 }

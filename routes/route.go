@@ -126,9 +126,10 @@ func Route(router *gin.Engine) {
 	staff := apiV1.Group("/staff", middleware.AlreadyLoggedIn(), middleware.AdminStaffOnly())
 	{
 		staff.GET("", controllers.GetAllStaff)
-		staff.GET("/:staff_id", controllers.GetStaffById)
+		staff.GET("/:staff_id", controllers.GetStaffByID)
 		staff.POST(create, controllers.CreateStaff)
-		// staff.PUT("/update/:staff_id", controllers.UpdateStaffById)
-		// staff.DELETE("/delete/:staff_id", controllers.DeleteStaffById)
+		staff.PUT("/update/:staff_id", controllers.UpdateStaffByID)
+		staff.DELETE("/delete/:staff_id", controllers.DeleteStaffByID)
+		staff.POST("/create-all", controllers.CreateAllStaff)
 	}
 }

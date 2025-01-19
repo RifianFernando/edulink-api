@@ -50,7 +50,7 @@ func GetUserTypeByUID(user models.User) []string {
 		UserID: user.UserID,
 	}).First(&staff)
 
-	if staff.StaffId != 0 {
+	if staff.StaffID != 0 {
 		roles = append(roles, User.Staff)
 	}
 

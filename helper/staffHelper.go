@@ -45,7 +45,6 @@ func PrepareStaffs(requestedStaffs []request.InsertStaffRequest, c *gin.Context)
 				UserEmail:        staff.UserEmail,
 			},
 		})
-		index++
 	}
 
 	return staffs, nil

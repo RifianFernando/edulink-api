@@ -249,6 +249,12 @@ func DeleteStaffByID(c *gin.Context) {
 	var staff models.StaffModel
 	var err error
 	staff.StaffID, err = strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "while parse staff id: " + err.Error(),
+		})
+		return
+	}
 
 	err = staff.GetStaffByModel()
 	if err != nil || staff.StaffID == 0 || staff.UserID == 0 {

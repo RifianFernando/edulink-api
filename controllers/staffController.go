@@ -2,8 +2,10 @@ package controllers
 
 import (
 	"net/http"
-	"github.com/edulink-api/lib"
+	"strconv"
+
 	"github.com/edulink-api/database/models"
+	"github.com/edulink-api/lib"
 	request "github.com/edulink-api/request/staff"
 	"github.com/edulink-api/res"
 	"github.com/gin-gonic/gin"
@@ -62,9 +64,8 @@ func CreateStaff(c *gin.Context) {
 		return
 	}
 
-
 	var staff = models.Staff{
-		UserID:       user.UserID,
+		UserID: user.UserID,
 	}
 	err = staff.CreateStaff()
 	if err != nil || staff.StaffId == 0 {
@@ -74,11 +75,9 @@ func CreateStaff(c *gin.Context) {
 		return
 	}
 
-
-
 	// return it
 	c.JSON(http.StatusOK, gin.H{
-		"user":    user,
+		"user":  user,
 		"staff": staff,
 	})
 }
@@ -267,28 +266,35 @@ func GetAllStaff(c *gin.Context) {
 		return
 	}
 
-
 	c.JSON(http.StatusOK, gin.H{
 		"staffs": result,
 	})
 }
 
-// func GetStaffById(c *gin.Context) {
-// 	id := c.Param("staff_id")
+func GetStaffById(c *gin.Context) {
+	id := c.Param("staff_id")
 
-// 	var staff models.Staff
-// 	result, err := staff.GetStaffById(id)
-// 	if err != nil || staff.StaffID == 0 {
-// 		c.JSON(http.StatusBadRequest, gin.H{
-// 			"error": err.Error(),
-// 		})
-// 		return
-// 	}
+	var staff models.StaffModel
+	var err error
+	staff.StaffId, err = strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "while parse staff id: " + err.Error(),
+		})
+		return
+	}
+	err = staff.GetStaffByModel()
+	if err != nil || staff.Staff.StaffId == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
 
-// 	c.JSON(http.StatusOK, gin.H{
-// 		"staff": result,
-// 	})
-// }
+	c.JSON(http.StatusOK, gin.H{
+		"staff": staff,
+	})
+}
 
 // func UpdateStaffById(c *gin.Context) {
 // 	var request request.UpdateStaffRequest

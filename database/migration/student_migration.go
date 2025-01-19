@@ -33,7 +33,6 @@ type Student struct {
 	StudentMotherPhoneNumber string       `gorm:"not null"`
 	Scores                   []Score      `gorm:"foreignKey:StudentID;references:StudentID;constraint:OnUpdate:SET NULL,OnDelete:SET NULL"`
 	Attendance               []Attendance `gorm:"foreignKey:StudentID;references:StudentID"`
-	Reports                  []Report     `gorm:"foreignKey:StudentID;references:StudentID"`
 	lib.BaseModel                         /* this type include CreatedAt, UpdatedAt, DeletedAt, I can't use the gorm.models because can't customize the id name */
 }
 

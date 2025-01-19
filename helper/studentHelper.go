@@ -66,23 +66,23 @@ func PrepareStudents(requestedStudents []request.InsertStudentRequest, c *gin.Co
 	return students, nil
 }
 
-func customErrorForDuplicate(property string, atribute string, index int) string {
+func CustomErrorForDuplicate(property string, atribute string, index int) string {
 	return "Duplicate " + property + ": " + atribute + " on index: " + strconv.Itoa(index + 1)
 }
 
 func checkForDuplicates(student request.InsertStudentRequest, index int, nameMap, nisnMap, numPhoneMap, emailMap map[string]bool) error {
 	// name can be duplicate
 	// if nameMap[student.StudentName] {
-	// 	return errors.New(customErrorForDuplicate("StudentName", student.StudentName, index))
+	// 	return errors.New(CustomErrorForDuplicate("StudentName", student.StudentName, index))
 	// }
 	if nisnMap[student.StudentNISN] {
-		return errors.New(customErrorForDuplicate("StudentNISN", student.StudentNISN, index))
+		return errors.New(CustomErrorForDuplicate("StudentNISN", student.StudentNISN, index))
 	}
 	if numPhoneMap[student.StudentPhoneNumber] {
-		return errors.New(customErrorForDuplicate("StudentPhoneNumber", student.StudentPhoneNumber, index))
+		return errors.New(CustomErrorForDuplicate("StudentPhoneNumber", student.StudentPhoneNumber, index))
 	}
 	if emailMap[student.StudentEmail] {
-		return errors.New(customErrorForDuplicate("StudentEmail", student.StudentEmail, index))
+		return errors.New(CustomErrorForDuplicate("StudentEmail", student.StudentEmail, index))
 	}
 
 	nameMap[student.StudentName] = true

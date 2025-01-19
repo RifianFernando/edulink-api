@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/edulink-api/database/models"
+	"github.com/edulink-api/helper"
 	"github.com/edulink-api/lib"
 	request "github.com/edulink-api/request/staff"
 	"github.com/edulink-api/res"
@@ -65,7 +66,7 @@ func CreateStaff(c *gin.Context) {
 	}
 
 	var staff = models.Staff{
-		UserID: user.UserID,
+		UserID:   user.UserID,
 		Position: request.Position,
 	}
 	err = staff.CreateStaff()
@@ -104,6 +105,14 @@ func CreateAllStaff(c *gin.Context) {
 		return
 	}
 
+	staffs, err := helper.PrepareStaffs(request.InsertStaffRequest, c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
 	// Create all staffs
 	// err := models.CreateAllStaffs(staffs)
 	// if err != nil {
@@ -116,6 +125,10 @@ func CreateAllStaff(c *gin.Context) {
 	// 		"staffs": staffs,
 	// 	})
 	// }
+	c.JSON(http.StatusOK, gin.H{
+		"staffs":     "Create all staffs",
+		"staff-data": staffs,
+	})
 }
 
 func GetAllStaff(c *gin.Context) {

@@ -114,17 +114,14 @@ func CreateAllStaff(c *gin.Context) {
 	}
 
 	// Create all staffs
-	// err := models.CreateAllStaffs(staffs)
-	// if err != nil {
-	// 	c.JSON(http.StatusBadRequest, gin.H{
-	// 		"error": err,
-	// 	})
-	// 	return
-	// } else {
-	// 	c.JSON(http.StatusOK, gin.H{
-	// 		"staffs": staffs,
-	// 	})
-	// }
+	err = models.CreateAllStaffs(staffs)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err,
+		})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"staffs":     "Create all staffs",
 		"staff-data": staffs,

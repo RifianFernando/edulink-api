@@ -59,20 +59,10 @@ func (user *User) UpdatePassword() error {
 }
 
 // Delete user
-func (user *User) DeleteUserById(id string) error {
+func (user *User) DeleteUserByID(id string) error {
 	result := connections.DB.Delete(&user, id)
 	if result.Error != nil {
 		return result.Error
 	}
-	return nil
-}
-
-// update user
-func (user *User) UpdateUser() error {
-	result := connections.DB.Model(&user).Updates(&user)
-	if result.Error != nil {
-		return result.Error
-	}
-
 	return nil
 }

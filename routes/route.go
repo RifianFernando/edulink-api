@@ -47,22 +47,12 @@ func Route(router *gin.Engine) {
 		teacher.DELETE("/delete/:teacher_id", controllers.DeleteTeacherById)
 	}
 
-	// Staff CRUD
-	staff := apiV1.Group("/staff", middleware.AlreadyLoggedIn(), middleware.AdminOnly())
-	{
-		staff.GET("", controllers.GetAllStaff)
-		staff.GET("/:staff_id", controllers.GetStaffByID)
-		staff.POST(create, controllers.CreateStaff)
-		staff.PUT("/update/:staff_id", controllers.UpdateStaffByID)
-		staff.DELETE("/delete/:staff_id", controllers.DeleteStaffByID)
-	}
-
 	// Class CRUD
 	class := apiV1.Group("/class")
 	{
 		class.GET("", controllers.GetAllClass)
-		class.POST(create, controllers.CreateClass)
 		class.GET("/:class_id", controllers.GetClassNameById)
+		class.POST(create, controllers.CreateClass)
 		class.PUT("/update/:class_id", controllers.UpdateClassById)
 		class.DELETE("/delete/:class_id", controllers.DeleteClassById)
 	}
@@ -116,10 +106,6 @@ func Route(router *gin.Engine) {
 		scoringOnlyTeacher.POST(CRUDScoring, controllers.CreateStudentsScoringBySubjectClassName)
 		scoringOnlyTeacher.GET(CRUDScoring, controllers.GetAllScoringBySubjectClassName)
 		scoring.PUT(CRUDScoring, controllers.UpdateScoringBySubjectClassName)
-
-		// scoring get specific student scoring by subject class name id
-		scoringOnlyTeacher.GET("/student/:student_id/:subject_id/:class_name_id", controllers.GetStudentScoresByStudentSubjectClassID)
-		scoringOnlyTeacher.PUT("/student/:student_id/:subject_id/:class_name_id", controllers.UpdateStudentScoresByStudentSubjectClassID)
 	}
 
 	// assignment
@@ -134,5 +120,16 @@ func Route(router *gin.Engine) {
 	generatorSchedule := apiV1.Group("/generator-schedule", middleware.AlreadyLoggedIn(), middleware.AdminStaffOnly())
 	{
 		generatorSchedule.POST("", controllers.GenerateAndCreateScheduleTeachingClassSubject)
+	}
+
+	// staff CRUD
+	staff := apiV1.Group("/staff", middleware.AlreadyLoggedIn(), middleware.AdminStaffOnly())
+	{
+		staff.GET("", controllers.GetAllStaff)
+		staff.GET("/:staff_id", controllers.GetStaffByID)
+		staff.POST(create, controllers.CreateStaff)
+		staff.PUT("/update/:staff_id", controllers.UpdateStaffByID)
+		staff.DELETE("/delete/:staff_id", controllers.DeleteStaffByID)
+		staff.POST("/create-all", controllers.CreateAllStaff)
 	}
 }

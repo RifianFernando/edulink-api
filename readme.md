@@ -49,7 +49,7 @@
     if you want to seed the database use the following command
 
     ```bash
-    go run database/database.go -seed
+    go run database/database.go -migrate:fresh
     ```
 
     if you want to generate the app_key for auth use the following command

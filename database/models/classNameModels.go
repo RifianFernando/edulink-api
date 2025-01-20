@@ -82,6 +82,16 @@ func (className *ClassName) GetClassNameById(id string) (ClassName, error) {
 	return classNames, nil
 }
 
+// get class Name by models
+func (className *ClassNameModel) GetClassNameModelByID(classNameID string) error {
+	result := connections.DB.Where("class_name_id = ?", classNameID).Preload("Teacher").Preload("Grade").First(&className)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
+
 // update class by id
 func (class *ClassName) UpdateClassNameByObject() error {
 	result := connections.DB.Model(&class).Updates(&class)

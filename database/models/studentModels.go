@@ -21,7 +21,7 @@ type Student struct {
 	StudentPlaceOfBirth      string    `json:"place_of_birth" binding:"required"`
 	StudentDateOfBirth       time.Time `json:"date_of_birth"`
 	StudentReligion          string    `json:"religion" binding:"required" validate:"required,oneof='Islam' 'Kristen Protestan' 'Kristen Katolik' 'Hindu' 'Buddha' 'Konghucu'"`
-	StudentAddress           string    `json:"address" binding:"required" validate:"required,min=10,max=200"`
+	StudentAddress           string    `json:"address" binding:"required" validate:"required,min=1,max=200"`
 	StudentPhoneNumber       string    `json:"number_phone" binding:"required" validate:"required,e164"`
 	StudentEmail             string    `json:"email" binding:"required" validate:"required,email"`
 	StudentAcceptedDate      time.Time `json:"accepted_date"`

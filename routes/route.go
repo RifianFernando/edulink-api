@@ -83,7 +83,7 @@ func Route(router *gin.Engine) {
 	subject := apiV1.Group("/subject", middleware.AlreadyLoggedIn())
 	{
 		subject.GET("", middleware.AdminOnly(), controllers.GetAllSubject)
-		subject.GET("/class", controllers.GetAllSubjectClassName)
+		// subject.GET("/class", controllers.GetAllSubjectClassName)
 		subject.GET("/:subject_id/:class_id", controllers.GetSubjectClassNameStudentsByID)
 	}
 
@@ -104,7 +104,7 @@ func Route(router *gin.Engine) {
 	{
 		const CRUDScoring = "/:subject_id/:class_name_id"
 		scoringOnlyTeacher.POST(CRUDScoring, controllers.CreateStudentsScoringBySubjectClassName)
-		scoringOnlyTeacher.GET(CRUDScoring,controllers.GetAllScoringBySubjectClassName)
+		scoringOnlyTeacher.GET(CRUDScoring, controllers.GetAllScoringBySubjectClassName)
 		scoring.PUT(CRUDScoring, controllers.UpdateScoringBySubjectClassName)
 	}
 

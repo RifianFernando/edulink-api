@@ -6,7 +6,7 @@ import (
 
 	"github.com/edulink-api/lib"
 	"github.com/edulink-api/database/models"
-	request "github.com/edulink-api/request/teacher"
+	request "github.com/edulink-api/request/personal-data/teacher"
 	"github.com/edulink-api/res"
 	"github.com/gin-gonic/gin"
 )

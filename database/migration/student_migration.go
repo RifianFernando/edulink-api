@@ -13,7 +13,7 @@ import (
  */
 type Student struct {
 	StudentID                int64        `gorm:"primaryKey;autoIncrement"`
-	ClassNameID              int64        `gorm:"not null"`
+	ClassNameID              *int64       // nullable foreign key
 	StudentName              string       `gorm:"not null"`
 	StudentNISN              string       `gorm:"not null;unique;type:CHAR(10)"`
 	StudentGender            Gender       `gorm:"type:VARCHAR(6);not null"`

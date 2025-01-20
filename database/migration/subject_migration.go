@@ -11,8 +11,7 @@ import (
  */
 type Subject struct {
 	SubjectID          int64            `gorm:"primaryKey;autoIncrement"`
-	GradeID            int64            `gorm:"not null"` // GradeID is the foreign key
-	SubjectName        string           `gorm:"not null"`
+	SubjectName        string           `gorm:"not null;unique"`
 	DurationPerSession int              `gorm:"not null"`
 	DurationPerWeek    int              `gorm:"not null"`
 	TeacherSubjects    []TeacherSubject `gorm:"foreignKey:SubjectID;references:SubjectID;constraint:OnUpdate:SET NULL,OnDelete:SET NULL"`

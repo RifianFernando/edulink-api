@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/edulink-api/database/models"
-	"github.com/edulink-api/request/student"
+	"github.com/edulink-api/request/personal-data/student"
 	"github.com/gin-gonic/gin"
 )
 

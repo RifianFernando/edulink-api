@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/edulink-api/connections"
 	"github.com/edulink-api/database/migration/lib"
@@ -31,15 +32,27 @@ func (StaffModel) TableName() string {
 }
 
 // Get staff by model
-func (staff *StaffModel) GetStaffByModel() error {
-	if err := connections.DB.Where(&staff).Preload("User").First(&staff).Error; err != nil {
+func (staff *StaffModel) GetStaffByModel() (staffDTO GetStaffByIDWithoutPassword, err error) {
+	if err := connections.DB.Preload("User").Where(&staff).First(&staff).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			return fmt.Errorf("Staff not found")
+			return staffDTO, fmt.Errorf("staff not found")
 		}
-		return err
+		return staffDTO, err
 	}
 
-	return nil
+	staffDTO.StaffID = staff.Staff.StaffID
+	staffDTO.UserID = staff.Staff.UserID
+	staffDTO.UserName = staff.User.UserName
+	staffDTO.UserGender = staff.User.UserGender
+	staffDTO.UserPlaceOfBirth = staff.User.UserPlaceOfBirth
+	staffDTO.UserDateOfBirth = staff.User.UserDateOfBirth
+	staffDTO.UserReligion = staff.User.UserReligion
+	staffDTO.UserAddress = staff.User.UserAddress
+	staffDTO.UserPhoneNum = staff.User.UserPhoneNum
+	staffDTO.UserEmail = staff.User.UserEmail
+	staffDTO.Position = staff.Staff.Position
+
+	return staffDTO, nil
 }
 
 func (staff *Staff) CreateStaff() error {
@@ -50,18 +63,43 @@ func (staff *Staff) CreateStaff() error {
 	return nil
 }
 
-func (staff *StaffModel) GetAllUserStaffWithUser() (
-	staffs []StaffModel,
-	msg string,
-) {
-	result := connections.DB.Preload("User").Find(&staffs)
-	if result.Error != nil {
-		return nil, result.Error.Error()
-	} else if result.RowsAffected == 0 {
-		return nil, "No user staff found"
+type GetStaffByIDWithoutPassword struct {
+	StaffID          int64     `json:"staff_id"`
+	UserID           int64     `json:"user_id"`
+	UserName         string    `json:"name" binding:"required"`
+	UserGender       string    `json:"gender" binding:"required,oneof=Male Female"`
+	UserPlaceOfBirth string    `json:"place_of_birth" binding:"required"`
+	UserDateOfBirth  time.Time `json:"date_of_birth"`
+	UserReligion     string    `json:"religion" binding:"required" validate:"required,oneof='Islam' 'Kristen Protestan' 'Kristen Katolik' 'Hindu' 'Buddha' 'Konghucu'"`
+	UserAddress      string    `json:"address" binding:"required" validate:"required,min=10,max=200"`
+	UserPhoneNum     string    `json:"num_phone" binding:"required,e164"`
+	UserEmail        string    `json:"email" binding:"required,email"`
+	Position         string    `json:"position" binding:"required"`
+}
+
+func (staff *StaffModel) GetAllStaffs() (staffDTO []GetStaffByIDWithoutPassword, err error) {
+	var staffs []StaffModel
+	if err = connections.DB.Preload("User").Find(&staffs).Error; err != nil {
+		return nil, err
 	}
 
-	return staffs, ""
+	for _, staff := range staffs {
+		staffDTO = append(staffDTO, GetStaffByIDWithoutPassword{
+			StaffID:          staff.Staff.StaffID,
+			UserID:           staff.Staff.StaffID,
+			UserName:         staff.User.UserName,
+			UserGender:       staff.User.UserGender,
+			UserPlaceOfBirth: staff.User.UserPlaceOfBirth,
+			UserDateOfBirth:  staff.User.UserDateOfBirth,
+			UserReligion:     staff.User.UserReligion,
+			UserAddress:      staff.User.UserAddress,
+			UserPhoneNum:     staff.User.UserPhoneNum,
+			UserEmail:        staff.User.UserEmail,
+			Position:         staff.Staff.Position,
+		})
+	}
+
+	return staffDTO, nil
 }
 
 func (staff *Staff) UpdateStaffByModel() error {

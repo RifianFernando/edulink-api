@@ -129,42 +129,50 @@ func CreateAllStaff(c *gin.Context) {
 }
 
 func GetAllStaff(c *gin.Context) {
-	var staffs models.StaffModel
-	result, err := staffs.GetAllUserStaffWithUser()
-	if err != "" {
+	// get from models
+	staff := models.StaffModel{}
+	staffs, err := staff.GetAllStaffs()
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err,
+			"message": err.Error(),
 		})
 		return
 	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"staffs": result,
+	c.JSON(200, gin.H{
+		"staff": staffs,
 	})
 }
 
 func GetStaffByID(c *gin.Context) {
-	id := c.Param("staff_id")
+	// Get the scoring data from the model
+	staffID := c.Param("staff_id")
+	if staffID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "check your parameter"})
+		return
+	}
 
-	var staff models.StaffModel
-	var err error
-	staff.StaffID, err = strconv.ParseInt(id, 10, 64)
+	staffIDParsed, err := strconv.ParseInt(staffID, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "staff_id must be a number"})
+		return
+	}
+
+	// get from models
+	staff := models.StaffModel{
+		Staff: models.Staff{
+			StaffID: staffIDParsed,
+		},
+	}
+	result, err := staff.GetStaffByModel()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "while parse staff id: " + err.Error(),
-		})
-		return
-	}
-	err = staff.GetStaffByModel()
-	if err != nil || staff.Staff.StaffID == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
+			"message": err.Error(),
 		})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"staff": staff,
+	c.JSON(200, gin.H{
+		"staff": result,
 	})
 }
 
@@ -201,13 +209,13 @@ func UpdateStaffByID(c *gin.Context) {
 	staffModel.StaffID, err = strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "while parse staff id: " + err.Error(),
+			"error": parseStaffIDError + err.Error(),
 		})
 		return
 	}
 
-	err = staffModel.GetStaffByModel()
-	if err != nil || staffModel.StaffID == 0 {
+	_, err = staffModel.GetStaffByModel()
+	if err != nil || staffModel.StaffID == 0{
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
 		})
@@ -240,6 +248,8 @@ func UpdateStaffByID(c *gin.Context) {
 	})
 }
 
+const parseStaffIDError = "while parse staff id: "
+
 func DeleteStaffByID(c *gin.Context) {
 	id := c.Param("staff_id")
 
@@ -248,15 +258,15 @@ func DeleteStaffByID(c *gin.Context) {
 	staff.StaffID, err = strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "while parse staff id: " + err.Error(),
+			"error": parseStaffIDError + err.Error(),
 		})
 		return
 	}
 
-	err = staff.GetStaffByModel()
+	_, err = staff.GetStaffByModel()
 	if err != nil || staff.StaffID == 0 || staff.UserID == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "while parse staff id: " + err.Error(),
+			"error": parseStaffIDError + err.Error(),
 		})
 		return
 	}

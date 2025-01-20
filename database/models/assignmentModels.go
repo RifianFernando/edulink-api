@@ -6,9 +6,9 @@ import (
 )
 
 type Assignment struct {
-	AssignmentId   int64  `gorm:"primaryKey"`
+	AssignmentID   int64  `gorm:"primaryKey"`
 	TypeAssignment string `json:"assignment_type" binding:"required" validate:"min=1,max=50"`
-	// Score          []Score `gorm:"foreignKey:AssignmentId;references:AssignmentId"`
+	// Score          []Score `gorm:"foreignKey:AssignmentID;references:AssignmentID"`
 	lib.BaseModel
 }
 

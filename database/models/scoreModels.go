@@ -13,6 +13,7 @@ type Score struct {
 	StudentID      int64 `json:"student_id" binding:"required"`
 	AssignmentID   int64 `json:"assignment_id" binding:"required"`
 	TeacherID      int64 `json:"teacher_id" binding:"required"`
+	ClassNameID    int64 `json:"class_name_id" binding:"required"`
 	SubjectID      int64 `json:"subject_id" binding:"required"`
 	AcademicYearID int64 `json:"academic_year_id" binding:"required"`
 	Score          int   `json:"score" binding:"required"`
@@ -21,8 +22,9 @@ type Score struct {
 
 type ScoreModel struct {
 	Score
-	Student Student `gorm:"foreignKey:StudentID;references:StudentID"`
-	Subject Subject `gorm:"foreignKey:SubjectID;references:SubjectID"`
+	Student    Student    `gorm:"foreignKey:StudentID;references:StudentID"`
+	Subject    Subject    `gorm:"foreignKey:SubjectID;references:SubjectID"`
+	Assignment Assignment `gorm:"foreignKey:AssignmentID;references:AssignmentID"`
 }
 
 func (Score) TableName() string {
@@ -135,6 +137,53 @@ func UpdateScoringBySubjectClassName(data []Score) error {
 	for _, item := range data {
 		result := tx.Model(&Score{}).Where(
 			"student_id = ? AND assignment_id = ? AND teacher_id = ? AND subject_id = ? AND academic_year_id = ?", item.StudentID, item.AssignmentID, item.TeacherID, item.SubjectID, item.AcademicYearID,
+		).Updates(&Score{
+			Score: item.Score,
+		})
+		if result.Error != nil {
+			tx.Rollback()
+			return result.Error
+		}
+	}
+
+	return tx.Commit().Error
+}
+
+func (score *ScoreModel) GetStudentScoresAndTypeByStudentSubjectClassID() (scores []ScoreModel, err error) {
+	result := connections.DB.Where("student_id = ? AND subject_id = ? AND class_name_id = ? AND teacher_id = ?", score.StudentID, score.SubjectID, score.ClassNameID, score.TeacherID).
+		Preload("Student").
+		Preload("Subject").
+		Preload("Assignment").
+		Find(&scores)
+
+	if result.Error != nil {
+		return []ScoreModel{}, result.Error
+	} else if result.RowsAffected == 0 {
+		return []ScoreModel{}, fmt.Errorf("no scores found")
+	}
+
+	return scores, nil
+}
+
+func UpdateStudentScoreAndTypeByStudentSubjectClassID(score []Score) error {
+	// Begin transaction
+	tx := connections.DB.Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err := tx.Error; err != nil {
+		return err
+	}
+
+	for _, item := range score {
+		result := tx.Model(&Score{}).Where(
+			"student_id = ? AND subject_id = ? AND class_name_id = ? AND teacher_id = ? AND assignment_id = ?", item.StudentID, item.SubjectID, item.ClassNameID, item.TeacherID, item.AssignmentID,
 		).Updates(&Score{
 			Score: item.Score,
 		})

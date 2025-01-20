@@ -13,7 +13,7 @@ import (
  */
 type Student struct {
 	StudentID                int64        `gorm:"primaryKey;autoIncrement"`
-	ClassNameID              int64        `gorm:"not null"`
+	ClassNameID              *int64       // nullable foreign key
 	StudentName              string       `gorm:"not null"`
 	StudentNISN              string       `gorm:"not null;unique;type:CHAR(10)"`
 	StudentGender            Gender       `gorm:"type:VARCHAR(6);not null"`
@@ -33,7 +33,6 @@ type Student struct {
 	StudentMotherPhoneNumber string       `gorm:"not null"`
 	Scores                   []Score      `gorm:"foreignKey:StudentID;references:StudentID;constraint:OnUpdate:SET NULL,OnDelete:SET NULL"`
 	Attendance               []Attendance `gorm:"foreignKey:StudentID;references:StudentID"`
-	Reports                  []Report     `gorm:"foreignKey:StudentID;references:StudentID"`
 	lib.BaseModel                         /* this type include CreatedAt, UpdatedAt, DeletedAt, I can't use the gorm.models because can't customize the id name */
 }
 

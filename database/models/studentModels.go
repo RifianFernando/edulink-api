@@ -1,10 +1,14 @@
 package models
 
 import (
+	"fmt"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/edulink-api/connections"
 	"github.com/edulink-api/database/migration/lib"
+	"github.com/jackc/pgx/v5/pgconn"
 	"gorm.io/gorm"
 )
 
@@ -17,7 +21,7 @@ type Student struct {
 	StudentPlaceOfBirth      string    `json:"place_of_birth" binding:"required"`
 	StudentDateOfBirth       time.Time `json:"date_of_birth"`
 	StudentReligion          string    `json:"religion" binding:"required" validate:"required,oneof='Islam' 'Kristen Protestan' 'Kristen Katolik' 'Hindu' 'Buddha' 'Konghucu'"`
-	StudentAddress           string    `json:"address" binding:"required" validate:"required,min=10,max=200"`
+	StudentAddress           string    `json:"address" binding:"required" validate:"required,min=1,max=200"`
 	StudentPhoneNumber       string    `json:"number_phone" binding:"required" validate:"required,e164"`
 	StudentEmail             string    `json:"email" binding:"required" validate:"required,email"`
 	StudentAcceptedDate      time.Time `json:"accepted_date"`
@@ -137,20 +141,9 @@ func (student *Student) DeleteStudentById(id string) error {
 	return nil
 }
 
+// CreateAllStudents inserts multiple students and handles unique constraint violations.
 func CreateAllStudents(students []Student) error {
-	result := connections.DB.Create(&students)
-	if result.Error != nil {
-		return result.Error
-	}
-	return nil
-}
-
-type UpdateManyStudentClass struct {
-	StudentID   int64 `json:"student_id" binding:"required" validate:"required,numeric,gte=1"`
-	ClassNameID int64 `json:"class_name_id" binding:"required" validate:"required,numeric,gte=1"`
-}
-
-func UpdateManyStudentClassID(studentData []UpdateManyStudentClass) error {
+	// Start the transaction
 	tx := connections.DB.Begin()
 	if tx.Error != nil {
 		return tx.Error
@@ -161,20 +154,65 @@ func UpdateManyStudentClassID(studentData []UpdateManyStudentClass) error {
 		}
 	}()
 
-	if err := tx.Error; err != nil {
-		return err
+	// Create students within the transaction
+	for _, student := range students {
+		result := tx.Create(&student)
+		if result.Error != nil {
+			var err error
+			// Check if the error contains a constraint violation message
+			if pgErr, ok := result.Error.(*pgconn.PgError); ok {
+				if pgErr.Code == "23505" {
+					if strings.Contains(pgErr.ConstraintName, "nisn") {
+						err = fmt.Errorf("student with NISN %s already exists", student.StudentNISN)
+					} else if strings.Contains(pgErr.ConstraintName, "phone") {
+						err = fmt.Errorf("student with phone number %s already exists", student.StudentPhoneNumber)
+					} else if strings.Contains(pgErr.ConstraintName, "email") {
+						err = fmt.Errorf("student with email %s already exists", student.StudentEmail)
+					} else {
+						err = result.Error
+					}
+				}
+			} else {
+				err = result.Error
+			}
+
+			// Rollback on any error
+			tx.Rollback()
+			return err
+		}
 	}
 
+	// If everything is successful, commit the transaction
+	return tx.Commit().Error
+}
+
+type UpdateManyStudentClass struct {
+	StudentID   int64 `json:"student_id" binding:"required" validate:"required,numeric,gte=1"`
+	ClassNameID int64 `json:"class_name_id" binding:"required" validate:"required,numeric,gte=1"`
+}
+
+func UpdateManyStudentClassID(studentData []UpdateManyStudentClass) error {
+	// Build the SQL query dynamically
+	query := "UPDATE academic.students SET class_name_id = CASE"
+
+	var listStudentIDIn []int64
 	for _, data := range studentData {
-		result := tx.Model(&Student{
-			StudentID: data.StudentID,
-		}).Updates(Student{
-			ClassNameID: data.ClassNameID,
-		})
-		if result.Error != nil {
-			tx.Rollback()
-			return result.Error
-		}
+		studentIDParsed := strconv.FormatInt(data.StudentID, 10)
+		query += fmt.Sprintf(" WHEN student_id = %s THEN %d", studentIDParsed, data.ClassNameID)
+		listStudentIDIn = append(listStudentIDIn, data.StudentID)
+	}
+
+	query += " END WHERE student_id IN ?"
+
+	// Execute the query
+	tx := connections.DB.Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	if err := tx.Exec(query, listStudentIDIn).Error; err != nil {
+		tx.Rollback()
+		return err
 	}
 
 	return tx.Commit().Error

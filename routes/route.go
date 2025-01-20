@@ -83,7 +83,7 @@ func Route(router *gin.Engine) {
 	subject := apiV1.Group("/subject", middleware.AlreadyLoggedIn())
 	{
 		subject.GET("", middleware.AdminOnly(), controllers.GetAllSubject)
-		subject.GET("/class", controllers.GetAllSubjectClassName)
+		// subject.GET("/class", controllers.GetAllSubjectClassName)
 		subject.GET("/:subject_id/:class_id", controllers.GetSubjectClassNameStudentsByID)
 	}
 
@@ -95,12 +95,16 @@ func Route(router *gin.Engine) {
 			middleware.AlreadyLoggedIn(),
 			controllers.GetSummariesScoringStudentBySubjectClassName,
 		)
+		scoring.GET(
+			"/get-all-class-teaching-subject-teacher",
+			controllers.GetAllClassTeachingSubjectTeacher,
+		)
 	}
 	scoringOnlyTeacher := scoring.Group("/", middleware.OnlyTeacher())
 	{
 		const CRUDScoring = "/:subject_id/:class_name_id"
 		scoringOnlyTeacher.POST(CRUDScoring, controllers.CreateStudentsScoringBySubjectClassName)
-		scoringOnlyTeacher.GET(CRUDScoring,controllers.GetAllScoringBySubjectClassName)
+		scoringOnlyTeacher.GET(CRUDScoring, controllers.GetAllScoringBySubjectClassName)
 		scoring.PUT(CRUDScoring, controllers.UpdateScoringBySubjectClassName)
 	}
 
@@ -116,5 +120,16 @@ func Route(router *gin.Engine) {
 	generatorSchedule := apiV1.Group("/generator-schedule", middleware.AlreadyLoggedIn(), middleware.AdminStaffOnly())
 	{
 		generatorSchedule.POST("", controllers.GenerateAndCreateScheduleTeachingClassSubject)
+	}
+
+	// staff CRUD
+	staff := apiV1.Group("/staff", middleware.AlreadyLoggedIn(), middleware.AdminStaffOnly())
+	{
+		staff.GET("", controllers.GetAllStaff)
+		staff.GET("/:staff_id", controllers.GetStaffByID)
+		staff.POST(create, controllers.CreateStaff)
+		staff.PUT("/update/:staff_id", controllers.UpdateStaffByID)
+		staff.DELETE("/delete/:staff_id", controllers.DeleteStaffByID)
+		staff.POST("/create-all", controllers.CreateAllStaff)
 	}
 }

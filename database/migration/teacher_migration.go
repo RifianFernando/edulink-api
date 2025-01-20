@@ -12,7 +12,6 @@ type Teacher struct {
 	UserID         int64            `gorm:"not null"`
 	TeachingHour   int32            `gorm:"not null"`
 	ClassNames     []ClassName      `gorm:"foreignKey:TeacherID;references:TeacherID"`
-	Scores         []Score          `gorm:"foreignKey:TeacherID;references:TeacherID;constraint:OnUpdate:SET NULL,OnDelete:SET NULL"`
 	TeacherSubject []TeacherSubject `gorm:"foreignKey:TeacherID;references:TeacherID;constraint:OnUpdate:SET NULL,OnDelete:SET NULL"`
 	lib.BaseModel                   /* this type include CreatedAt, UpdatedAt, DeletedAt, I can't use the gorm.models because can't customize the id name */
 }

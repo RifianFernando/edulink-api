@@ -1,0 +1,57 @@
+name: Overwrite main.go on PR merge to master
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - master
+
+jobs:
+  overwrite-main:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Overwrite main.go
+        run: |
+          cat > main.go <<'EOL'
+          package handler
+
+          import (
+              "net/http"
+
+              "github.com/edulink-api/config"
+              "github.com/edulink-api/connections"
+              "github.com/edulink-api/lib"
+              _ "github.com/edulink-api/request"
+              "github.com/edulink-api/routes"
+          )
+
+          // init function for environment setup
+          func init() {
+              connections.LoadEnvVariables()
+              config.InitializeSessionStore()
+
+              // Initialize database connection
+              err := connections.ConnecToDB()
+              lib.HandleError(err, "Failed to connect db")
+          }
+
+          // Vercel requires an HTTP handler function that serves the API
+          func Handler(w http.ResponseWriter, r *http.Request) {
+              app := routes.SetupRouter()
+              app.ServeHTTP(w, r)
+          }
+          EOL
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add main.go
+          git commit -m "Overwrite main.go during PR merge to master"
+          git push origin master

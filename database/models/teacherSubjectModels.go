@@ -39,7 +39,6 @@ type TeacherSubjectGrade struct {
 	TeacherSubjectID     int64                  `gorm:"primaryKey" json:"id"`
 	TeacherID            int64                  `json:"teacher_id" binding:"required"`
 	SubjectID            int64                  `json:"subject_id" binding:"required"`
-	Subject              SubjectModel           `gorm:"foreignKey:SubjectID;references:SubjectID"`
 	TeachingClassSubject []TeachingClassSubject `gorm:"foreignKey:TeacherSubjectID;references:TeacherSubjectID"`
 	lib.BaseModel
 }

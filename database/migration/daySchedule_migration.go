@@ -21,5 +21,5 @@ type DaySchedule struct {
 * https://gorm.io/docs/conventions.html
  */
 func (DaySchedule) TableName() string {
-	return lib.GenerateTableName(lib.Academic, "day_schedules")
+	return lib.GenerateTableName(lib.Administration, "day_schedules")
 }

@@ -65,7 +65,7 @@ COPY public ./public/
 RUN go build -o main ./main.go && chmod +x main
 
 # Expose the port the application runs on
-EXPOSE 8000
+EXPOSE 443
 
 # Command to run the application
 CMD ["./main"]

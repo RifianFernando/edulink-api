@@ -1,10 +1,12 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
-	"github.com/edulink-api/helper"
 	"github.com/edulink-api/database/models"
+	"github.com/edulink-api/database/user"
+	"github.com/edulink-api/helper"
 	"github.com/edulink-api/request"
 	"github.com/gin-gonic/gin"
 )
@@ -79,7 +81,8 @@ func GetAllClass(c *gin.Context) {
 	var result []models.ClassNameModel
 	var err string
 	var ClassName models.ClassNameModel
-	if userType == "teacher" {
+	fmt.Println(userType)
+	if !user.CheckUserRole(userType, user.Admin) && !user.CheckUserRole(userType, user.Staff) {
 		uid := claims.UserID
 		ClassName.Teacher.UserID = uid
 	}

@@ -3,14 +3,15 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/edulink-api/helper"
 	"github.com/edulink-api/database/models"
+	"github.com/edulink-api/database/user"
+	"github.com/edulink-api/helper"
 	"github.com/gin-gonic/gin"
 )
 
 func GetUserType(c *gin.Context) {
-	userType, exist := c.Get("user_type")
-	if !exist {
+	userTypeArray := user.GetUserTypeFromCtx(c)
+	if len(userTypeArray) == 0 {
 		uid, isExist := c.Get("user_id")
 		if !isExist {
 			c.JSON(http.StatusUnauthorized, gin.H{
@@ -21,15 +22,16 @@ func GetUserType(c *gin.Context) {
 
 		var user models.User
 		user.UserID = uid.(int64)
-		userType = helper.GetUserTypeByUID(user)
-		if userType == "" {
+		userTypeArray = helper.GetUserTypeByUID(user)
+		if len(userTypeArray) == 0 {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"error": "User type not found",
 			})
 			return
 		}
 	}
+
 	c.JSON(http.StatusOK, gin.H{
-		"user_type": userType,
+		"user_type": userTypeArray,
 	})
 }

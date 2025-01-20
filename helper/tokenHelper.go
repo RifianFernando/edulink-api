@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/edulink-api/lib"
 	"github.com/edulink-api/database/models"
+	"github.com/edulink-api/lib"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 )
@@ -16,7 +16,7 @@ import (
 type userDetailToken struct {
 	UserID    int64
 	UserName  string
-	User_type string
+	User_type []string
 	TokenType string
 	jwt.StandardClaims
 }
@@ -32,7 +32,7 @@ var invalidToken = "the token is invalid"
 
 var SECRET_KEY string = os.Getenv("APP_KEY")
 
-func GenerateToken(user models.User, userType string) (signedToken string, signedRefreshToken string, err error) {
+func GenerateToken(user models.User, userType []string) (signedToken string, signedRefreshToken string, err error) {
 	claims := &userDetailToken{
 		UserID:    user.UserID,
 		UserName:  user.UserName,
@@ -110,7 +110,7 @@ func UpdateSession(refreshToken string, userID int64, ipAddress string, userAgen
 
 	// Generate new access token and refresh token
 	user := models.User{UserID: userID, UserName: claims.UserName}
-	newToken, newRefreshToken, err = GenerateToken(user, GetUserTypeByPrivilege(user))
+	newToken, newRefreshToken, err = GenerateToken(user, GetUserTypeByUID(user))
 	if err != nil {
 		return "", "", err
 	}

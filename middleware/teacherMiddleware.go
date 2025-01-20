@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/edulink-api/database/models"
+	"github.com/edulink-api/database/user"
 	"github.com/edulink-api/helper"
 	"github.com/edulink-api/res"
 	"github.com/gin-gonic/gin"
@@ -18,7 +19,6 @@ func IsTeacherHomeRoom() gin.HandlerFunc {
 			return
 		}
 
-		userTypeCtx, err := getUserTypeFromContext(c)
 		if err != nil {
 			fmt.Println("Error getting user type from context: ", err)
 			res.AbortUnauthorized(c)
@@ -36,7 +36,7 @@ func IsTeacherHomeRoom() gin.HandlerFunc {
 			return
 		}
 
-		if isTeacherHomeRoom(claims.UserID, claims.User_type, userTypeCtx) {
+		if isTeacherHomeRoom(claims.UserID) {
 			c.Next()
 			return
 		}
@@ -45,11 +45,7 @@ func IsTeacherHomeRoom() gin.HandlerFunc {
 	}
 }
 
-func isTeacherHomeRoom(userID int64, userType string, userTypeCtx interface{}) bool {
-	if userType != "teacher" || userTypeCtx != "teacher" {
-		return false
-	}
-
+func isTeacherHomeRoom(userID int64) bool {
 	var teacher models.Teacher
 	teacher.UserID = userID
 	if err := teacher.GetTeacherByModel(); err != nil {
@@ -79,7 +75,6 @@ func OnlyTeacher() gin.HandlerFunc {
 			return
 		}
 
-		userTypeCtx, err := getUserTypeFromContext(c)
 		if err != nil {
 			fmt.Println("Error getting user type from context: ", err)
 			res.AbortUnauthorized(c)
@@ -92,14 +87,16 @@ func OnlyTeacher() gin.HandlerFunc {
 			return
 		}
 
-		if userTypeCtx != "teacher" {
+		if user.ValidateUserRoleCtx(c, user.Teacher) {
 			userType := helper.GetUserTypeByUID(
 				models.User{
 					UserID: claims.UserID,
 				},
 			)
+			fmt.Println("User type: ", userType)
 			for _, role := range userType {
-				if role == "teacher" {
+				fmt.Println("Role: ", role)
+				if role == user.Teacher || role == user.HomeRoomTeacher {
 					c.Next()
 					return
 				}

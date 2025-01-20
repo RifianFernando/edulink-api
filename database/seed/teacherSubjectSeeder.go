@@ -42,6 +42,11 @@ func TeacherSubjectSeeder() (teachers []models.TeacherSubject) {
 			TeacherID:              3,
 			SubjectID:              3,
 		},
+		//8. Teacher testadmin mengajar mata pelajaran kelas 8 Science
+		{
+			TeacherID:              4,
+			SubjectID:              5,
+		},
 	}
 
 	return teachers

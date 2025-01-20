@@ -12,6 +12,7 @@ type Score struct {
 	StudentID      int64  `gorm:"not null;uniqueIndex:unique_student_score"`
 	AssignmentID   int64  `gorm:"not null;uniqueIndex:unique_student_score"`
 	TeacherID      int64  `gorm:"not null;uniqueIndex:unique_student_score"`
+	ClassNameID    int64  `gorm:"not null;uniqueIndex:unique_student_score"`
 	SubjectID      int64  `gorm:"not null;uniqueIndex:unique_student_score"`
 	AcademicYearID int64  `gorm:"not null;uniqueIndex:unique_student_score"`
 	Score          string `gorm:"not null"`

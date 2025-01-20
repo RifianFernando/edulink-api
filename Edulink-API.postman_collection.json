@@ -1,0 +1,1418 @@
+{
+	"info": {
+		"_postman_id": "c6c5f418-dbcd-4f35-98e8-e35d737161cd",
+		"name": "Edulink API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19995857",
+		"_collection_link": "https://planetary-equinox-735758.postman.co/workspace/Team-Workspace~3a1502bb-3d3d-47c5-88fc-91878f1402e4/collection/19995857-c6c5f418-dbcd-4f35-98e8-e35d737161cd?action=share&source=collection_link&creator=19995857"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// this is home room teacher with user id 1 math subject\r\n// {\r\n//     \"email\": \"guru1@gmail.com\",\r\n//     \"password\": \"123456\"\r\n// }\r\n\r\n// this is teacher and admin and homeroom with user id 2\r\n// {\r\n//     \"email\": \"guruadmin@gmail.com\",\r\n//     \"password\": \"123456\"\r\n// }\r\n\r\n// this is teacher roles only user id = 3 & teacher id = 3\r\n// {\r\n//     \"email\": \"nothomeroom@gmail.com\",\r\n//     \"password\": \"123456\"\r\n// }\r\n\r\n// this is admin1 & teacher roles with user id 4\r\n{\r\n    \"email\": \"testadmin@gmail.com\",\r\n    \"password\": \"123456\"\r\n}\r\n\r\n// this is Staff1 roles only with user id 5\r\n// {\r\n//     \"email\": \"staff1@gmail.com\",\r\n//     \"password\": \"123456\"\r\n// }\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local_host}}/api/v1/auth/login",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local_host}}/api/v1/auth/logout",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RefreshToken",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local_host}}/api/v1/auth/refresh-token",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"refresh-token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Forget Password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"testadmin@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local_host}}/api/v1/auth/forget-password",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"forget-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"token\": \"\",\r\n    \"email\": \"testadmin@gmail.com\",\r\n    \"password\": \"123456\",\r\n    \"password_confirmation\": \"123456\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local_host}}/api/v1/auth/reset-password",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"reset-password"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "PersonalData",
+			"item": [
+				{
+					"name": "CRUD Student",
+					"item": [
+						{
+							"name": "Create Student",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjMsIlVzZXJOYW1lIjoiQWRtaW4xIiwiVXNlcl90eXBlIjoiYWRtaW4iLCJleHAiOjE3Mjk3NzI3MTYsImlhdCI6MTcyOTY4NjMxNn0.uzu6TyHYKm22Q4e-qQ7aaXs-8Z-G4ZhYQIcGxtFolNg",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"nisn\": \"1234567890\",\r\n    \"name\": \"Mutiara Ramah\",\r\n    \"gender\": \"Female\",\r\n    \"place_of_birth\": \"Samarinda\",\r\n    \"date_of_birth\": \"2003-11-24\",\r\n    \"religion\": \"Kristen Protestan\",\r\n    \"address\": \"Kecamaatn Samarinda depokSAD\",\r\n    \"number_phone\": \"+62234567898\",\r\n    \"email\": \"johndoe2@example.com\",\r\n    \"accepted_date\": \"2024-06-28\",\r\n    \"school_origin\": \"High School A\",\r\n    \"class_id\": 2,\r\n    \"father_name\": \"Father Doe\",\r\n    \"father_job\": \"Job A\",\r\n    \"father_number_phone\": \"+0987654321\",\r\n    \"mother_name\": \"Mother Doe\",\r\n    \"mother_job\": \"Job B\",\r\n    \"mother_number_phone\": \"+62122334455\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{local_host}}/api/v1/student/create",
+									"host": [
+										"{{local_host}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"student",
+										"create"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Student",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true,
+								"disabledSystemHeaders": {}
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{local_host}}/api/v1/student/",
+									"host": [
+										"{{local_host}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"student",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Student By  ID",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjIsIlVzZXJOYW1lIjoiIiwiVXNlcl90eXBlIjoiYWRtaW4iLCJleHAiOjE3Mjg4MDQ0MjAsImlhdCI6MTcyODYzMTYyMH0.dstUTMBtJ1-DcAjiKlEehqwFpypmU8Owr1hdzr67bpI",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{local_host}}/api/v1/student/3",
+									"host": [
+										"{{local_host}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"student",
+										"3"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DELETE Student by ID",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{local_host}}/api/v1/student/delete/1",
+									"host": [
+										"{{local_host}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"student",
+										"delete",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Student",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Mutiara Tiga\",\r\n    \"nisn\": \"1234567800\",\r\n    \"gender\": \"Male\",\r\n    \"place_of_birth\": \"Bogor\",\r\n    \"date_of_birth\": \"2003-11-24\",\r\n    \"religion\": \"Kristen Protestan\",\r\n    \"address\": \"Tinggal dimana hayo pasti penasaran\",\r\n    \"number_phone\": \"+62234567890\",\r\n    \"email\": \"johndoe@example.com\",\r\n    \"accepted_date\": \"2024-06-28\",\r\n    \"school_origin\": \"High School A\",\r\n    \"class_id\": 2,\r\n    \"father_name\": \"Father Tia\",\r\n    \"father_job\": \"SRIN\",\r\n    \"father_number_phone\": \"+0987654321\",\r\n    \"mother_name\": \"Mother Doe\",\r\n    \"mother_job\": \"Kalbe\",\r\n    \"mother_number_phone\": \"+62122334455\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{local_host}}/api/v1/student/update/3",
+									"host": [
+										"{{local_host}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"student",
+										"update",
+										"3"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Many Student",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjMsIlVzZXJOYW1lIjoiQWRtaW4xIiwiVXNlcl90eXBlIjoiYWRtaW4iLCJleHAiOjE3Mjk3NzI3MTYsImlhdCI6MTcyOTY4NjMxNn0.uzu6TyHYKm22Q4e-qQ7aaXs-8Z-G4ZhYQIcGxtFolNg",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"student-data\": [\r\n        {\r\n            \"nisn\": \"1234567980\",\r\n            \"name\": \"John\",\r\n            \"gender\": \"Male\",\r\n            \"place_of_birth\": \"New York\",\r\n            \"date_of_birth\": \"1989-12-31\",\r\n            \"religion\": \"Islam\",\r\n            \"address\": \"123 St asdf asdfklasdjf;l kasdf\",\r\n            \"number_phone\": \"+623456781\",\r\n            \"email\": \"john@email.com\",\r\n            \"accepted_date\": \"2020-05-09\",\r\n            \"school_origin\": \"High School A\",\r\n            \"class_id\": 1,\r\n            \"father_name\": \"Mr. John Sr\",\r\n            \"father_job\": \"Engineer\",\r\n            \"father_number_phone\": \"+6234567890\",\r\n            \"mother_name\": \"Mrs. John\",\r\n            \"mother_job\": \"Doctor\",\r\n            \"mother_number_phone\": \"+6234567890\"\r\n        },\r\n        {\r\n            \"nisn\": \"1234567809\",\r\n            \"name\": \"Alice\",\r\n            \"gender\": \"Female\",\r\n            \"place_of_birth\": \"Los Angeles\",\r\n            \"date_of_birth\": \"1992-02-14\",\r\n            \"religion\": \"Buddha\",\r\n            \"address\": \"456 Avenue, bogor jawabarat\",\r\n            \"number_phone\": \"+622234567890\",\r\n            \"email\": \"alice@email.com\",\r\n            \"accepted_date\": \"2020-06-14\",\r\n            \"school_origin\": \"High School B\",\r\n            \"class_id\": 1,\r\n            \"father_name\": \"Mr. Smith\",\r\n            \"father_job\": \"Lawyer\",\r\n            \"father_number_phone\": \"+622234567890\",\r\n            \"mother_name\": \"Mrs. Smith\",\r\n            \"mother_job\": \"Teacher\",\r\n            \"mother_number_phone\": \"+622234567890\"\r\n        },\r\n        {\r\n            \"nisn\": \"0987564312\",\r\n            \"name\": \"Robert\",\r\n            \"gender\": \"Male\",\r\n            \"place_of_birth\": \"Chicago\",\r\n            \"date_of_birth\": \"1988-07-21\",\r\n            \"religion\": \"Buddha\",\r\n            \"address\": \"456 Avenue, bogor jawabarat\",\r\n            \"number_phone\": \"+623234567890\",\r\n            \"email\": \"robert@email.com\",\r\n            \"accepted_date\": \"2020-04-19\",\r\n            \"school_origin\": \"High School C\",\r\n            \"class_id\": 1,\r\n            \"father_name\": \"Mr. Robert Sr\",\r\n            \"father_job\": \"Architect\",\r\n            \"father_number_phone\": \"+623234567890\",\r\n            \"mother_name\": \"Mrs. Robert\",\r\n            \"mother_job\": \"Nurse\",\r\n            \"mother_number_phone\": \"+623234567890\"\r\n        },\r\n        {\r\n\r\n            \"nisn\": \"1122334455\",\r\n            \"name\": \"Emily\",\r\n            \"gender\": \"Female\",\r\n            \"place_of_birth\": \"Miami\",\r\n            \"date_of_birth\": \"1994-03-10\",\r\n            \"religion\": \"Buddha\",\r\n            \"address\": \"456 Avenue, bogor jawabarat\",\r\n            \"number_phone\": \"+624234567890\",\r\n            \"email\": \"emily@email.com\",\r\n            \"accepted_date\": \"2020-07-09\",\r\n            \"school_origin\": \"High School D\",\r\n            \"class_id\": 1,\r\n            \"father_name\": \"Mr. Brown\",\r\n            \"father_job\": \"Accountant\",\r\n            \"father_number_phone\": \"+624234567890\",\r\n            \"mother_name\": \"Mrs. Brown\",\r\n            \"mother_job\": \"Pharmacist\",\r\n            \"mother_number_phone\": \"+624234567890\"\r\n        },\r\n        {\r\n            \"nisn\": \"2233445566\",\r\n            \"name\": \"Michael\",\r\n            \"gender\": \"Male\",\r\n            \"place_of_birth\": \"Houston\",\r\n            \"date_of_birth\": \"1991-11-30\",\r\n            \"religion\": \"Islam\",\r\n            \"address\": \"456 Avenue, bogor jawabarate\",\r\n            \"number_phone\": \"+625234567890\",\r\n            \"email\": \"michael@email.com\",\r\n            \"accepted_date\": \"2020-03-04\",\r\n            \"school_origin\": \"High School E\",\r\n            \"class_id\": 1,\r\n            \"father_name\": \"Mr. Michael Sr\",\r\n            \"father_job\": \"Pilot\",\r\n            \"father_number_phone\": \"+625234567890\",\r\n            \"mother_name\": \"Mrs. Michael\",\r\n            \"mother_job\": \"Dentist\",\r\n            \"mother_number_phone\": \"+625234567890\"\r\n        },\r\n        {\r\n            \"nisn\": \"3344556677\",\r\n            \"name\": \"Jessica\",\r\n            \"gender\": \"Female\",\r\n            \"place_of_birth\": \"Boston\",\r\n            \"date_of_birth\": \"1995-09-08\",\r\n            \"religion\": \"Hindu\",\r\n            \"address\": \"303 S456 Avenue, bogor jawabaratt\",\r\n            \"number_phone\": \"+626234567890\",\r\n            \"email\": \"jessica@email.com\",\r\n            \"accepted_date\": \"1899-12-30\",\r\n            \"school_origin\": \"High School F\",\r\n            \"class_id\": 1,\r\n            \"father_name\": \"Mr. Wilson\",\r\n            \"father_job\": \"Banker\",\r\n            \"father_number_phone\": \"+626234567890\",\r\n            \"mother_name\": \"Mrs. Wilson\",\r\n            \"mother_job\": \"Lawyer\",\r\n            \"mother_number_phone\": \"+626234567890\"\r\n        },\r\n        {\r\n            \"nisn\": \"4455667788\",\r\n            \"name\": \"David\",\r\n            \"gender\": \"Male\",\r\n            \"place_of_birth\": \"San Francisco\",\r\n            \"date_of_birth\": \"1993-06-17\",\r\n            \"religion\": \"Buddha\",\r\n            \"address\": \"404 Ave456 Avenue, bogor jawabarat\",\r\n            \"number_phone\": \"+627234567890\",\r\n            \"email\": \"david@email.com\",\r\n            \"accepted_date\": \"2020-02-19\",\r\n            \"school_origin\": \"High School G\",\r\n            \"class_id\": 1,\r\n            \"father_name\": \"Mr. Miller\",\r\n            \"father_job\": \"Scientist\",\r\n            \"father_number_phone\": \"+627234567890\",\r\n            \"mother_name\": \"Mrs. Miller\",\r\n            \"mother_job\": \"Professor\",\r\n            \"mother_number_phone\": \"+627234567890\"\r\n        },\r\n        {\r\n            \"nisn\": \"5566778899\",\r\n            \"name\": \"Sarah\",\r\n            \"gender\": \"Female\",\r\n            \"place_of_birth\": \"Seattle\",\r\n            \"date_of_birth\": \"1990-11-29\",\r\n            \"religion\": \"Islam\",\r\n            \"address\": \"505 Road456 Avenue, bogor jawabarat\",\r\n            \"number_phone\": \"+628234567890\",\r\n            \"email\": \"sarah@email.com\",\r\n            \"accepted_date\": \"2020-05-24\",\r\n            \"school_origin\": \"High School H\",\r\n            \"class_id\": 1,\r\n            \"father_name\": \"Mr. Davis\",\r\n            \"father_job\": \"Doctor\",\r\n            \"father_number_phone\": \"+628234567890\",\r\n            \"mother_name\": \"Mrs. Davis\",\r\n            \"mother_job\": \"Judge\",\r\n            \"mother_number_phone\": \"+628234567890\"\r\n        },\r\n        {\r\n            \"nisn\": \"6677889900\",\r\n            \"name\": \"Daniel\",\r\n            \"gender\": \"Male\",\r\n            \"place_of_birth\": \"Dallas\",\r\n            \"date_of_birth\": \"1992-04-04\",\r\n            \"religion\": \"Islam\",\r\n            \"address\": \"606 Circle456 Avenue, bogor jawabarat\",\r\n            \"number_phone\": \"+629234567890\",\r\n            \"email\": \"daniel@email.com\",\r\n            \"accepted_date\": \"2020-04-29\",\r\n            \"school_origin\": \"High School I\",\r\n            \"class_id\": 1,\r\n            \"father_name\": \"Mr. Thomas\",\r\n            \"father_job\": \"Chef\",\r\n            \"father_number_phone\": \"+629234567890\",\r\n            \"mother_name\": \"Mrs. Thomas\",\r\n            \"mother_job\": \"Designer\",\r\n            \"mother_number_phone\": \"+629234567890\"\r\n        },\r\n        {\r\n            \"nisn\": \"1234567890\",\r\n            \"name\": \"Laura\",\r\n            \"gender\": \"Female\",\r\n            \"place_of_birth\": \"Washington\",\r\n            \"date_of_birth\": \"1989-10-21\",\r\n            \"religion\": \"Hindu\",\r\n            \"address\": \"707 Court dfgijpdf idfg\",\r\n            \"number_phone\": \"+62234567098\",\r\n            \"email\": \"laura@email.com\",\r\n            \"accepted_date\": \"2020-09-09\",\r\n            \"school_origin\": \"High School J\",\r\n            \"class_id\": 1,\r\n            \"father_name\": \"Mr. Evans\",\r\n            \"father_job\": \"Engineer\",\r\n            \"father_number_phone\": \"+62234567890\",\r\n            \"mother_name\": \"Mrs. Evans\",\r\n            \"mother_job\": \"Manager\",\r\n            \"mother_number_phone\": \"+62234567890\"\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{local_host}}/api/v1/student/create-all",
+									"host": [
+										"{{local_host}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"student",
+										"create-all"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Student By ClassID",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{local_host}}/api/v1/student/class/1",
+									"host": [
+										"{{local_host}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"student",
+										"class",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "CRUD Teacher",
+					"item": [
+						{
+							"name": "Create Teacher",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Gracella Noveliora\",\n    \"gender\": \"Female\",\n    \"place_of_birth\": \"Samarinda\",\n    \"date_of_birth\": \"2003-11-24\",\n    \"religion\": \"Buddha\",\n    \"address\": \"Samarinda\",\n    \"num_phone\": \"+62134567898\",\n    \"email\": \"johndoe21@example.com\",\n    \"teaching_hours\": \"0\",\n    \"teaching_subject\": [\n        1, 2, 3, 4\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{local_host}}/api/v1/teacher/create",
+									"host": [
+										"{{local_host}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"teacher",
+										"create"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Teacher",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{local_host}}/api/v1/teacher/",
+									"host": [
+										"{{local_host}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"teacher",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Teacher By ID",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{local_host}}/api/v1/teacher/4",
+									"host": [
+										"{{local_host}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"teacher",
+										"4"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Teacher",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Gracella Testing123\",\r\n    \"gender\": \"Female\",\r\n    \"place_of_birth\": \"Samarinda\",\r\n    \"religion\": \"Islam\",\r\n    \"date_of_birth\": \"2003-11-24\",\r\n    \"address\": \"Samarinda\",\r\n    \"num_phone\": \"+62134567898\",\r\n    \"email\": \"johndoe21@example.com\",\r\n    \"teaching_hour\": 5\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{local_host}}/api/v1/teacher/update/4",
+									"host": [
+										"{{local_host}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"teacher",
+										"update",
+										"4"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Teacher By ID",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{local_host}}/api/v1/teacher/delete/4",
+									"host": [
+										"{{local_host}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"teacher",
+										"delete",
+										"4"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Many Teacher [NOT DONE]",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{local_host}}/api/v1/teacher/create-all",
+									"host": [
+										"{{local_host}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"teacher",
+										"create-all"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "CRUD Staff",
+					"item": [
+						{
+							"name": "Get All Staff",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{local_host}}/api/v1/staff",
+									"host": [
+										"{{local_host}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"staff"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Staff By ID",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{local_host}}/api/v1/staff/:staff_id",
+									"host": [
+										"{{local_host}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"staff",
+										":staff_id"
+									],
+									"variable": [
+										{
+											"key": "staff_id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Staff",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Gracella Noveliora\",\r\n    \"gender\": \"Female\",\r\n    \"place_of_birth\": \"Samarinda\",\r\n    \"date_of_birth\": \"2003-11-24\",\r\n    \"religion\": \"Buddha\",\r\n    \"address\": \"Samarinda\",\r\n    \"num_phone\": \"+62134567898\",\r\n    \"email\": \"johndoe21@example.com\",\r\n    \"position\": \"TU\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{local_host}}/api/v1/staff/create",
+									"host": [
+										"{{local_host}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"staff",
+										"create"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "CRUD Class",
+			"item": [
+				{
+					"name": "Create Class",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id_grade\": 1,\r\n    \"id_teacher\": 1,\r\n    \"name\": \"A\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local_host}}/api/v1/class/create",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"class",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Class",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local_host}}/api/v1/class/",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"class",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Class By  ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local_host}}/api/v1/class/1",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"class",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE Class by ID",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{local_host}}/api/v1/class/delete/1",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"class",
+								"delete",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Class",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id_teacher\": 1 ,\r\n    \"name\": \"XII Mipa\",\r\n    \"grade\": \"12B\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local_host}}/api/v1/class/update/1",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"class",
+								"update",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Report",
+			"item": [
+				{
+					"name": "Get Report Template",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local_host}}/api/v1/report/template",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"report",
+								"template"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Attendance",
+			"item": [
+				{
+					"name": "Create Attendance",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"student\":[\r\n        {\r\n            \"student_id\":\"4\",\r\n            \"reason\":\"Absent\"\r\n        },\r\n        {\r\n            \"student_id\":\"1\",\r\n            \"reason\":\"Present\"\r\n        },\r\n        {\r\n            \"student_id\":\"2\",\r\n            \"reason\":\"Present\"\r\n        },\r\n        {\r\n            \"student_id\":\"3\",\r\n            \"reason\":\"Present\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local_host}}/api/v1/attendance/2/2024-11-29",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"attendance",
+								"2",
+								"2024-11-29"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update attendance",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"student\":[\r\n        {\r\n            \"student_id\":\"4\",\r\n            \"reason\":\"Absent\"\r\n        },\r\n        {\r\n            \"student_id\":\"1\",\r\n            \"reason\":\"Present\"\r\n        },\r\n        {\r\n            \"student_id\":\"2\",\r\n            \"reason\":\"Present\"\r\n        },\r\n        {\r\n            \"student_id\":\"3\",\r\n            \"reason\":\"Present\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local_host}}/api/v1/attendance/2/2024-11-29",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"attendance",
+								"2",
+								"2024-11-29"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Attendance Summary",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local_host}}/api/v1/attendance/summary/1/2024-07-01",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"attendance",
+								"summary",
+								"1",
+								"2024-07-01"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Student Attendance Date By ClassID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local_host}}/api/v1/attendance/all-student/1/2024-08-01",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"attendance",
+								"all-student",
+								"1",
+								"2024-08-01"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Subject",
+			"item": [
+				{
+					"name": "Get All Subject",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local_host}}/api/v1/subject",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"subject"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetAllSubjectWithClassName",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local_host}}/api/v1/subject/class",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"subject",
+								"class"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetSubjectAndClassNameByID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local_host}}/api/v1/subject/1/1",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"subject",
+								"1",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Scoring",
+			"item": [
+				{
+					"name": "By StudentID",
+					"item": [
+						{
+							"name": "Get Score By 1 Student ID",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{local_host}}/api/v1/scoring/student/:student_id/:subject_id/:class_name_id",
+									"host": [
+										"{{local_host}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"scoring",
+										"student",
+										":student_id",
+										":subject_id",
+										":class_name_id"
+									],
+									"variable": [
+										{
+											"key": "student_id",
+											"value": "11"
+										},
+										{
+											"key": "subject_id",
+											"value": "5"
+										},
+										{
+											"key": "class_name_id",
+											"value": "5"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "UpdateStudentsScoringBySubjectClassName Copy",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"StudentName\": \"Isabella Martinez\",\r\n    \"SubjectName\": \"Sosiology\",\r\n    \"Scores\": [\r\n        {\r\n            \"AssignmentID\": 1,\r\n            \"AssignmentType\": \"PAS\",\r\n            \"SubjectName\": \"Sosiology\",\r\n            \"Score\": 80\r\n        },\r\n        {\r\n            \"AssignmentID\": 2,\r\n            \"AssignmentType\": \"PTS\",\r\n            \"SubjectName\": \"Sosiology\",\r\n            \"Score\": 100\r\n        }\r\n    ]\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{local_host}}/api/v1/scoring/student/:student_id/:subject_id/:class_name_id",
+									"host": [
+										"{{local_host}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"scoring",
+										"student",
+										":student_id",
+										":subject_id",
+										":class_name_id"
+									],
+									"variable": [
+										{
+											"key": "student_id",
+											"value": "15"
+										},
+										{
+											"key": "subject_id",
+											"value": "5"
+										},
+										{
+											"key": "class_name_id",
+											"value": "5"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "CreateStudentsScoringBySubjectClassName",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"assignment_id\": 1,  // PAS (id: 1) PTS (id: 2)\r\n    \"scores\": [\r\n        {\r\n            \"studentID\":1,\r\n            \"score\":80\r\n        },\r\n        {\r\n            \"studentID\":2,\r\n            \"score\":100\r\n        },\r\n        {\r\n            \"studentID\":3,\r\n            \"score\":90\r\n        },\r\n        {\r\n            \"studentID\":4,\r\n            \"score\":100\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local_host}}/api/v1/scoring/:subject_id/:class_name_id",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"scoring",
+								":subject_id",
+								":class_name_id"
+							],
+							"variable": [
+								{
+									"key": "subject_id",
+									"value": "3"
+								},
+								{
+									"key": "class_name_id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Scoring By Subject Class Assigned by teacher",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local_host}}/api/v1/scoring/:subject_id/:class_name_id",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"scoring",
+								":subject_id",
+								":class_name_id"
+							],
+							"variable": [
+								{
+									"key": "subject_id",
+									"value": "1"
+								},
+								{
+									"key": "class_name_id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateStudentsScoringBySubjectClassName",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"assignment_id\": 3, // PAS (id: 1) PTS (id: 2) Quizz 1 (id: 3)\r\n    \"scores\": [\r\n        {\r\n            \"studentID\": 1,\r\n            \"score\": 100\r\n        },\r\n        {\r\n            \"studentID\": 2,\r\n            \"score\": 100\r\n        },\r\n        {\r\n            \"studentID\": 3,\r\n            \"score\": 100\r\n        },\r\n        {\r\n            \"studentID\": 4,\r\n            \"score\": 100\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local_host}}/api/v1/scoring/:subject_id/:class_name_id",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"scoring",
+								":subject_id",
+								":class_name_id"
+							],
+							"variable": [
+								{
+									"key": "subject_id",
+									"value": "1"
+								},
+								{
+									"key": "class_name_id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get ClassNameList by Teaching Subject",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local_host}}/api/v1/scoring/get-all-class-teaching-subject-teacher",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"scoring",
+								"get-all-class-teaching-subject-teacher"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Summaries",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local_host}}/api/v1/scoring/summaries/:class_id",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"scoring",
+								"summaries",
+								":class_id"
+							],
+							"variable": [
+								{
+									"key": "class_id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Assignment",
+			"item": [
+				{
+					"name": "CreateAsigment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"assignment_type\": \"Quizz 1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local_host}}/api/v1/assignment",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"assignment"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[DISABLED] Get All Assignment Type",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local_host}}/api/v1/assignment",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"assignment"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Generator",
+			"item": [
+				{
+					"name": "Schedule",
+					"item": [
+						{
+							"name": "GenerateSchedule",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"schedule\": [\r\n        {\r\n            \"teacher_id\": 1,\r\n            \"teaching_hour\": 15,\r\n            \"class_name_id\": [1, 2, 3],\r\n            \"subject_id\": [1, 2]\r\n        },\r\n        {\r\n            \"teacher_id\": 2,\r\n            \"teaching_hour\": 15,\r\n            \"class_name_id\": [1, 2, 3],\r\n            \"subject_id\": [1, 2]\r\n        },\r\n        {\r\n            \"teacher_id\": 3,\r\n            \"teaching_hour\": 15,\r\n            \"class_name_id\": [1, 2, 3],\r\n            \"subject_id\": [1, 2]\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{local_host}}/api/v1/generator-schedule",
+									"host": [
+										"{{local_host}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"generator-schedule"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "New Folder",
+					"item": []
+				}
+			]
+		},
+		{
+			"name": "testing request",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{local_host}}/",
+					"host": [
+						"{{local_host}}"
+					],
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Server test request",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://https://go-vercel-rifian-fernando-rifian-fernandos-projects.vercel.app/api/v1/student",
+					"protocol": "https",
+					"host": [
+						"https"
+					],
+					"port": "",
+					"path": [
+						"",
+						"go-vercel-rifian-fernando-rifian-fernandos-projects.vercel.app",
+						"api",
+						"v1",
+						"student"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Many Student Class",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"student-data\": [\r\n        {\r\n            \"student_id\": 1,\r\n            \"class_name_id\": 5\r\n        },\r\n        {\r\n            \"student_id\": 2,\r\n            \"class_name_id\": 5\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{local_host}}/api/v1/student/update-all-student-class-id",
+					"host": [
+						"{{local_host}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"student",
+						"update-all-student-class-id"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "local_host",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "production",
+			"value": "https://go-vercel-psi.vercel.app",
+			"type": "string"
+		}
+	]
+}

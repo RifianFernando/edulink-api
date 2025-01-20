@@ -59,9 +59,11 @@ func (class *ClassNameModel) GetAllClassName() (
 				classList = append(classList, v)
 			}
 		}
+		// return classess by teacher id
 		return classList, ""
 	}
 
+	// return all classess
 	return className, ""
 }
 
@@ -78,6 +80,16 @@ func (className *ClassName) GetClassNameById(id string) (ClassName, error) {
 	}
 
 	return classNames, nil
+}
+
+// get class Name by models
+func (className *ClassNameModel) GetClassNameModelByID(classNameID string) error {
+	result := connections.DB.Where("class_name_id = ?", classNameID).Preload("Teacher").Preload("Grade").First(&className)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
 }
 
 // update class by id

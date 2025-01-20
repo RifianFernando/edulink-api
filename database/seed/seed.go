@@ -75,6 +75,15 @@ func Seed() error {
 	if err := Validate(StudentSeeder()); err != nil {
 		errs = append(errs, fmt.Sprintf("StudentSeeder error: %v", err))
 	}
+	if err := Validate(DayScheduleSeeder()); err != nil {
+		errs = append(errs, fmt.Sprintf("DayScheduleSeeder error: %v", err))
+	}
+	if err := Validate(HourScheduleSeeder()); err != nil {
+		errs = append(errs, fmt.Sprintf("DayScheduleSeeder error: %v", err))
+	}
+	if err := Validate(ScheduleSeeder()); err != nil {
+		errs = append(errs, fmt.Sprintf("ScheduleSeeder error: %v", err))
+	}
 	if err := Validate(AdminSeeder()); err != nil {
 		errs = append(errs, fmt.Sprintf("AdminSeeder error: %v", err))
 	}

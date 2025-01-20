@@ -10,6 +10,10 @@ func StaffSeeder() (staffs []models.Staff) {
 			UserID:   5,
 			Position: "TU",
 		},
+		{
+			UserID:   6,
+			Position: "Koperasi",
+		},
 	}
 
 	return staffs

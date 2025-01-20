@@ -49,7 +49,7 @@
     if you want to seed the database use the following command
 
     ```bash
-    go run database/database.go -seed
+    go run database/database.go -migrate:fresh
     ```
 
     if you want to generate the app_key for auth use the following command
@@ -72,7 +72,9 @@
     go run main.go
     ```
 
-- Run workflows locally using `act` and `docker`
+    # Tutorial For Another Tools
+
+    ## Run workflows locally using `act` and `docker`
     see the workflow list in `.github/workflows` and run the workflow using the following command
 
     ```bash
@@ -83,6 +85,18 @@
 
     ```bash
     act -j <job_name>
+    ```
+
+    ## Run Collection Postman Using newman locally with terminal
+        
+    - first install the newman using the following command in powershell with current user policy to remoteSigned
+    ```bash
+    npm install -g newman
+    ```
+
+    - run the collection using the following command
+    ```bash
+    newman run Edulink-Api.postman_collection.json
     ```
 
 - ERD Diagram for this application

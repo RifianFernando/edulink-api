@@ -12,72 +12,72 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func CreateStaff(c *gin.Context) {
-	var request request.InsertStaffRequest
+const parseStaffIDError = "while parse staff id: "
+
+func handleValidationErrors(c *gin.Context, errors []map[string]string) bool {
+	if len(errors) > 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": errors,
+		})
+		return true
+	}
+	return false
+}
+
+func bindAndValidateRequest(c *gin.Context, req interface{}, validateFunc func() []map[string]string) ([]map[string]string, bool) {
 	var allErrors []map[string]string
-
-	// Bind the request JSON to the CreateStaffRequest struct
-	if err := res.ResponseMessage(c.ShouldBindJSON(&request)); len(err) > 0 {
+	if err := res.ResponseMessage(c.ShouldBindJSON(req)); len(err) > 0 {
 		allErrors = append(allErrors, err...)
 	}
-
-	// Validate the request
-	if err := request.ValidateStaff(); len(err) > 0 {
+	if err := validateFunc(); len(err) > 0 {
 		allErrors = append(allErrors, err...)
 	}
+	if handleValidationErrors(c, allErrors) {
+		return nil, true
+	}
+	return allErrors, false
+}
 
-	if len(allErrors) > 0 {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": allErrors,
-		})
+func CreateStaff(c *gin.Context) {
+	var req request.InsertStaffRequest
+	if _, invalid := bindAndValidateRequest(c, &req, req.ValidateStaff); invalid {
 		return
 	}
 
-	// Parse date strings to time.Time
-	DateOfBirth, err := request.ParseDates()
+	DateOfBirth, err := req.ParseDates()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid date format",
-		})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid date format"})
 		return
 	}
 
-	var user = models.User{
-		UserName:         request.UserName,
-		UserGender:       request.UserGender,
-		UserPlaceOfBirth: request.UserPlaceOfBirth,
+	user := models.User{
+		UserName:         req.UserName,
+		UserGender:       req.UserGender,
+		UserPlaceOfBirth: req.UserPlaceOfBirth,
 		UserDateOfBirth:  DateOfBirth,
-		UserReligion:     request.UserReligion,
-		UserAddress:      request.UserAddress,
-		UserPhoneNum:     request.UserPhoneNum,
-		UserEmail:        request.UserEmail,
+		UserReligion:     req.UserReligion,
+		UserAddress:      req.UserAddress,
+		UserPhoneNum:     req.UserPhoneNum,
+		UserEmail:        req.UserEmail,
 		UserPassword: lib.HashPassword(
-			request.UserEmail + request.DateOfBirth,
+			req.UserEmail + req.DateOfBirth,
 		),
 	}
 
-	err = user.CreateUser()
-
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "while create user: " + err.Error(),
-		})
+	if err := user.CreateUser(); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "while create user: " + err.Error()})
 		return
 	}
 
-	var staff = models.Staff{
+	staff := models.Staff{
 		UserID:   user.UserID,
-		Position: request.Position,
+		Position: req.Position,
 	}
-	err = staff.CreateStaff()
-	if err != nil || staff.StaffID == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "while create staff: " + err.Error(),
-		})
+	if err := staff.CreateStaff(); err != nil || staff.StaffID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "while create staff: " + err.Error()})
 		return
 	}
 
-	// return it
 	c.JSON(http.StatusOK, gin.H{
 		"user":  user,
 		"staff": staff,
@@ -85,40 +85,19 @@ func CreateStaff(c *gin.Context) {
 }
 
 func CreateAllStaff(c *gin.Context) {
-	var request request.InsertAllStaffRequest
-	var allErrors []map[string]string
-
-	// Bind the request JSON to the CreateStaffRequest struct
-	if err := res.ResponseMessage(c.ShouldBindJSON(&request)); len(err) > 0 {
-		allErrors = append(allErrors, err...)
-	}
-
-	// Validate the request
-	if err := request.ValidateAllStaff(); len(err) > 0 {
-		allErrors = append(allErrors, err...)
-	}
-
-	if len(allErrors) > 0 {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": allErrors,
-		})
+	var req request.InsertAllStaffRequest
+	if _, invalid := bindAndValidateRequest(c, &req, req.ValidateAllStaff); invalid {
 		return
 	}
 
-	staffs, err := helper.PrepareStaffs(request.InsertStaffRequest, c)
+	staffs, err := helper.PrepareStaffs(req.InsertStaffRequest, c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Create all staffs
-	err = models.CreateAllStaffs(staffs)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err,
-		})
+	if err := models.CreateAllStaffs(staffs); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -129,22 +108,16 @@ func CreateAllStaff(c *gin.Context) {
 }
 
 func GetAllStaff(c *gin.Context) {
-	// get from models
 	staff := models.StaffModel{}
 	staffs, err := staff.GetAllStaffs()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
-	c.JSON(200, gin.H{
-		"staff": staffs,
-	})
+	c.JSON(http.StatusOK, gin.H{"staff": staffs})
 }
 
 func GetStaffByID(c *gin.Context) {
-	// Get the scoring data from the model
 	staffID := c.Param("staff_id")
 	if staffID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "check your parameter"})
@@ -157,137 +130,100 @@ func GetStaffByID(c *gin.Context) {
 		return
 	}
 
-	// get from models
-	staff := models.StaffModel{
-		Staff: models.Staff{
-			StaffID: staffIDParsed,
-		},
-	}
+	staff := models.StaffModel{Staff: models.Staff{StaffID: staffIDParsed}}
 	result, err := staff.GetStaffByModel()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 
-	c.JSON(200, gin.H{
-		"staff": result,
-	})
+	c.JSON(http.StatusOK, gin.H{"staff": result})
 }
 
 func UpdateStaffByID(c *gin.Context) {
-	var request request.UpdateStaffRequest
+	var req request.UpdateStaffRequest
 	// Bind the request JSON to the InsertStaffRequest struct
-	if err := c.ShouldBindJSON(&request); err != nil {
+	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "should bind json: " + err.Error(),
 		})
 		return
 	}
-
 	// Validate the request
-	if err := request.Validate(); err != nil {
+	if err := req.Validate(); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
 		return
 	}
 
-	// Parse date strings to time.Time
-	DateOfBirth, err := request.ParseDates()
+	DateOfBirth, err := req.ParseDates()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid date format: " + err.Error(),
-		})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid date format: " + err.Error()})
 		return
 	}
 
-	// Get staff id from URL and parse it to int64
 	id := c.Param("staff_id")
-	var staffModel models.StaffModel
+	staffModel := models.StaffModel{}
 	staffModel.StaffID, err = strconv.ParseInt(id, 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": parseStaffIDError + err.Error(),
-		})
+		c.JSON(http.StatusBadRequest, gin.H{"error": parseStaffIDError + err.Error()})
 		return
 	}
 
-	_, err = staffModel.GetStaffByModel()
-	if err != nil || staffModel.StaffID == 0{
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+	if _, err = staffModel.GetStaffByModel(); err != nil || staffModel.StaffID == 0 {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	// update staff and user
-	staffModel.User.UserName = request.UserName
-	staffModel.User.UserGender = request.UserGender
-	staffModel.User.UserPlaceOfBirth = request.UserPlaceOfBirth
-	staffModel.User.UserReligion = request.UserReligion
-	staffModel.User.UserDateOfBirth = DateOfBirth
-	staffModel.User.UserAddress = request.UserAddress
-	staffModel.User.UserPhoneNum = request.UserPhoneNum
-	staffModel.User.UserEmail = request.UserEmail
-	staffModel.Position = request.Position
+	staffModel.User = models.User{
+		UserName:         req.UserName,
+		UserGender:       req.UserGender,
+		UserPlaceOfBirth: req.UserPlaceOfBirth,
+		UserReligion:     req.UserReligion,
+		UserDateOfBirth:  DateOfBirth,
+		UserAddress:      req.UserAddress,
+		UserPhoneNum:     req.UserPhoneNum,
+		UserEmail:        req.UserEmail,
+	}
+	staffModel.Position = req.Position
 
-	err = staffModel.UpdateStaffByID()
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+	if err := staffModel.UpdateStaffByID(); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Return success response
 	c.JSON(http.StatusOK, gin.H{
 		"success":     "Updated staff with ID: " + id,
 		"DateOfBirth": DateOfBirth,
 	})
 }
 
-const parseStaffIDError = "while parse staff id: "
-
 func DeleteStaffByID(c *gin.Context) {
 	id := c.Param("staff_id")
+	staff := models.StaffModel{}
 
-	var staff models.StaffModel
-	var err error
-	staff.StaffID, err = strconv.ParseInt(id, 10, 64)
+	staffID, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": parseStaffIDError + err.Error(),
-		})
+		c.JSON(http.StatusBadRequest, gin.H{"error": parseStaffIDError + err.Error()})
+		return
+	}
+	staff.StaffID = staffID
+
+	if _, err := staff.GetStaffByModel(); err != nil || staff.StaffID == 0 || staff.UserID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": parseStaffIDError + err.Error()})
 		return
 	}
 
-	_, err = staff.GetStaffByModel()
-	if err != nil || staff.StaffID == 0 || staff.UserID == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": parseStaffIDError + err.Error(),
-		})
+	if err := staff.DeleteStaffByID(); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	err = staff.DeleteStaffByID()
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+	if err := staff.User.DeleteUserByID(strconv.FormatInt(staff.UserID, 10)); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	err = staff.User.DeleteUserByID(strconv.FormatInt(staff.UserID, 10))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"staff": "deleted staff with id " + id,
-	})
+	c.JSON(http.StatusOK, gin.H{"staff": "deleted staff with id " + id})
 }

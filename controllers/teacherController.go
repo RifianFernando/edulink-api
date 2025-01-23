@@ -108,10 +108,10 @@ func CreateTeacher(c *gin.Context) {
 }
 
 func CreateAllTeacher(c *gin.Context) {
-	var req request.InsertAllTeacherRequest
-	if _, invalid := bindAndValidateRequest(c, &req, req.ValidateAllTeacher); invalid {
-		return
-	}
+	// var req request.InsertAllTeacherRequest
+	// if _, invalid := bindAndValidateRequest(c, &req, req.ValidateAllTeacher); invalid {
+	// 	return
+	// }
 
 	// teacher, err := helper.PrepareTeachers(req.InsertTeacherRequest, c)
 	// if err != nil {
@@ -124,10 +124,9 @@ func CreateAllTeacher(c *gin.Context) {
 	// 	return
 	// }
 
-	// c.JSON(http.StatusOK, gin.H{
-	// 	"teacher":     "Create all teacher",
-	// 	"staff-data": teacher,
-	// })
+	c.JSON(http.StatusOK, gin.H{
+		"teacher": "all teacher created",
+	})
 }
 
 func GetAllTeacher(c *gin.Context) {

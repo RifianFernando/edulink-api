@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/edulink-api/lib"
 	"github.com/edulink-api/database/models"
+	"github.com/edulink-api/lib"
 	request "github.com/edulink-api/request/personal-data/teacher"
 	"github.com/edulink-api/res"
 	"github.com/gin-gonic/gin"
@@ -107,179 +107,28 @@ func CreateTeacher(c *gin.Context) {
 	})
 }
 
-// func CreateAllTeacher() gin.HandlerFunc {
-// 	return func(c *gin.Context) {
-// 		var request request.InsertAllTeacherRequest
+func CreateAllTeacher(c *gin.Context) {
+	var req request.InsertAllTeacherRequest
+	if _, invalid := bindAndValidateRequest(c, &req, req.ValidateAllTeacher); invalid {
+		return
+	}
 
-// 		// Bind the request JSON to the CreateAllTeacherRequest struct
-// 		if err := c.ShouldBindJSON(&request); err != nil {
-// 			c.JSON(http.StatusBadRequest, gin.H{
-// 				"error": "should bind json" + err.Error(),
-// 			})
-// 			return
-// 		}
+	// teacher, err := helper.PrepareTeachers(req.InsertTeacherRequest, c)
+	// if err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	// 	return
+	// }
 
-// 		// Validate the request
-// 		if err := request.ValidateAllTeacher(); err != nil {
-// 			c.JSON(http.StatusBadRequest, gin.H{
-// 				"error": "when validate" + err.Error(),
-// 			})
-// 			return
-// 		}
+	// if err := models.CreateAllTeachers(teacher); err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	// 	return
+	// }
 
-// 		// return
-// 		nameMap := make(map[string]bool)
-// 		nisnMap := make(map[string]bool)
-// 		numPhoneMap := make(map[string]bool)
-// 		emailMap := make(map[string]bool)
-// 		var teachers []models.Teacher
-// 		for index, teacher := range request.InsertTeacherRequest {
-// 			index = index + 1
-// 			// Check if TeacherName is already in the map
-// 			if nameMap[teacher.TeacherName] {
-// 				c.JSON(http.StatusBadRequest, gin.H{
-// 					"error": "Duplicate TeacherName: " + teacher.TeacherName + " on index: " + strconv.Itoa(index),
-// 				})
-// 				return
-// 			}
-// 			// Check if TeacherID is already in the map
-// 			if idMap[teacher.TeacherID] {
-// 				c.JSON(http.StatusBadRequest, gin.H{
-// 					"error": "Duplicate TeacherID: " + teacher.TeacherID + " on index: " + strconv.Itoa(index),
-// 				})
-// 				return
-// 			}
-// 			// Check if TeacherNumPhone is already in the map
-// 			if numPhoneMap[teacher.TeacherNumPhone] {
-// 				c.JSON(http.StatusBadRequest, gin.H{
-// 					"error": "Duplicate TeacherNumPhone: " + teacher.TeacherNumPhone + " on index: " + strconv.Itoa(index),
-// 				})
-// 				return
-// 			}
-// 			// Check if TeacherEmail is already in the map
-// 			if emailMap[teacher.TeacherEmail] {
-// 				c.JSON(http.StatusBadRequest, gin.H{
-// 					"error": "Duplicate TeacherEmail: " + teacher.TeacherEmail + " on index: " + strconv.Itoa(index),
-// 				})
-// 				return
-// 			}
-
-// 			// Parse dates (if needed) and construct teacher models
-// 			DateOfBirth, err := time.Parse("2006-01-02", teacher.DateOfBirth)
-// 			if err != nil {
-// 				c.JSON(http.StatusBadRequest, gin.H{
-// 					"error": "Invalid date format on index: " + strconv.Itoa(index),
-// 				})
-// 				return
-// 			}
-
-// 			// checking database name, id, number phone, and email if already exist
-// 			var teacherSearch = models.Teacher{
-// 				TeacherName: student.TeacherName,
-// 			}
-// 			result, err := teacherSearch.GetTeacher()
-// 			if err != nil {
-// 				c.JSON(http.StatusBadRequest, gin.H{
-// 					"error": err.Error(),
-// 				})
-// 				return
-// 			} else if result.TeacherID != 0 {
-// 				c.JSON(http.StatusBadRequest, gin.H{
-// 					"error": "Teacher named: " + teacher.TeacherName + " already exist on index: " + strconv.Itoa(index),
-// 				})
-// 				return
-// 			}
-
-// 			teacherSearch = models.Teacher{
-// 				TeacherID: teacher.TeacherID,
-// 			}
-// 			result, err = teacherSearch.GetTeacher()
-// 			if err != nil {
-// 				c.JSON(http.StatusBadRequest, gin.H{
-// 					"error": err.Error(),
-// 				})
-// 				return
-// 			} else if result.TeacherID != 0 {
-// 				c.JSON(http.StatusBadRequest, gin.H{
-// 					"error": "Teacher ID: " + teacher.TeacherID + " already exist on index: " + strconv.Itoa(index),
-// 				})
-// 				return
-// 			}
-
-// 			teacherSearch = models.Teacher{
-// 				TeacherNumPhone: teacher.TeacherNumPhone,
-// 			}
-// 			result, err = teacherSearch.GetTeacher()
-// 			if err != nil {
-// 				c.JSON(http.StatusBadRequest, gin.H{
-// 					"error": err.Error(),
-// 				})
-// 				return
-// 			} else if result.TeacherID != 0 {
-// 				c.JSON(http.StatusBadRequest, gin.H{
-// 					"error": "Teacher number_phone: " + teacher.TeacherNumPhone + " already exist on index: " + strconv.Itoa(index),
-// 				})
-// 				return
-// 			}
-
-// 			teacherSearch = models.Teacher{
-// 				TeacherEmail: teacher.TeacherEmail,
-// 			}
-// 			result, err = teacherSearch.GetTeacher()
-// 			if err != nil {
-// 				c.JSON(http.StatusBadRequest, gin.H{
-// 					"error": err.Error(),
-// 				})
-// 				return
-// 			} else if result.TeacherID != 0 {
-// 				c.JSON(http.StatusBadRequest, gin.H{
-// 					"error": "Teacher email: " + teacher.TeacherEmail + " already exist on index: " + strconv.Itoa(index),
-// 				})
-// 				return
-// 			}
-
-// 			teachers = append(teachers, models.Teacher{
-// 				// ClassID:               student.ClassID,
-// 				// StudentName:           student.StudentName,
-// 				// StudentNISN:           student.StudentNISN,
-// 				// StudentGender:         student.StudentGender,
-// 				// StudentPlaceOfBirth:   student.StudentPlaceOfBirth,
-// 				// StudentDateOfBirth:    DateOfBirth,
-// 				// StudentReligion:       student.StudentReligion,
-// 				// StudentAddress:        student.StudentAddress,
-// 				// StudentNumPhone:       student.StudentNumPhone,
-// 				// StudentEmail:          student.StudentEmail,
-// 				// StudentAcceptedDate:   AcceptedDate,
-// 				// StudentSchoolOrigin:   student.StudentSchoolOrigin,
-// 				// StudentFatherName:     student.StudentFatherName,
-// 				// StudentFatherJob:      student.StudentFatherJob,
-// 				// StudentFatherNumPhone: student.StudentFatherNumPhone,
-// 				// StudentMotherName:     student.StudentMotherName,
-// 				// StudentMotherJob:      student.StudentMotherJob,
-// 				// StudentMotherNumPhone: student.StudentMotherNumPhone,
-// 			})
-
-// 			// Mark each field as seen in the map
-// 			nameMap[teacher.TeacherName] = true
-// 			idMap[teacher.TeacherID] = true
-// 			numPhoneMap[teacher.TeacherNumPhone] = true
-// 			emailMap[teacher.TeacherEmail] = true
-// 		}
-
-// 		// Create all teachers
-// 		err := models.CreateAllTeachers(teachers)
-// 		if err != nil {
-// 			c.JSON(http.StatusBadRequest, gin.H{
-// 				"error": err,
-// 			})
-// 			return
-// 		} else {
-// 			c.JSON(http.StatusOK, gin.H{
-// 				"teachers": teachers,
-// 			})
-// 		}
-// 	}
-// }
+	// c.JSON(http.StatusOK, gin.H{
+	// 	"teacher":     "Create all teacher",
+	// 	"staff-data": teacher,
+	// })
+}
 
 func GetAllTeacher(c *gin.Context) {
 	var teachers models.TeacherModel
@@ -290,7 +139,6 @@ func GetAllTeacher(c *gin.Context) {
 		})
 		return
 	}
-
 
 	c.JSON(http.StatusOK, gin.H{
 		"teachers": result,

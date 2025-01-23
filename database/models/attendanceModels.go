@@ -208,7 +208,7 @@ func GetAllAttendanceYearSummaryByClassID(
 	classID string,
 	year int,
 ) (
-	attendances[]AttendanceYearSummaryStudent,
+	attendances []AttendanceYearSummaryStudent,
 	err error,
 ) {
 	err = connections.DB.Model(Attendance{}).
@@ -226,6 +226,37 @@ func GetAllAttendanceYearSummaryByClassID(
 
 	if err != nil {
 		return nil, err
+	}
+
+	return attendances, nil
+}
+
+func GetAllAttendanceArchive(
+	academicYearStart string,
+	academicYearEnd string,
+) (
+	attendances []AttendanceYearSummaryStudent,
+	err error,
+) {
+	academicYearStart += "-07-01"
+	academicYearEnd += "-06-30"
+	err = connections.DB.Model(Attendance{}).
+		Select("s.student_id AS student_id, "+
+			"s.student_name AS student_name, "+
+			"SUM(CASE WHEN attendance_status = 'Present' THEN 1 ELSE 0 END) AS present_total, "+
+			"SUM(CASE WHEN attendance_status = 'Sick' THEN 1 ELSE 0 END) AS sick_total, "+
+			"SUM(CASE WHEN attendance_status = 'Leave' THEN 1 ELSE 0 END) AS leave_total, "+
+			"SUM(CASE WHEN attendance_status = 'Absent' THEN 1 ELSE 0 END) AS absent_total").
+		Joins("JOIN academic.students s ON s.student_id = attendances.student_id").
+		Where("attendance_date BETWEEN ? AND ?", academicYearStart, academicYearEnd).
+		Group("s.student_id").
+		Order("s.student_name ASC").
+		Scan(&attendances).Error
+
+	if err != nil {
+		return nil, err
+	} else if len(attendances) == 0 {
+		return nil, fmt.Errorf("attendance not found")
 	}
 
 	return attendances, nil

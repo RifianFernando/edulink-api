@@ -1,6 +1,8 @@
 package models
 
 import (
+	"fmt"
+
 	"github.com/edulink-api/connections"
 	"github.com/edulink-api/database/migration/lib"
 )
@@ -32,4 +34,16 @@ func (academicYear *AcademicYear) GetAcademicYearByModel() error {
 	}
 
 	return nil
+}
+
+func (academicYear *AcademicYear) GetAcademicYearList() ([]AcademicYear, error) {
+	var academicYearList []AcademicYear
+	result := connections.DB.Find(&academicYearList)
+	if result.Error != nil {
+		return academicYearList, result.Error
+	} else if result.RowsAffected == 0 {
+		return academicYearList, fmt.Errorf("no academic year found")
+	}
+
+	return academicYearList, nil
 }

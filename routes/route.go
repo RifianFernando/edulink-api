@@ -45,6 +45,7 @@ func Route(router *gin.Engine) {
 		teacher.POST(create, controllers.CreateTeacher)
 		teacher.PUT("/update/:teacher_id", controllers.UpdateTeacherById)
 		teacher.DELETE("/delete/:teacher_id", controllers.DeleteTeacherById)
+		teacher.POST("/create-all", controllers.CreateAllTeacher)
 	}
 
 	// Class CRUD
@@ -131,5 +132,24 @@ func Route(router *gin.Engine) {
 		staff.PUT("/update/:staff_id", controllers.UpdateStaffByID)
 		staff.DELETE("/delete/:staff_id", controllers.DeleteStaffByID)
 		staff.POST("/create-all", controllers.CreateAllStaff)
+	}
+
+	// profile
+	profile := apiV1.Group("/profile", middleware.AlreadyLoggedIn())
+	{
+		profile.GET("", authController.GetUserProfile)
+	}
+
+	// get academic year list
+	academicYear := apiV1.Group("/academic-year", middleware.AlreadyLoggedIn())
+	{
+		academicYear.GET("", controllers.GetAcademicYearList)
+	}
+
+	// get archive academic calendar
+	archiveData := apiV1.Group("/archive", middleware.AlreadyLoggedIn())
+	{
+		// archiveData.GET("/student-personal-data", controllers.GetAllStudentPersonalDataArchive);
+		archiveData.GET("/student-attendance/:academic_year_start/:academic_year_end", controllers.GetAllStudentAttendanceArchive)
 	}
 }

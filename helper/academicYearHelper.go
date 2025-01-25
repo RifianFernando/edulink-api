@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	AcademicStartSemesterMonth = 7
+	AcademicStartSemesterMonth = 7 // July
 )
 
 func GetOrCreateAcademicYear() (models.AcademicYear, error) {
@@ -57,16 +57,9 @@ func ValidateAcademicYearInput(academicYear string) error {
 	if academicYear == "" {
 		return fmt.Errorf("academic_year is required")
 	}
+
 	academicYearStart := strings.Split(academicYear, "/")[0]
 	academicYearEnd := strings.Split(academicYear, "/")[1]
-	fmt.Println("rizz:", academicYearStart, academicYearEnd)
-	if academicYearStart == "" || academicYearEnd == "" {
-		return fmt.Errorf("academic_year_start and academic_year_end are required")
-	} else if academicYearStart == academicYearEnd {
-		return fmt.Errorf("academic_year_start and academic_year_end cannot be the same")
-	} else if academicYearStart > academicYearEnd {
-		return fmt.Errorf("academic_year_start cannot be greater than academic_year_end")
-	}
 
 	parsedIntAcademicYearStart, err := strconv.ParseInt(academicYearStart, 10, 64)
 	if err != nil {
@@ -77,9 +70,19 @@ func ValidateAcademicYearInput(academicYear string) error {
 	if err != nil {
 		return fmt.Errorf("academic_year_end must be a number")
 	}
-
-	if (parsedIntAcademicYearStart + 1) != parsedIntAcademicYearEnd {
+	fmt.Println("rizz:", academicYearStart, academicYearEnd)
+	if academicYearStart == "" || academicYearEnd == "" {
+		return fmt.Errorf("academic_year_start and academic_year_end are required")
+	} else if academicYearStart == academicYearEnd {
+		return fmt.Errorf("academic_year_start and academic_year_end cannot be the same")
+	} else if academicYearStart > academicYearEnd {
+		return fmt.Errorf("academic_year_start cannot be greater than academic_year_end")
+	} else if (parsedIntAcademicYearStart + 1) != parsedIntAcademicYearEnd {
 		return fmt.Errorf("academic_year_end must be exactly 1 year greater than academic_year_start")
+	} else if int(time.Now().Month()) < AcademicStartSemesterMonth {
+		if int(parsedIntAcademicYearStart) >= time.Now().Year() {
+			return fmt.Errorf("academic_year_start must be exactly 1 year less than the current year because the new semester starts in July")
+		}
 	}
 
 	return nil

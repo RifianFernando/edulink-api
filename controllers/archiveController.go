@@ -9,6 +9,14 @@ import (
 )
 
 // func GetAllStudentPersonalDataArchive(c *gin.Context) {
+// 	// get params
+// 	academicYearStart := c.Param("academic_year_start")
+// 	academicYearEnd := c.Param("academic_year_end")
+
+// 	err := helper.ValidateAcademicYearInput(
+// 		academicYearStart + "/" + academicYearEnd,
+// 	)
+
 // 	// Get All all student personal data
 // 	studentPersonalData, err := helper.GetAllStudentPersonalDataArchive()
 // 	if err != nil {

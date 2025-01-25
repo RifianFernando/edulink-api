@@ -155,6 +155,11 @@ func Route(router *gin.Engine) {
 		* */
 
 		// archiveData.GET("/student-personal-data", controllers.GetAllStudentPersonalDataArchive);
+	
+		/*
+		* archiveData student personal-data
+		* example: /student-personal-data/2019/2020
+		* */
 		archiveData.GET("/student-attendance/:academic_year_start/:academic_year_end", controllers.GetAllStudentAttendanceArchive)
 
 		/*

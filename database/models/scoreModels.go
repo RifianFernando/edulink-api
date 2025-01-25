@@ -93,8 +93,18 @@ func CreateStudentsScoringBySubjectClassName(data []Score) error {
 	return tx.Commit().Error
 }
 
-func GetSummariesScoringStudentBySubjectClassName(classID, academicYearID string) ([]ScoringBySubjectClassName, error) {
-	query := `
+func GetSummariesScoringStudentBySubjectClassName(classID string, academicYearID string) ([]ScoringBySubjectClassName, error) {
+	var results []ScoringBySubjectClassName
+
+	if academicYearID == "" {
+		return nil, fmt.Errorf("academic_year_id is required")
+	}
+
+	var queryBuilder strings.Builder
+	var params []interface{}
+
+	// Base query
+	queryBuilder.WriteString(`
 		SELECT 
 			st.student_id,
 			st.student_name,
@@ -106,12 +116,26 @@ func GetSummariesScoringStudentBySubjectClassName(classID, academicYearID string
 		JOIN academic.students st ON sc.student_id = st.student_id
 		JOIN academic.subjects su ON sc.subject_id = su.subject_id
 		JOIN academic.assignments a ON sc.assignment_id = a.assignment_id
-		join academic.class_names cn on st.class_name_id = cn.class_name_id 
-		WHERE st.class_name_id = ? AND sc.academic_year_id = ?
-	`
+	`)
 
-	var results []ScoringBySubjectClassName
-	result := connections.DB.Raw(query, classID, academicYearID).Scan(&results)
+	// Add `classID` filter only if provided
+	if classID != "" {
+		queryBuilder.WriteString(`
+			JOIN academic.class_names cn ON st.class_name_id = cn.class_name_id
+			WHERE st.class_name_id = ? AND sc.academic_year_id = ?
+		`)
+		params = append(params, classID, academicYearID)
+	} else {
+		queryBuilder.WriteString(`
+			WHERE sc.academic_year_id = ?
+		`)
+		params = append(params, academicYearID)
+	}
+
+	query := queryBuilder.String()
+
+	// Execute the query
+	result := connections.DB.Raw(query, params...).Scan(&results)
 	if result.Error != nil {
 		return nil, result.Error
 	}

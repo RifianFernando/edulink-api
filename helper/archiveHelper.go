@@ -1,6 +1,8 @@
 package helper
 
 import (
+	"strconv"
+
 	"github.com/edulink-api/database/models"
 )
 
@@ -28,4 +30,24 @@ func GetAllStudentAttendanceArchive(
 	// Get all student attendance
 
 	return AllStudentAttendanceArchive, nil
+}
+
+func GetAllStudentScoreArchive(
+	acadmicYear models.AcademicYear,
+	classID string,
+) (
+	[]DTOAllScoringBySubjectClassName,
+	error,
+) {
+	// Get the scoring data from the model
+	parsedAcademicYearID := strconv.FormatInt(acadmicYear.AcademicYearID, 10)
+	result, err := models.GetSummariesScoringStudentBySubjectClassName(classID, parsedAcademicYearID)
+	if err != nil {
+		return nil, err
+	}
+
+	resultMap := RemapScoringStudentBySubjectClassName(result)
+	resultDTO := GetAverageScoreByStudentResult(resultMap)
+
+	return resultDTO, nil
 }

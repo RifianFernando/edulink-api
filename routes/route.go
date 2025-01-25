@@ -93,7 +93,6 @@ func Route(router *gin.Engine) {
 	{
 		scoring.GET(
 			"/summaries/:class_id",
-			middleware.AlreadyLoggedIn(),
 			controllers.GetSummariesScoringStudentBySubjectClassName,
 		)
 		scoring.GET(
@@ -147,9 +146,23 @@ func Route(router *gin.Engine) {
 	}
 
 	// get archive academic calendar
-	archiveData := apiV1.Group("/archive", middleware.AlreadyLoggedIn())
+	archiveData := apiV1.Group("/archive", middleware.AlreadyLoggedIn(), middleware.AdminStaffOnly())
 	{
+		/* 
+		We use param academic_year_start and academic_year_end for readability instead of academic_year_id
+		* because it's easier to understand the range of academic year
+		* example: 2019/2020
+		* */
+
 		// archiveData.GET("/student-personal-data", controllers.GetAllStudentPersonalDataArchive);
 		archiveData.GET("/student-attendance/:academic_year_start/:academic_year_end", controllers.GetAllStudentAttendanceArchive)
+
+		/*
+		* archiveData student score
+		* example: /student-score/2019/2020
+		* example: /student-score/2019/2020/1 -> with class_id
+		* */
+		archiveData.GET("/student-score/:academic_year_start/:academic_year_end", controllers.GetAllStudentScoreArchive)
+		archiveData.GET("/student-score/:academic_year_start/:academic_year_end/:class_id", controllers.GetAllStudentScoreArchive)
 	}
 }

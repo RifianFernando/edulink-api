@@ -235,15 +235,12 @@ func GetAllStudentPersonalDataArchive(
 	err error,
 ) {
 	academicSemester1YearStart := academicYearStart + "-07-01"
-	// academicSemester1YearEnd := academicYearStart + "-12-31"
-	// academicSemester2YearStart := academicYearEnd + "-01-01"
 	academicSemester2YearEnd := academicYearEnd + "-06-30"
 
 	// Query for graduated students (id_class_name IS NULL)
 	graduated := connections.DB.Unscoped().Model(&Student{}).
 		Where("class_name_id IS NULL").
-		Where("student_accepted_date > ? OR deleted_at < ?", academicSemester1YearStart, academicSemester2YearEnd)
-		// Where("deleted_at < ?", academicSemester2YearEnd) // Ensure they have graduated.
+		Not("student_accepted_date > ? OR deleted_at < ?", academicSemester2YearEnd, academicSemester1YearStart)
 
 	// Query for non-graduated students (class_name_id IS NOT NULL)
 	notGraduated := connections.DB.Model(&Student{}).

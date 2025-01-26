@@ -65,7 +65,6 @@ func ValidateAcademicYearInput(academicYear string) error {
 	if err != nil {
 		return fmt.Errorf("academic_year_start must be a number")
 	}
-
 	parsedIntAcademicYearEnd, err := strconv.ParseInt(academicYearEnd, 10, 64)
 	if err != nil {
 		return fmt.Errorf("academic_year_end must be a number")

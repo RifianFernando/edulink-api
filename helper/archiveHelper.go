@@ -6,10 +6,23 @@ import (
 	"github.com/edulink-api/database/models"
 )
 
-// func GetAllStudentPersonalDataArchive() (models.AcademicYear, error) {
+func GetAllStudentPersonalDataArchive(
+	academicYearStart string,
+	academicYearEnd string,
+) (
+	student []models.Student,
+	err error,
+) {
+	student, err = models.GetAllStudentPersonalDataArchive(
+		academicYearStart,
+		academicYearEnd,
+	)
+	if err != nil {
+		return student, err
+	}
 
-// 	return academicYear, nil
-// }
+	return student, nil
+}
 
 func GetAllStudentAttendanceArchive(
 	GetAcademicYearStart string,

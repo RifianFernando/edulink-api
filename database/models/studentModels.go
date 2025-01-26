@@ -226,3 +226,41 @@ func (student *Student) GetAllStudentsByClassID(classID string) (students []Stud
 
 	return students, nil
 }
+
+func GetAllStudentPersonalDataArchive(
+	academicYearStart string,
+	academicYearEnd string,
+) (
+	students []Student,
+	err error,
+) {
+	academicSemester1YearStart := academicYearStart + "-07-01"
+	// academicSemester1YearEnd := academicYearStart + "-12-31"
+	// academicSemester2YearStart := academicYearEnd + "-01-01"
+	academicSemester2YearEnd := academicYearEnd + "-06-30"
+
+	// Query for graduated students (id_class_name IS NULL)
+	graduated := connections.DB.Unscoped().Model(&Student{}).
+		Where("class_name_id IS NULL").
+		Where("student_accepted_date > ? OR deleted_at < ?", academicSemester1YearStart, academicSemester2YearEnd)
+		// Where("deleted_at < ?", academicSemester2YearEnd) // Ensure they have graduated.
+
+	// Query for non-graduated students (class_name_id IS NOT NULL)
+	notGraduated := connections.DB.Model(&Student{}).
+		Where("class_name_id IS NOT NULL").
+		Where("student_accepted_date < ?", academicSemester2YearEnd).
+		Where("deleted_at IS NULL") // Ensure they haven't graduated yet.
+
+	// Combine the two queries using UNION
+	result := graduated.Or(notGraduated).Find(&students)
+	if result.Error != nil {
+		return nil, fmt.Errorf("error fetching students: %w", result.Error)
+	} else if result.RowsAffected == 0 {
+		return nil, fmt.Errorf("no students found")
+	}
+	// if err := connections.DB.Raw("(?) UNION ALL (?)", graduated, notGraduated).Scan(&students).Error; err != nil {
+	// 	return nil, fmt.Errorf("error fetching students: %w", err)
+	// }
+
+	return students, nil
+}

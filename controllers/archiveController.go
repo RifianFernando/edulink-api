@@ -8,25 +8,31 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// func GetAllStudentPersonalDataArchive(c *gin.Context) {
-// 	// get params
-// 	academicYearStart := c.Param("academic_year_start")
-// 	academicYearEnd := c.Param("academic_year_end")
+func GetAllStudentPersonalDataArchive(c *gin.Context) {
+	// get params
+	academicYearStart := c.Param("academic_year_start")
+	academicYearEnd := c.Param("academic_year_end")
 
-// 	err := helper.ValidateAcademicYearInput(
-// 		academicYearStart + "/" + academicYearEnd,
-// 	)
+	err := helper.ValidateAcademicYearInput(
+		academicYearStart + "/" + academicYearEnd,
+	)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-// 	// Get All all student personal data
-// 	studentPersonalData, err := helper.GetAllStudentPersonalDataArchive()
-// 	if err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-// 		return
-// 	}
+	// if student class id null it means the student has graduated
+	studentPersonalData, err := helper.GetAllStudentPersonalDataArchive(academicYearStart, academicYearEnd)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-// 	// Send the grouped result as a response
-// 	c.JSON(http.StatusOK, gin.H{"student-personal-data": studentPersonalData})
-// }
+	// Send the grouped result as a response
+	c.JSON(http.StatusOK, gin.H{
+		"student-personal-data": studentPersonalData,
+	})
+}
 
 func GetAllStudentAttendanceArchive(c *gin.Context) {
 	// get params

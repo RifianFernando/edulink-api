@@ -31,6 +31,8 @@ func (academicYear *AcademicYear) GetAcademicYearByModel() error {
 		"academic_year = ?", academicYear.AcademicYear)
 	if result.Error != nil {
 		return result.Error
+	} else if result.RowsAffected == 0 {
+		return fmt.Errorf("academic year not found")
 	}
 
 	return nil

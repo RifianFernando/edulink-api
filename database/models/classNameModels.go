@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/edulink-api/connections"
 	"github.com/edulink-api/database/migration/lib"
@@ -9,11 +10,14 @@ import (
 )
 
 type ClassName struct {
-	ClassNameID int64  `gorm:"primaryKey" json:"id"`
-	GradeID     int64  `json:"id_grade" binding:"required"`
-	TeacherID   int64  `json:"id_teacher" binding:"required"`
-	Name        string `json:"name" binding:"required" validate:"len=1"`
-	lib.BaseModel
+	ClassNameID int64          `gorm:"primaryKey" json:"id"`
+	GradeID     int64          `json:"id_grade" binding:"required"`
+	TeacherID   int64          `json:"id_teacher" binding:"required"`
+	Name        string         `json:"name" binding:"required" validate:"len=1"`
+	// Manually managed by gorm because I can't find a way to automatically manage it
+	CreatedAt   time.Time      // Automatically managed by GORM for creation timecreating time
+	UpdatedAt   time.Time      // Automatically managed by GORM for update time
+	DeletedAt   gorm.DeletedAt `gorm:"index"`
 }
 
 type ClassNameModel struct {

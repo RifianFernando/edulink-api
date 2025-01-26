@@ -1,10 +1,14 @@
 package seed
 
 import (
+	"time"
+
 	"github.com/edulink-api/database/models"
 )
 
 func ClassSeeder() (className []models.ClassName) {
+	// Load the Indonesia timezone (Asia/Jakarta)
+	loc, _ := time.LoadLocation("Asia/Jakarta")
 	className = []models.ClassName{
 		{ // 1
 			TeacherID: 1,
@@ -40,6 +44,12 @@ func ClassSeeder() (className []models.ClassName) {
 			TeacherID: 2,
 			GradeID:   2,
 			Name:      "C",
+		},
+		{ // 8
+			TeacherID: 1,
+			GradeID:   1,
+			Name:      "A",
+			CreatedAt: time.Date(2021, 7, 6, 0, 0, 0, 0, loc),
 		},
 	}
 

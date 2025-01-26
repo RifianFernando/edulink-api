@@ -32,7 +32,11 @@ type Student struct {
 	StudentMotherName        string    `json:"mother_name" binding:"required"`
 	StudentMotherJob         string    `json:"mother_job" binding:"required"`
 	StudentMotherPhoneNumber string    `json:"mother_number_phone" binding:"required,e164"`
-	lib.BaseModel
+	// lib.BaseModel
+	// Manually managed by gorm because I can't find a way to automatically manage it
+	CreatedAt   time.Time      // Automatically managed by GORM for creation timecreating time
+	UpdatedAt   time.Time      // Automatically managed by GORM for update time
+	DeletedAt   gorm.DeletedAt `gorm:"index"`
 }
 
 type StudentModel struct {

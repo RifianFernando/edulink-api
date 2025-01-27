@@ -241,14 +241,12 @@ func GetAllStudentPersonalDataArchive(
 	academicSemester1YearStart := academicYearStart + "-07-01"
 	academicSemester2YearEnd := academicYearEnd + "-06-30"
 
-	// Query for graduated students (id_class_name IS NULL)
+	// Query for graduated students (deleted_at IS NOT NULL)
 	graduated := connections.DB.Unscoped().Model(&Student{}).
-		Where("class_name_id IS NULL").
 		Not("student_accepted_date > ? OR deleted_at < ?", academicSemester2YearEnd, academicSemester1YearStart)
 
-	// Query for non-graduated students (class_name_id IS NOT NULL)
+	// Query for non-graduated students (deleted_at IS NULL)
 	notGraduated := connections.DB.Model(&Student{}).
-		Where("class_name_id IS NOT NULL").
 		Where("student_accepted_date < ?", academicSemester2YearEnd).
 		Where("deleted_at IS NULL") // Ensure they haven't graduated yet.
 
@@ -259,9 +257,6 @@ func GetAllStudentPersonalDataArchive(
 	} else if result.RowsAffected == 0 {
 		return nil, fmt.Errorf("no students found")
 	}
-	// if err := connections.DB.Raw("(?) UNION ALL (?)", graduated, notGraduated).Scan(&students).Error; err != nil {
-	// 	return nil, fmt.Errorf("error fetching students: %w", err)
-	// }
 
 	return students, nil
 }

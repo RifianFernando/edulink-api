@@ -100,17 +100,32 @@ func GetAllStudentScoreArchive(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"student-score": studentScore})
 }
 
-// func GetAllClassArchive(c *gin.Context) {
-// 	// Get All all class
-// 	class, err := helper.GetAllClassArchive()
-// 	if err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-// 		return
-// 	}
+func GetAllClassArchiveByGradeID(c *gin.Context) {
+	// get params academic year and grade id
+	academicYearStart := c.Param("academic_year_start")
+	academicYearEnd := c.Param("academic_year_end")
+	gradeID := c.Param("grade_id")
 
-// 	// Send the grouped result as a response
-// 	c.JSON(http.StatusOK, gin.H{"class": class})
-// }
+	err := helper.ValidateAcademicYearInput(academicYearStart + "/" + academicYearEnd)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Get All all class and student list 
+	class, err := helper.GetAllClassArchiveByGradeID(
+		academicYearStart,
+		academicYearEnd,
+		gradeID,
+	)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Send the grouped result as a response
+	c.JSON(http.StatusOK, gin.H{"class": class})
+}
 
 // func GetAllScheduleArchive(c *gin.Context) {
 // 	// Get All all schedule

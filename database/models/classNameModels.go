@@ -10,14 +10,14 @@ import (
 )
 
 type ClassName struct {
-	ClassNameID int64          `gorm:"primaryKey" json:"id"`
-	GradeID     int64          `json:"id_grade" binding:"required"`
-	TeacherID   int64          `json:"id_teacher" binding:"required"`
-	Name        string         `json:"name" binding:"required" validate:"len=1"`
+	ClassNameID int64  `gorm:"primaryKey" json:"id"`
+	GradeID     int64  `json:"id_grade" binding:"required"`
+	TeacherID   int64  `json:"id_teacher" binding:"required"`
+	Name        string `json:"name" binding:"required" validate:"len=1"`
 	// Manually managed by gorm because I can't find a way to automatically manage it
-	CreatedAt   time.Time      // Automatically managed by GORM for creation timecreating time
-	UpdatedAt   time.Time      // Automatically managed by GORM for update time
-	DeletedAt   gorm.DeletedAt `gorm:"index"`
+	CreatedAt time.Time      // Automatically managed by GORM for creation timecreating time
+	UpdatedAt time.Time      // Automatically managed by GORM for update time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
 type ClassNameModel struct {
@@ -29,6 +29,12 @@ type ClassNameModel struct {
 type ClassNameGrade struct {
 	ClassName
 	Grade Grade `gorm:"foreignKey:GradeID;references:GradeID"`
+}
+
+type ClassNameArchiveModel struct {
+	ClassName
+	Teacher TeacherModel `gorm:"foreignKey:TeacherID;references:TeacherID"`
+	Grade   Grade        `gorm:"foreignKey:GradeID;references:GradeID"`
 }
 
 func (ClassName) TableName() string {
@@ -123,6 +129,60 @@ func (className *ClassName) GetHomeRoomTeacherByTeacherID() (classes []ClassName
 			return []ClassName{}, fmt.Errorf("no class found")
 		}
 		return []ClassName{}, result.Error
+	}
+
+	return classes, nil
+}
+
+type ClassListArchive struct {
+	ClassNameID int64     `json:"class_name_id"`
+	GradeName   string    `json:"grade_name"`
+	TeacherID   int64     `json:"teacher_id"`
+	TeacherName string    `json:"home_room_teacher_name"`
+	Student     []Student `json:"student-class-list"`
+}
+
+func GetAllClassArchiveByGradeID(
+	academicYearStart string,
+	academicYearEnd string,
+	gradeID string,
+) (
+	classes []ClassListArchive,
+	err error,
+) {
+	var className []ClassNameArchiveModel
+	result := connections.DB.
+		Preload("Teacher").
+		Preload("Teacher.User").
+		Preload("Grade").
+		Where("grade_id = ?", gradeID).
+		Where("created_at >= ? AND created_at <= ?", academicYearStart, academicYearEnd).
+		Find(&className)
+	if result.Error != nil {
+		return nil, result.Error
+	} else if result.RowsAffected == 0 {
+		return nil, fmt.Errorf("no class found")
+	}
+
+	for _, v := range className {
+		// ClassNameIDStr := fmt.Sprintf("%d", v.ClassNameID)
+		// var students Student
+		var students []Student
+		result := connections.DB.
+			Unscoped().
+			Model(&Student{}).
+			Where("class_name_id = ?", v.ClassNameID).
+			Find(&students)
+		if result.Error != nil {
+			return nil, result.Error
+		}
+		classes = append(classes, ClassListArchive{
+			ClassNameID: v.ClassNameID,
+			GradeName:   fmt.Sprintf("%d%s", v.Grade.Grade, v.Name),
+			TeacherID:   v.TeacherID,
+			TeacherName: v.Teacher.User.UserName,
+			Student:     students,
+		})
 	}
 
 	return classes, nil

@@ -238,8 +238,6 @@ func GetAllAttendanceArchive(
 	attendances []AttendanceYearSummaryStudent,
 	err error,
 ) {
-	academicYearStart += "-07-01"
-	academicYearEnd += "-06-30"
 	err = connections.DB.Model(Attendance{}).
 		Select("s.student_id AS student_id, "+
 			"s.student_name AS student_name, "+

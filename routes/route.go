@@ -174,5 +174,11 @@ func Route(router *gin.Engine) {
 		* */
 		archiveData.GET("/student-score/:academic_year_start/:academic_year_end", controllers.GetAllStudentScoreArchive)
 		archiveData.GET("/student-score/:academic_year_start/:academic_year_end/:class_id", controllers.GetAllStudentScoreArchive)
+
+		/*
+		* archiveData class and student list
+		* example: /class/2019/2020
+		* */
+		archiveData.GET("/class/:academic_year_start/:academic_year_end/:grade_id", controllers.GetAllClassArchiveByGradeID)
 	}
 }

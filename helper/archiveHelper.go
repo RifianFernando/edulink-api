@@ -13,6 +13,7 @@ func GetAllStudentPersonalDataArchive(
 	student []models.Student,
 	err error,
 ) {
+	academicYearStart, academicYearEnd = FormatSemesterDateAcademicYear(academicYearStart, academicYearEnd)
 	student, err = models.GetAllStudentPersonalDataArchive(
 		academicYearStart,
 		academicYearEnd,
@@ -32,6 +33,9 @@ func GetAllStudentAttendanceArchive(
 	err error,
 ) {
 	// Get all student attendance
+	GetAcademicYearStart, GetAcademicYearEnd = FormatSemesterDateAcademicYear(
+		GetAcademicYearStart, GetAcademicYearEnd,
+	)
 	AllStudentAttendanceArchive, err = models.GetAllAttendanceArchive(
 		GetAcademicYearStart,
 		GetAcademicYearEnd,
@@ -63,4 +67,26 @@ func GetAllStudentScoreArchive(
 	resultDTO := GetAverageScoreByStudentResult(resultMap)
 
 	return resultDTO, nil
+}
+
+func GetAllClassArchiveByGradeID(
+	academicYearStart string,
+	academicYearEnd string,
+	gradeID string,
+) (
+	studentsClassArchive []models.ClassListArchive,
+	err error,
+) {
+	academicYearStart, academicYearEnd = FormatSemesterDateAcademicYear(academicYearStart, academicYearEnd)
+
+	studentsClassArchive, err = models.GetAllClassArchiveByGradeID(
+		academicYearStart,
+		academicYearEnd,
+		gradeID,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return studentsClassArchive, nil
 }

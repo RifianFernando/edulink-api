@@ -86,3 +86,13 @@ func ValidateAcademicYearInput(academicYear string) error {
 
 	return nil
 }
+
+func FormatSemesterDateAcademicYear(
+	academicYearStart string,
+	academicYearEnd string,
+) (
+	string,
+	string,
+) {
+	return academicYearStart + "-07-01", academicYearEnd + "-06-30"
+}

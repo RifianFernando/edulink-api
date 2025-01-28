@@ -3,6 +3,7 @@ package models
 import (
 	"time"
 
+	"github.com/edulink-api/connections"
 	"github.com/edulink-api/database/migration/lib"
 )
 
@@ -24,4 +25,9 @@ type EventSchedule struct {
  */
 func (EventSchedule) TableName() string {
 	return lib.GenerateTableName(lib.Administration, "event_schedules")
+}
+
+// InsertEventSchedule method
+func (e *EventSchedule) CreateEventSchedule() error {
+	return connections.DB.Create(e).Error
 }

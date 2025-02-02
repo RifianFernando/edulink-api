@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/edulink-api/connections"
@@ -13,9 +14,10 @@ import (
 * https://gorm.io/docs/models.html#Fields-Tags
  */
 type EventSchedule struct {
-	ScheduleID        int64     `json:"schedule_id" binding:"required" validate:"required"`
-	EventScheduleName string    `json:"event_name" binding:"required" validate:"required"`
-	EventScheduleDate time.Time `json:"schedule_date"`
+	EventScheduleID        int64     `gorm:"primaryKey"`
+	EventScheduleName      string    `json:"event_name" binding:"required" validate:"required"`
+	EventScheduleDateStart time.Time `json:"schedule_date_start" binding:"required" validate:"required,datetime=2006-01-02"`
+	EventScheduleDateEnd   time.Time `json:"schedule_date_end" binding:"required" validate:"required,datetime=2006-01-02"`
 	lib.BaseModel
 }
 
@@ -27,7 +29,33 @@ func (EventSchedule) TableName() string {
 	return lib.GenerateTableName(lib.Administration, "event_schedules")
 }
 
-// InsertEventSchedule method
 func (e *EventSchedule) CreateEventSchedule() error {
-	return connections.DB.Create(e).Error
+	result := connections.DB.Create(&e)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
+
+func (e *EventSchedule) UpdateEventSchedule() error {
+	result := connections.DB.Save(&e)
+	if result.Error != nil {
+		return result.Error
+	} else if result.RowsAffected == 0 {
+		return fmt.Errorf("eventSchedule not found")
+	}
+
+	return nil
+}
+
+func (e *EventSchedule) DeleteEventSchedule() error {
+	result := connections.DB.Delete(&e)
+	if result.Error != nil {
+		return result.Error
+	} else if result.RowsAffected == 0 {
+		return fmt.Errorf("eventSchedule not found")
+	}
+
+	return nil
 }

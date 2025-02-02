@@ -186,5 +186,7 @@ func Route(router *gin.Engine) {
 	event := apiV1.Group("/event", middleware.AlreadyLoggedIn(), middleware.AdminStaffOnly())
 	{
 		event.POST("", controllers.CreateEvent)
+		event.PUT("/:event_id", controllers.UpdateEvent)
+		event.DELETE("/:event_id", controllers.DeleteEvent)
 	}
 }

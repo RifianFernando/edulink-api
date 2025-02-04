@@ -18,7 +18,7 @@ type ScheduleRequest struct {
 	DataTeaching []struct {
 		SubjectID   int64   `json:"subject_id" binding:"required" validate:"required,min=1"`
 		ClassNameID []int64 `json:"class_name_id" binding:"required" validate:"required,min=1,dive"`
-	}
+	} `json:"data_teaching" binding:"required" validate:"required,min=1,dive"`
 }
 
 // Validate method

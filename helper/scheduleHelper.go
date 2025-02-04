@@ -9,7 +9,15 @@ import (
 	req "github.com/edulink-api/request/schedule"
 )
 
-func GenerateAndCreateScheduleTeachingClassSubject(req req.InsertScheduleRequest) error {
+func GenerateAndCreateScheduleTeachingClassSubject(
+	req req.InsertScheduleRequest,
+) error {
+
+	// get academic year
+	academicYear, err := GetOrCreateAcademicYear()
+	if err != nil || academicYear.AcademicYearID == 0 {
+		return err
+	}
 
 	tx := connections.DB.Begin()
 	if tx.Error != nil {
@@ -26,7 +34,7 @@ func GenerateAndCreateScheduleTeachingClassSubject(req req.InsertScheduleRequest
 	queryUpdateTeacherTeachingHour := "UPDATE academic.teachers SET teaching_hour = CASE"
 
 	// create teacher subject and update teacher subject with upsert method sql query like teacher model
-	queryUpsertTeacherSubject := "INSERT INTO academic.teaching_class_subjects (teacher_subject_id, class_name_id) VALUES "
+	queryUpsertTeacherSubject := "INSERT INTO academic.teaching_class_subjects (teacher_subject_id, class_name_id, academic_year_id) VALUES "
 	for _, teacher := range req.ScheduleRequest {
 		// first update the teaching hour using bulk update
 		teacherIDParsed := strconv.FormatInt(teacher.TeacherID, 10)

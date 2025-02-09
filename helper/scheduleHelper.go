@@ -31,6 +31,7 @@ func GenerateAndCreateScheduleTeachingClassSubject(
 
 	// update teacher teaching hour
 	var listTeacherIDIn []int64
+	var listTeacherSubjectIDIn []int64
 	queryUpdateTeacherTeachingHour := "UPDATE academic.teachers SET teaching_hour = CASE"
 
 	// create teacher subject and update teacher subject with upsert method sql query like teacher model
@@ -43,32 +44,43 @@ func GenerateAndCreateScheduleTeachingClassSubject(
 
 		// upsert the teaching class subject too like the teacher subject
 		for _, DataTeaching := range teacher.DataTeaching {
-			//TODO: get the teacher subject ID with get teaching class subject, but I think we need to get optimize this database querry for get teacher subject ID and then we are going through join the teaching class subject, for assign new value method with bulk upsert
+			// get teacher subject by teacher_id and subject_id
+			TeacherSubject := models.TeacherSubject{}
+			if err := tx.Where("teacher_id = ? AND subject_id = ?", teacher.TeacherID, DataTeaching.SubjectID).First(&TeacherSubject).Error; err != nil {
+				tx.Rollback()
+				return fmt.Errorf("teacherID with: %d with subjectID %d not found", teacher.TeacherID, DataTeaching.SubjectID)
+			}
 
-			// TODO: e.g. using query select for searching the teacher subject ID
-			var teachingClassSubject models.TeachingClassSubject
-			teachingClassSubject.TeacherSubjectID = int64(DataTeaching.SubjectID)
-			for _, ClassTeaching := range DataTeaching.ClassNameID {
-				teachingClassSubject.ClassNameID = ClassTeaching
+			// append the teacher subject id
+			listTeacherSubjectIDIn = append(listTeacherSubjectIDIn, TeacherSubject.TeacherSubjectID)
 
-				// TODO: create the query for upsert value for teaching class subject using the existing data with bulk upsert for best practice
-				queryUpsertTeacherSubject += ""
+			// upsert the teaching class subject
+			for index, ClassTeaching := range DataTeaching.ClassNameID {
+				if index == len(DataTeaching.ClassNameID)-1 {
+					queryUpsertTeacherSubject += fmt.Sprintf("(%d, %d, %d)", TeacherSubject.TeacherSubjectID, ClassTeaching, academicYear.AcademicYearID)
+				} else {
+					queryUpsertTeacherSubject += fmt.Sprintf("(%d, %d, %d),", TeacherSubject.TeacherSubjectID, ClassTeaching, academicYear.AcademicYearID)
+				}
 			}
 		}
 	}
 	// execute update teacher teaching hour and upsert teacher subject
 	queryUpdateTeacherTeachingHour += " END WHERE teacher_id IN ?"
-	// TODO: after refactoring table teacher_subjects, this query should be used
-	// queryUpsertTeacherSubject += " ON CONFLICT (teacher_id, subject_id) DO NOTHING"
+	queryUpsertTeacherSubject += fmt.Sprintf(" ON CONFLICT (id_teacher_subject, id_class_name) DO UPDATE SET deleted_at = NULL, updated_at = NOW(), academic_year_id = %d", academicYear.AcademicYearID)
+
+	// first will be delete all teaching class subject by teacher subject id that will be updated
+	for _, teacherSubjectID := range listTeacherSubjectIDIn {
+		result := tx.Where("teacher_subject_id = ?", teacherSubjectID).Delete(&models.TeachingClassSubject{})
+		if result.Error != nil {
+			tx.Rollback()
+			return result.Error
+		}
+	}
 
 	if err := tx.Exec(queryUpdateTeacherTeachingHour, listTeacherIDIn).Error; err != nil {
 		tx.Rollback()
 		return err
 	}
-
-	// if (len(teacherSubjects) == 0) {
-	// return fmt.Errorf("invalid data")
-	// }
 
 	return tx.Commit().Error
 }

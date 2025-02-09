@@ -31,14 +31,32 @@ func (r *ScheduleRequest) Validate() []map[string]string {
 }
 
 type InsertScheduleRequest struct {
-	ScheduleRequest []ScheduleRequest `json:"schedule" binding:"required"`
+	ScheduleRequest []ScheduleRequest `json:"schedule" binding:"required" validate:"required,min=1,dive"`
 }
 
 // Validate method
 func (r *InsertScheduleRequest) Validate() []map[string]string {
 	// Validate the struct
 	var allErrors []map[string]string
+
+	// Create a map to track unique TeacherIDs
+	teacherIDMap := make(map[int64]bool)
+
+	err := res.ResponseMessage(req.Validate.Struct(r))
+	if len(err) > 0 {
+		return err
+	}
 	for i, data := range r.ScheduleRequest {
+		// Check if TeacherID is unique
+		if _, exists := teacherIDMap[data.TeacherID]; exists {
+			allErrors = append(allErrors, map[string]string{
+				"row-error":  fmt.Sprintf("%d", i + 1),
+				"field":      "teacher_id",
+				"message":    "TeacherID must be unique across all schedule requests",
+			})
+		} else {
+			teacherIDMap[data.TeacherID] = true
+		}
 		if err := data.Validate(); err != nil {
 			// index with error
 			errorMap := map[string]string{

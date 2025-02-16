@@ -59,3 +59,14 @@ func (e *EventSchedule) DeleteEventSchedule() error {
 
 	return nil
 }
+
+func (e *EventSchedule) GetAllEvent() (event []EventSchedule, err error) {
+	result := connections.DB.Find(&event)
+	if result.Error != nil {
+		return []EventSchedule{}, result.Error
+	} else if result.RowsAffected == 0 {
+		return []EventSchedule{}, fmt.Errorf("eventSchedule not found")
+	}
+
+	return event, nil
+}

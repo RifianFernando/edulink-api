@@ -120,3 +120,17 @@ func DeleteEvent(c *gin.Context) {
 		"message": "Event deleted successfully",
 	})
 }
+
+func GetAllEvent(c *gin.Context) {
+	eventData := models.EventSchedule{}
+
+	eventDataArr, err := eventData.GetAllEvent()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"event": eventDataArr,
+	})
+}

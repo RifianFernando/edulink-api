@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/edulink-api/database/models"
+	"gorm.io/gorm"
 )
 
 func ClassSeeder() (className []models.ClassName) {
@@ -50,6 +51,7 @@ func ClassSeeder() (className []models.ClassName) {
 			GradeID:   1,
 			Name:      "A",
 			CreatedAt: time.Date(2021, 7, 6, 0, 0, 0, 0, loc),
+			DeletedAt: gorm.DeletedAt{Time: time.Now(), Valid: true},
 		},
 	}
 

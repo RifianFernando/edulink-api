@@ -34,9 +34,9 @@ type Student struct {
 	StudentMotherPhoneNumber string    `json:"mother_number_phone" binding:"required,e164"`
 	// lib.BaseModel
 	// Manually managed by gorm because I can't find a way to automatically manage it
-	CreatedAt   time.Time      // Automatically managed by GORM for creation timecreating time
-	UpdatedAt   time.Time      // Automatically managed by GORM for update time
-	DeletedAt   gorm.DeletedAt `gorm:"index"`
+	CreatedAt time.Time      // Automatically managed by GORM for creation timecreating time
+	UpdatedAt time.Time      // Automatically managed by GORM for update time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
 type StudentModel struct {
@@ -235,15 +235,17 @@ func GetAllStudentPersonalDataArchive(
 	academicYearStart string,
 	academicYearEnd string,
 ) (
-	students []Student,
+	students []StudentModel,
 	err error,
 ) {
 	// Query for graduated students (deleted_at IS NOT NULL)
-	graduated := connections.DB.Unscoped().Model(&Student{}).
+	graduated := connections.DB.Unscoped().Model(&StudentModel{}).
+		Preload("ClassName.Grade").
 		Not("student_accepted_date > ? OR deleted_at < ?", academicYearEnd, academicYearStart)
 
 	// Query for non-graduated students (deleted_at IS NULL)
-	notGraduated := connections.DB.Model(&Student{}).
+	notGraduated := connections.DB.Model(&StudentModel{}).
+		Preload("ClassName.Grade").
 		Where("student_accepted_date < ?", academicYearEnd).
 		Where("deleted_at IS NULL") // Ensure they haven't graduated yet.
 

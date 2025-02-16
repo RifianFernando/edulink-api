@@ -18,7 +18,8 @@ type TeachingClassSubject struct {
 
 type TeachingClassSubjectModel struct {
 	TeachingClassSubject
-	ClassName string `gorm:"foreignKey:ClassNameID;references:ClassNameID"`
+	ClassName      ClassName      `gorm:"foreignKey:ClassNameID;references:ClassNameID"`
+	TeacherSubject TeacherSubject `gorm:"foreignKey:TeacherSubjectID;references:TeacherSubjectID"`
 }
 
 func (TeachingClassSubject) TableName() string {

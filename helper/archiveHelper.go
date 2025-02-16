@@ -10,7 +10,7 @@ func GetAllStudentPersonalDataArchive(
 	academicYearStart string,
 	academicYearEnd string,
 ) (
-	student []models.Student,
+	student []models.StudentModel,
 	err error,
 ) {
 	academicYearStart, academicYearEnd = FormatSemesterDateAcademicYear(academicYearStart, academicYearEnd)

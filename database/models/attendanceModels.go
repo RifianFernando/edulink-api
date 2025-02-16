@@ -234,6 +234,7 @@ func GetAllAttendanceYearSummaryByClassID(
 func GetAllAttendanceArchive(
 	academicYearStart string,
 	academicYearEnd string,
+	classID string,
 ) (
 	attendances []AttendanceYearSummaryStudent,
 	err error,
@@ -247,6 +248,7 @@ func GetAllAttendanceArchive(
 			"SUM(CASE WHEN attendance_status = 'Absent' THEN 1 ELSE 0 END) AS absent_total").
 		Joins("JOIN academic.students s ON s.student_id = attendances.student_id").
 		Where("attendance_date BETWEEN ? AND ?", academicYearStart, academicYearEnd).
+		Where("attendances.class_name_id = ?", classID).
 		Group("s.student_id").
 		Order("s.student_name ASC").
 		Scan(&attendances).Error

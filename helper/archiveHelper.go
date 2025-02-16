@@ -28,6 +28,7 @@ func GetAllStudentPersonalDataArchive(
 func GetAllStudentAttendanceArchive(
 	GetAcademicYearStart string,
 	GetAcademicYearEnd string,
+	classID string,
 ) (
 	AllStudentAttendanceArchive []models.AttendanceYearSummaryStudent,
 	err error,
@@ -39,6 +40,7 @@ func GetAllStudentAttendanceArchive(
 	AllStudentAttendanceArchive, err = models.GetAllAttendanceArchive(
 		GetAcademicYearStart,
 		GetAcademicYearEnd,
+		classID,
 	)
 	if err != nil {
 		return nil, err

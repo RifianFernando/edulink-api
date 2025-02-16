@@ -165,7 +165,7 @@ func Route(router *gin.Engine) {
 		* example: /student-attendance/2019/2020
 		* example: /student-attendance/2019/2020/1 -> with class_id
 		* */
-		archiveData.GET("/student-attendance/:academic_year_start/:academic_year_end", controllers.GetAllStudentAttendanceArchive)
+		archiveData.GET("/student-attendance/:academic_year_start/:academic_year_end/:class_id", controllers.GetAllStudentAttendanceArchive)
 
 		/*
 		* archiveData student score
@@ -182,7 +182,7 @@ func Route(router *gin.Engine) {
 		archiveData.GET("/class/:academic_year_start/:academic_year_end/:grade_id", controllers.GetAllClassArchiveByGradeID)
 	}
 
-	// create event 
+	// create event
 	event := apiV1.Group("/event", middleware.AlreadyLoggedIn(), middleware.AdminStaffOnly())
 	{
 		event.POST("", controllers.CreateEvent)

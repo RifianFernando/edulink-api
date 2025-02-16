@@ -17,6 +17,10 @@ func GenerateNewScheduleTeachingClassSubject(academicYear models.AcademicYear) e
 		}
 	}()
 
-	// Get all teaching class subjects
+	// 1. Get all teaching class subjects
+	tx.Model(&models.TeachingClassSubject{}).Where("academic_year_id = ?", academicYear.AcademicYearID).Find(&models.TeachingClassSubject{})
+	
+	// 2. generate schedule teaching class subjects
+	// 3. insert schedule teaching class subjects
 	return nil
 }

@@ -16,6 +16,11 @@ type TeachingClassSubject struct {
 	lib.BaseModel
 }
 
+type TeachingClassSubjectModel struct {
+	TeachingClassSubject
+	ClassName string `gorm:"foreignKey:ClassNameID;references:ClassNameID"`
+}
+
 func (TeachingClassSubject) TableName() string {
 	return lib.GenerateTableName(lib.Academic, "teaching_class_subjects")
 }

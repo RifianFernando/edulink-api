@@ -51,6 +51,7 @@ func GetAllStudentAttendanceArchive(c *gin.Context) {
 	studentAttendance, err := helper.GetAllStudentAttendanceArchive(
 		academicYearStart,
 		academicYearEnd,
+		c.Param("class_id"),
 	)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

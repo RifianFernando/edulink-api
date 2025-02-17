@@ -182,12 +182,16 @@ func Route(router *gin.Engine) {
 		archiveData.GET("/class/:academic_year_start/:academic_year_end/:grade_id", controllers.GetAllClassArchiveByGradeID)
 	}
 
-	// create event
-	event := apiV1.Group("/event", middleware.AlreadyLoggedIn(), middleware.AdminStaffOnly())
+	event := apiV1.Group("/event", middleware.AlreadyLoggedIn())
 	{
 		event.GET("", controllers.GetAllEvent)
-		event.POST("", controllers.CreateEvent)
-		event.PUT("/:event_id", controllers.UpdateEvent)
-		event.DELETE("/:event_id", controllers.DeleteEvent)
+	}
+
+	// create event
+	eventAdminStaff := event.Group("", middleware.AdminStaffOnly())
+	{
+		eventAdminStaff.POST("", controllers.CreateEvent)
+		eventAdminStaff.PUT("/:event_id", controllers.UpdateEvent)
+		eventAdminStaff.DELETE("/:event_id", controllers.DeleteEvent)
 	}
 }

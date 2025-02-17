@@ -12,6 +12,11 @@ type LearningSchedule struct {
 	TeachingClassSubjectID int64 `json:"teaching_class_id" binding:"required" validate:"required"`
 }
 
+type LearningScheduleModel struct {
+	LearningSchedule
+	TeachingClassSubject   TeachingClassSubjectModel `gorm:"foreignKey:TeachingClassSubjectID;references:TeachingClassSubjectID"`
+}
+
 /*
 * see the documentation here about conventions
 * https://gorm.io/docs/conventions.html

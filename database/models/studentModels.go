@@ -32,7 +32,11 @@ type Student struct {
 	StudentMotherName        string    `json:"mother_name" binding:"required"`
 	StudentMotherJob         string    `json:"mother_job" binding:"required"`
 	StudentMotherPhoneNumber string    `json:"mother_number_phone" binding:"required,e164"`
-	lib.BaseModel
+	// lib.BaseModel
+	// Manually managed by gorm because I can't find a way to automatically manage it
+	CreatedAt time.Time      // Automatically managed by GORM for creation timecreating time
+	UpdatedAt time.Time      // Automatically managed by GORM for update time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
 type StudentModel struct {
@@ -222,6 +226,35 @@ func (student *Student) GetAllStudentsByClassID(classID string) (students []Stud
 	result := connections.DB.Where("class_name_id = ?", classID).Find(&students)
 	if result.Error != nil {
 		return students, result.Error
+	}
+
+	return students, nil
+}
+
+func GetAllStudentPersonalDataArchive(
+	academicYearStart string,
+	academicYearEnd string,
+) (
+	students []StudentModel,
+	err error,
+) {
+	// Query for graduated students (deleted_at IS NOT NULL)
+	graduated := connections.DB.Unscoped().Model(&StudentModel{}).
+		Preload("ClassName.Grade").
+		Not("student_accepted_date > ? OR deleted_at < ?", academicYearEnd, academicYearStart)
+
+	// Query for non-graduated students (deleted_at IS NULL)
+	notGraduated := connections.DB.Model(&StudentModel{}).
+		Preload("ClassName.Grade").
+		Where("student_accepted_date < ?", academicYearEnd).
+		Where("deleted_at IS NULL") // Ensure they haven't graduated yet.
+
+	// Combine the two queries using UNION
+	result := graduated.Or(notGraduated).Find(&students)
+	if result.Error != nil {
+		return nil, fmt.Errorf("error fetching students: %w", result.Error)
+	} else if result.RowsAffected == 0 {
+		return nil, fmt.Errorf("no students found")
 	}
 
 	return students, nil

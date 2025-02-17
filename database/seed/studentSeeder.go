@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/edulink-api/database/models"
+	"gorm.io/gorm"
 )
 
 // StudentData defines the input data for creating a student
@@ -102,6 +103,35 @@ func StudentSeeder() (students []models.Student) {
 	for _, data := range studentDataList {
 		students = append(students, createStudent(data))
 	}
+
+	// additional student data for testing class archive
+	additionalStudents := []models.Student{
+		{ClassNameID: 8, StudentName: "John Doe", StudentNISN: "9988776655", StudentGender: "Male", StudentPlaceOfBirth: "Jakarta", StudentDateOfBirth: time.Date(2005, 1, 10, 0, 0, 0, 0, time.UTC), StudentReligion: "Konghucu", StudentAddress: "Jl. Kemang Timur No 12", StudentPhoneNumber: "+628910111111", StudentEmail: "johndoe@gmail.com", StudentAcceptedDate: time.Date(2021, 7, 20, 0, 0, 0, 0, time.UTC), StudentSchoolOfOrigin: "SMP 2", StudentFatherName: "Ayah 31", StudentFatherJob: "Wiraswasta", StudentFatherPhoneNumber: "+62123456111", StudentMotherName: "Ibu 31", StudentMotherJob: "Guru", StudentMotherPhoneNumber: "+62123456112"},
+		{ClassNameID: 8, StudentName: "Jane Smith", StudentNISN: "9966443321", StudentGender: "Female", StudentPlaceOfBirth: "Bandung", StudentDateOfBirth: time.Date(2006, 5, 15, 0, 0, 0, 0, time.UTC), StudentReligion: "Konghucu", StudentAddress: "Jl. Thamrin No 20", StudentPhoneNumber: "+628910222222", StudentEmail: "janesmith@gmail.com", StudentAcceptedDate: time.Date(2021, 7, 20, 0, 0, 0, 0, time.UTC), StudentSchoolOfOrigin: "SMP 3", StudentFatherName: "Ayah 32", StudentFatherJob: "Dokter", StudentFatherPhoneNumber: "+62123456222", StudentMotherName: "Ibu 32", StudentMotherJob: "Perawat", StudentMotherPhoneNumber: "+62123456223"},
+		{ClassNameID: 8, StudentName: "Michael Johnson", StudentNISN: "9955332211", StudentGender: "Male", StudentPlaceOfBirth: "Surabaya", StudentDateOfBirth: time.Date(2005, 12, 20, 0, 0, 0, 0, time.UTC), StudentReligion: "Konghucu", StudentAddress: "Jl. Senayan No 25", StudentPhoneNumber: "+628910333333", StudentEmail: "michaeljohnson@gmail.com", StudentAcceptedDate: time.Date(2021, 7, 20, 0, 0, 0, 0, time.UTC), StudentSchoolOfOrigin: "SMP 4", StudentFatherName: "Ayah 33", StudentFatherJob: "Karyawan Swasta", StudentFatherPhoneNumber: "+62123456333", StudentMotherName: "Ibu 33", StudentMotherJob: "Ibu Rumah Tangga", StudentMotherPhoneNumber: "+62123456334"},
+		{ClassNameID: 8, StudentName: "Emily Davis", StudentNISN: "9944221100", StudentGender: "Female", StudentPlaceOfBirth: "Medan", StudentDateOfBirth: time.Date(2006, 7, 8, 0, 0, 0, 0, time.UTC), StudentReligion: "Konghucu", StudentAddress: "Jl. Cilandak No 7", StudentPhoneNumber: "+628910444444", StudentEmail: "emilydavis@gmail.com", StudentAcceptedDate: time.Date(2021, 7, 20, 0, 0, 0, 0, time.UTC), StudentSchoolOfOrigin: "SMP 7", StudentFatherName: "Ayah 34", StudentFatherJob: "Pengusaha", StudentFatherPhoneNumber: "+62123456444", StudentMotherName: "Ibu 34", StudentMotherJob: "PNS", StudentMotherPhoneNumber: "+62123456445"},
+		{ClassNameID: 8, StudentName: "Chris Brown", StudentNISN: "9933110099", StudentGender: "Male", StudentPlaceOfBirth: "Yogyakarta", StudentDateOfBirth: time.Date(2005, 2, 11, 0, 0, 0, 0, time.UTC), StudentReligion: "Konghucu", StudentAddress: "Jl. Tebet Barat No 8", StudentPhoneNumber: "+628910555555", StudentEmail: "chrisbrown@gmail.com", StudentAcceptedDate: time.Date(2021, 7, 20, 0, 0, 0, 0, time.UTC), StudentSchoolOfOrigin: "SMP 5", StudentFatherName: "Ayah 35", StudentFatherJob: "Polisi", StudentFatherPhoneNumber: "+62123456555", StudentMotherName: "Ibu 35", StudentMotherJob: "Guru", StudentMotherPhoneNumber: "+62123456556"},
+		{ClassNameID: 8, StudentName: "Sophia Wilson", StudentNISN: "9922008899", StudentGender: "Female", StudentPlaceOfBirth: "Malang", StudentDateOfBirth: time.Date(2006, 9, 5, 0, 0, 0, 0, time.UTC), StudentReligion: "Konghucu", StudentAddress: "Jl. Kelapa Gading No 16", StudentPhoneNumber: "+628910666666", StudentEmail: "sophiawilson@gmail.com", StudentAcceptedDate: time.Date(2021, 7, 20, 0, 0, 0, 0, time.UTC), StudentSchoolOfOrigin: "SMP 8", StudentFatherName: "Ayah 36", StudentFatherJob: "TNI", StudentFatherPhoneNumber: "+62123456666", StudentMotherName: "Ibu 36", StudentMotherJob: "Dokter", StudentMotherPhoneNumber: "+62123456667"},
+		{ClassNameID: 8, StudentName: "Liam Garcia", StudentNISN: "9911007788", StudentGender: "Male", StudentPlaceOfBirth: "Palembang", StudentDateOfBirth: time.Date(2005, 4, 1, 0, 0, 0, 0, time.UTC), StudentReligion: "Konghucu", StudentAddress: "Jl. Menteng No 11", StudentPhoneNumber: "+628910777777", StudentEmail: "liamgarcia@gmail.com", StudentAcceptedDate: time.Date(2021, 7, 20, 0, 0, 0, 0, time.UTC), StudentSchoolOfOrigin: "SMP 9", StudentFatherName: "Ayah 37", StudentFatherJob: "Wiraswasta", StudentFatherPhoneNumber: "+62123456777", StudentMotherName: "Ibu 37", StudentMotherJob: "Perawat", StudentMotherPhoneNumber: "+62123456778"},
+		{ClassNameID: 8, StudentName: "Isabella Martinos", StudentNISN: "9900099888", StudentGender: "Female", StudentPlaceOfBirth: "Makassar", StudentDateOfBirth: time.Date(2006, 6, 25, 0, 0, 0, 0, time.UTC), StudentReligion: "Konghucu", StudentAddress: "Jl. Fatmawati No 6", StudentPhoneNumber: "+628910888888", StudentEmail: "isabelladiatercinta@gmail.com", StudentAcceptedDate: time.Date(2021, 7, 20, 0, 0, 0, 0, time.UTC), StudentSchoolOfOrigin: "SMP 10", StudentFatherName: "Ayah 38", StudentFatherJob: "Pengusaha", StudentFatherPhoneNumber: "+62123456888", StudentMotherName: "Ibu 38", StudentMotherJob: "Ibu Rumah Tangga", StudentMotherPhoneNumber: "+62123456889"},
+		{ClassNameID: 8, StudentName: "Noah Thomas", StudentNISN: "9898987766", StudentGender: "Male", StudentPlaceOfBirth: "Bali", StudentDateOfBirth: time.Date(2005, 8, 12, 0, 0, 0, 0, time.UTC), StudentReligion: "Konghucu", StudentAddress: "Jl. Pancoran No 2", StudentPhoneNumber: "+628910999999", StudentEmail: "noahthomas@gmail.com", StudentAcceptedDate: time.Date(2021, 7, 20, 0, 0, 0, 0, time.UTC), StudentSchoolOfOrigin: "SMP 11", StudentFatherName: "Ayah 39", StudentFatherJob: "Karyawan Swasta", StudentFatherPhoneNumber: "+62123456999", StudentMotherName: "Ibu 39", StudentMotherJob: "PNS", StudentMotherPhoneNumber: "+62123456990"},
+		{ClassNameID: 8, StudentName: "Ava White", StudentNISN: "9888876655", StudentGender: "Female", StudentPlaceOfBirth: "Pontianak", StudentDateOfBirth: time.Date(2006, 11, 3, 0, 0, 0, 0, time.UTC), StudentReligion: "Konghucu", StudentAddress: "Jl. Setiabudi No 10", StudentPhoneNumber: "+628910000000", StudentEmail: "avawhite@gmail.com", StudentAcceptedDate: time.Date(2021, 7, 20, 0, 0, 0, 0, time.UTC), StudentSchoolOfOrigin: "SMP 12", StudentFatherName: "Ayah 40", StudentFatherJob: "Polisi", StudentFatherPhoneNumber: "+62123457000", StudentMotherName: "Ibu 40", StudentMotherJob: "Guru", StudentMotherPhoneNumber: "+62123457001"},
+	}
+
+	// for _, data := range additionalStudents {
+	// 	// add deleted at for testing class archive
+	// 	data.DeletedAt = gorm.DeletedAt{Time: time.Date(2024, 6, 20, 0, 0, 0, 0, time.UTC)}
+	// }
+	for i := range additionalStudents {
+		// Add DeletedAt only for the additional students
+		additionalStudents[i].StudentName = "Deleted " + additionalStudents[i].StudentName
+		additionalStudents[i].DeletedAt = gorm.DeletedAt{
+			Time: time.Date(2024, 6, 20, 0, 0, 0, 0, time.UTC), 
+			Valid: true,
+		}
+	}
+
+	students = append(students, additionalStudents...)
 
 	return students
 }

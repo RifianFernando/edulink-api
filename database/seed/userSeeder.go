@@ -22,7 +22,7 @@ func UserSeeder() (users []models.User) {
 			UserPassword:     lib.HashPassword("123456"),
 		},
 		{
-			UserName:         "guru admin",
+			UserName:         "guru aja",
 			UserGender:       "Female",
 			UserPlaceOfBirth: "Jakarta",
 			UserReligion:     "Kristen Katolik",
@@ -44,14 +44,14 @@ func UserSeeder() (users []models.User) {
 			UserPassword:     lib.HashPassword("123456"),
 		},
 		{
-			UserName:         "Admin1",
+			UserName:         "guru2",
 			UserGender:       "Male",
 			UserPlaceOfBirth: "Jakarta",
 			UserReligion:     "Kristen Protestan",
 			UserDateOfBirth:  time.Now(),
 			UserAddress:      "Jl. Jakarta no 3",
-			UserPhoneNum:     "+628123456781",
-			UserEmail:        "testadmin@gmail.com",
+			UserPhoneNum:     "+628123457771",
+			UserEmail:        "guru2@gmail.com",
 			UserPassword:     lib.HashPassword("123456"),
 		},
 		{
@@ -72,13 +72,33 @@ func UserSeeder() (users []models.User) {
 			UserReligion:     "Kristen Protestan",
 			UserDateOfBirth:  time.Now(),
 			UserAddress:      "Jl. Jakarta no 5",
-			UserPhoneNum:     "+628123451722",
+			UserPhoneNum:     "+628123451772",
 			UserEmail:        "staff2@gmail.com",
 			UserPassword:     lib.HashPassword("123456"),
 		},
-		// {
-		// 	UserName:         "Staff2",
-		// 	UserGender: 
+		{
+			UserName:         "Test Admin",
+			UserGender:       "Female",
+			UserPlaceOfBirth: "Jakarta Barat",
+			UserReligion:     "Kristen Protestan",
+			UserDateOfBirth:  time.Now(),
+			UserAddress:      "Jl. Jakarta no 5",
+			UserPhoneNum:     "+628123451712",
+			UserEmail:        "testadmin@gmail.com",
+			UserPassword:     lib.HashPassword("123456"),
+		},
+		{
+			UserName:         "Admin2",
+			UserGender:       "Female",
+			UserPlaceOfBirth: "Jakarta Barat",
+			UserReligion:     "Kristen Protestan",
+			UserDateOfBirth:  time.Now(),
+			UserAddress:      "Jl. Jakarta no 5",
+			UserPhoneNum:     "+628123451722",
+			UserEmail:        "admin2@gmail.com",
+			UserPassword:     lib.HashPassword("123456"),
+		},
+
 	}
 
 	return users

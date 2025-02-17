@@ -1,16 +1,16 @@
 package helper
 
 import (
-	"fmt"
-	"strconv"
-
 	"github.com/edulink-api/connections"
 	"github.com/edulink-api/database/models"
-	req "github.com/edulink-api/request/schedule"
 )
+// start hour schedule each day is 7 am
+// const startHour = 7
+// end hour schedule each day is 5 pm
+// const endHour = 17
 
-func GenerateAndCreateScheduleTeachingClassSubject(req req.InsertScheduleRequest) error {
-
+func GenerateNewScheduleTeachingClassSubject(academicYear models.AcademicYear) error {
+	// Get or create academic year
 	tx := connections.DB.Begin()
 	if tx.Error != nil {
 		return tx.Error
@@ -21,46 +21,40 @@ func GenerateAndCreateScheduleTeachingClassSubject(req req.InsertScheduleRequest
 		}
 	}()
 
-	// update teacher teaching hour
-	var listTeacherIDIn []int64
-	queryUpdateTeacherTeachingHour := "UPDATE academic.teachers SET teaching_hour = CASE"
+	// 1. Get all teaching class subjects
+	var teachingClassSubjects []models.TeachingClassSubjectModel
+	tx.Model(&models.TeachingClassSubjectModel{}).
+		Preload("ClassName").
+		Preload("TeacherSubject").
+		Where("academic_year_id = ?", academicYear.AcademicYearID).Find(&teachingClassSubjects)
 
-	// create teacher subject and update teacher subject with upsert method sql query like teacher model
-	queryUpsertTeacherSubject := "INSERT INTO academic.teaching_class_subjects (teacher_subject_id, class_name_id) VALUES "
-	for _, teacher := range req.ScheduleRequest {
-		// first update the teaching hour using bulk update
-		teacherIDParsed := strconv.FormatInt(teacher.TeacherID, 10)
-		queryUpdateTeacherTeachingHour += fmt.Sprintf(" WHEN teacher_id = %s THEN %d", teacherIDParsed, teacher.TeachingHour)
-		listTeacherIDIn = append(listTeacherIDIn, teacher.TeacherID)
+	// TODO: jadi gw bikinnya kgk ngecek database yang lama karena pengen cepat jadi gw bikinnya langsung insert aja kalo mau best practice coba di check databasenya sesuai sama academic year sekarang terus juga cek yang deleted_at nya null dan juga check learning schedulenya masih aktif atau tidak
 
-		// upsert the teaching class subject too like the teacher subject
-		for _, DataTeaching := range teacher.DataTeaching {
-			//TODO: get the teacher subject ID with get teaching class subject, but I think we need to get optimize this database querry for get teacher subject ID and then we are going through join the teaching class subject, for assign new value method with bulk upsert
+	// 2. generate schedule teaching class subjects
+	// TODO: ohh iya bisa pakai hash map buat nentuin jadwal gk boleh sama saat melakukan create INGATTTTTTTTTTTTT!!!!!!!!!!!!!!!
+	// [teacher_subject_id] => [schedule_id]
+	// [class_name_id] => [schedule_id]
+	uniqueTeacherSchedule := make(map[int64]int)
+	uniqueClassChedule := make(map[int64]int)
 
-			// TODO: e.g. using query select for searching the teacher subject ID
-			var teachingClassSubject models.TeachingClassSubject
-			teachingClassSubject.TeacherSubjectID = int64(DataTeaching.SubjectID)
-			for _, ClassTeaching := range DataTeaching.ClassNameID {
-				teachingClassSubject.ClassNameID = ClassTeaching
-
-				// TODO: create the query for upsert value for teaching class subject using the existing data with bulk upsert for best practice
-				queryUpsertTeacherSubject += ""
+	// teaching class subject is need duration session for each schedule
+	for _, teachingClassSubject := range teachingClassSubjects {
+	// create learning schedule by schedule id
+		// i for id schedule
+		for i := 1; i <= 70; i++ {
+			teacherID := teachingClassSubject.TeacherSubject.TeacherID
+			teachingClassNameID := teachingClassSubject.ClassNameID
+			if _, teacherExists := uniqueTeacherSchedule[teacherID]; !teacherExists {
+				if _, classExists := uniqueClassChedule[teachingClassNameID]; !classExists {
+					uniqueTeacherSchedule[teacherID] = i
+					uniqueClassChedule[teachingClassNameID] = i
+					var learningSchedule models.LearningSchedule
+					learningSchedule.TeachingClassSubjectID = teachingClassSubject.TeachingClassSubjectID
+				}
 			}
 		}
 	}
-	// execute update teacher teaching hour and upsert teacher subject
-	queryUpdateTeacherTeachingHour += " END WHERE teacher_id IN ?"
-	// TODO: after refactoring table teacher_subjects, this query should be used
-	// queryUpsertTeacherSubject += " ON CONFLICT (teacher_id, subject_id) DO NOTHING"
 
-	if err := tx.Exec(queryUpdateTeacherTeachingHour, listTeacherIDIn).Error; err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	// if (len(teacherSubjects) == 0) {
-	// return fmt.Errorf("invalid data")
-	// }
-
-	return tx.Commit().Error
+	// 3. insert schedule teaching class subjects
+	return nil
 }

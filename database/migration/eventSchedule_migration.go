@@ -12,11 +12,11 @@ import (
 * https://gorm.io/docs/models.html#Fields-Tags
  */
 type EventSchedule struct {
-	EventScheduleID   int64     `gorm:"primaryKey;autoIncrement"`
-	ScheduleID        int64     `gorm:"not null"`
-	EventScheduleName string    `gorm:"not null"`
-	EventScheduleDate time.Time `gorm:"not null"`
-	lib.BaseModel               /* this type include CreatedAt, UpdatedAt, DeletedAt, I can't use the gorm.models because can't customize the id name */
+	EventScheduleID        int64     `gorm:"primaryKey;autoIncrement"`
+	EventScheduleName      string    `gorm:"not null"`
+	EventScheduleDateStart time.Time `gorm:"not null"`
+	EventScheduleDateEnd   time.Time `gorm:"not null"`
+	lib.BaseModel                    /* this type include CreatedAt, UpdatedAt, DeletedAt, I can't use the gorm.models because can't customize the id name */
 }
 
 /*

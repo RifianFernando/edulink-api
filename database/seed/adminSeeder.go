@@ -9,11 +9,11 @@ import (
 func AdminSeeder() (admins []models.Admin) {
 	admins = []models.Admin{
 		{
-			UserID:   2,
+			UserID:   7,
 			Position: user.Admin,
 		},
 		{
-			UserID:   4,
+			UserID:   8,
 			Position: user.Admin,
 		},
 	}

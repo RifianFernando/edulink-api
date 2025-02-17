@@ -94,3 +94,15 @@ func IsTeachingClassSubjectExist(userID any, subjectID string, classNameID strin
 
 	return teacher, nil
 }
+
+func PrepareTeachers(teachers []models.Teacher) []map[string]interface{} {
+	var result []map[string]interface{}
+	for _, teacher := range teachers {
+		result = append(result, map[string]interface{}{
+			"id": teacher.TeacherID,
+			// "name": teacher.User.UserName,
+		})
+	}
+
+	return result
+}

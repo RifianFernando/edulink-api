@@ -66,3 +66,14 @@ func (user *User) DeleteUserByID(id string) error {
 	}
 	return nil
 }
+
+// Get User Profile
+// TODO: Add user type
+func (user *User) GetUserProfile(userType []string) (User, string) {
+	result := connections.DB.Where(&user).First(&user)
+	if result.Error != nil {
+		return User{}, result.Error.Error()
+	}
+
+	return *user, ""
+}

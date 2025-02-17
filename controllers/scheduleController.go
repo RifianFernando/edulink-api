@@ -29,9 +29,19 @@ func GenerateAndCreateScheduleTeachingClassSubject(c *gin.Context) {
 		})
 		return
 	}
+		
+	academicYear, _ := helper.GetOrCreateAcademicYear()
 
 	// Generate And Create Schedule Teaching Class Subject
-	err := helper.GenerateAndCreateScheduleTeachingClassSubject(request)
+	err := helper.GenerateTeachingClassSubject(request, academicYear)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	err = helper.GenerateNewScheduleTeachingClassSubject(academicYear)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),

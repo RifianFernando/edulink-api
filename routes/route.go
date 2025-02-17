@@ -45,6 +45,7 @@ func Route(router *gin.Engine) {
 		teacher.POST(create, controllers.CreateTeacher)
 		teacher.PUT("/update/:teacher_id", controllers.UpdateTeacherById)
 		teacher.DELETE("/delete/:teacher_id", controllers.DeleteTeacherById)
+		teacher.POST("/create-all", controllers.CreateAllTeacher)
 	}
 
 	// Class CRUD
@@ -92,7 +93,6 @@ func Route(router *gin.Engine) {
 	{
 		scoring.GET(
 			"/summaries/:class_id",
-			middleware.AlreadyLoggedIn(),
 			controllers.GetSummariesScoringStudentBySubjectClassName,
 		)
 		scoring.GET(
@@ -131,5 +131,67 @@ func Route(router *gin.Engine) {
 		staff.PUT("/update/:staff_id", controllers.UpdateStaffByID)
 		staff.DELETE("/delete/:staff_id", controllers.DeleteStaffByID)
 		staff.POST("/create-all", controllers.CreateAllStaff)
+	}
+
+	// profile
+	profile := apiV1.Group("/profile", middleware.AlreadyLoggedIn())
+	{
+		profile.GET("", authController.GetUserProfile)
+	}
+
+	// get academic year list
+	academicYear := apiV1.Group("/academic-year", middleware.AlreadyLoggedIn())
+	{
+		academicYear.GET("", controllers.GetAcademicYearList)
+	}
+
+	// get archive academic calendar
+	archiveData := apiV1.Group("/archive", middleware.AlreadyLoggedIn(), middleware.AdminStaffOnly())
+	{
+		/*
+			We use param academic_year_start and academic_year_end for readability instead of academic_year_id
+			* because it's easier to understand the range of academic year
+			* example: 2019/2020
+			* */
+
+		/*
+		* archiveData student personal-data
+		* example: /student-personal-data/2019/2020
+		* */
+		archiveData.GET("/student-personal-data/:academic_year_start/:academic_year_end", controllers.GetAllStudentPersonalDataArchive)
+
+		/*
+		* archiveData student attendance
+		* example: /student-attendance/2019/2020
+		* example: /student-attendance/2019/2020/1 -> with class_id
+		* */
+		archiveData.GET("/student-attendance/:academic_year_start/:academic_year_end/:class_id", controllers.GetAllStudentAttendanceArchive)
+
+		/*
+		* archiveData student score
+		* example: /student-score/2019/2020
+		* example: /student-score/2019/2020/1 -> with class_id
+		* */
+		archiveData.GET("/student-score/:academic_year_start/:academic_year_end", controllers.GetAllStudentScoreArchive)
+		archiveData.GET("/student-score/:academic_year_start/:academic_year_end/:class_id", controllers.GetAllStudentScoreArchive)
+
+		/*
+		* archiveData class and student list
+		* example: /class/2019/2020
+		* */
+		archiveData.GET("/class/:academic_year_start/:academic_year_end/:grade_id", controllers.GetAllClassArchiveByGradeID)
+	}
+
+	event := apiV1.Group("/event", middleware.AlreadyLoggedIn())
+	{
+		event.GET("", controllers.GetAllEvent)
+	}
+
+	// create event
+	eventAdminStaff := event.Group("", middleware.AdminStaffOnly())
+	{
+		eventAdminStaff.POST("", controllers.CreateEvent)
+		eventAdminStaff.PUT("/:event_id", controllers.UpdateEvent)
+		eventAdminStaff.DELETE("/:event_id", controllers.DeleteEvent)
 	}
 }

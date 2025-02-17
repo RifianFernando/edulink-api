@@ -5,9 +5,9 @@ import (
 	"github.com/edulink-api/database/models"
 )
 // start hour schedule each day is 7 am
-const startHour = 7
+// const startHour = 7
 // end hour schedule each day is 5 pm
-const endHour = 17
+// const endHour = 17
 
 func GenerateNewScheduleTeachingClassSubject(academicYear models.AcademicYear) error {
 	// Get or create academic year
